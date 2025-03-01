@@ -1,0 +1,5 @@
+Feature branch usage: 
+  git checkout -b - creates and switches to a new branch with "b" as the name
+  git add file.html file.css file.py - adds these files to the new branch
+  git commit -m - commits and adds a message to describe what the branch does/is 
+  git push origin -b - push the feature branch onto the main branch

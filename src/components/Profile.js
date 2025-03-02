@@ -30,9 +30,9 @@ const Profile = () => {
       {/* Stats & Actions */}
       <div className="profile-stats-container">
         <div className="profile-stats">
-          <span><strong>10</strong> Posts</span>
-          <span><strong>362</strong> Followers</span>
-          <span><strong>380</strong> Following</span>
+          <span><strong>_</strong> Posts</span>
+          <span><strong>_</strong> Followers</span>
+          <span><strong>_</strong> Following</span>
         </div>
         <div className="profile-actions">
           <button className="profile-btn">Edit Profile</button>

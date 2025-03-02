@@ -1,0 +1,156 @@
+/* Profile Page Full Background */
+.profile-container {
+    background-color: #E5E5E5; 
+    color: black;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Profile Header */
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px 0;
+}
+
+/* Avatar that links back to Navbar */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 100px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Profile Info */
+.profile-info {
+    margin-left: 20px;
+}
+
+.profile-username {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile-bio {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Centered Stats & Actions */
+.profile-stats-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Profile Buttons */
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.edit-btn, .archive-btn {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-btn:hover, .archive-btn:hover {
+    background-color: #555;
+}
+
+/* Divider */
+.profile-divider {
+    width: 75%;
+    border: 0.5px solid #aaa;
+    margin: 15px 0;
+}
+
+/* Tabs Section */
+.profile-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.3s ease;
+}
+
+.tab-button.active {
+    color: black;
+    border-bottom: 2px solid black;
+}
+
+.tab-button.inactive {
+    color: #666;
+}
+
+/* Profile Builds (Larger Image Placeholders) */
+.profile-builds-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Default: 6 placeholders, changes to 9 when clicking 'Saved' or 'Tagged' */
+.profile-builds {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 80%;
+}
+
+/* Bigger Placeholder Box */
+.build-placeholder {
+    width: 300px;
+    height: 300px;
+    background-color: #d3d3d3;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #555;
+    font-weight: bold;
+}
+
+/* Placeholder Text */
+.build-placeholder::before {
+    content: "Image Placeholder";
+}

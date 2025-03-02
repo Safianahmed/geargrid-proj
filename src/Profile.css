@@ -1,13 +1,13 @@
-/* Profile Page Full Background */
 .profile-container {
     background-color: #E5E5E5; 
     color: black;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    overflow-y: auto;
 }
 
 /* Profile Header */
@@ -19,7 +19,7 @@
     padding: 20px 0;
 }
 
-/* Avatar that links back to Navbar */
+/* Avatar */
 .profile-avatar {
     width: 100px;
     height: 100px;
@@ -38,16 +38,6 @@
     margin-left: 20px;
 }
 
-.profile-username {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.profile-bio {
-    font-size: 16px;
-    color: #333;
-}
-
 /* Centered Stats & Actions */
 .profile-stats-container {
     display: flex;
@@ -64,35 +54,36 @@
     margin-bottom: 10px;
 }
 
-/* Profile Buttons */
+/* Profile Buttons (Restored Styling) */
 .profile-actions {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     justify-content: center;
 }
 
-.edit-btn, .archive-btn {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 10px 16px;
+.profile-btn {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
     border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
-.edit-btn:hover, .archive-btn:hover {
-    background-color: #555;
+.profile-btn:hover {
+    background-color: #ddd;
 }
 
-/* Divider */
-.profile-divider {
-    width: 75%;
-    border: 0.5px solid #aaa;
-    margin: 15px 0;
+/* Divider Between Profile Stats & Image Placeholders */
+.profile-image-divider {
+    width: 80%;
+    border-bottom: 2px solid #ccc;
+    margin: 20px 0;
 }
 
-/* Tabs Section */
+/* Tabs */
 .profile-tabs {
     display: flex;
     justify-content: center;
@@ -116,11 +107,7 @@
     border-bottom: 2px solid black;
 }
 
-.tab-button.inactive {
-    color: #666;
-}
-
-/* Profile Builds (Larger Image Placeholders) */
+/* Image Grid */
 .profile-builds-container {
     display: flex;
     flex-direction: column;
@@ -128,18 +115,17 @@
     gap: 20px;
 }
 
-/* Default: 6 placeholders, changes to 9 when clicking 'Saved' or 'Tagged' */
 .profile-builds {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    width: 80%;
+    width: 105%;
 }
 
-/* Bigger Placeholder Box */
+/* Bigger Image Placeholder */
 .build-placeholder {
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     background-color: #d3d3d3;
     border-radius: 5px;
     display: flex;
@@ -148,9 +134,4 @@
     font-size: 18px;
     color: #555;
     font-weight: bold;
-}
-
-/* Placeholder Text */
-.build-placeholder::before {
-    content: "Image Placeholder";
 }

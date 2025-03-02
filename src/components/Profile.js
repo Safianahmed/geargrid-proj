@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../Profile.css"; // 
+import "../Profile.css";
+
 const Profile = () => {
-  const navigate = useNavigate(); 
-  const [activeTab, setActiveTab] = useState("posts"); 
+  const [activeTab, setActiveTab] = useState("posts");
+  const navigate = useNavigate();
+
   // Renders different image counts based on selected tab
   const renderImages = () => {
     let count = activeTab === "posts" ? 6 : 9; 
     return Array.from({ length: count }, (_, index) => (
-      <div key={index} className="build-placeholder"></div>
+      <div key={index} className="build-placeholder">Image Placeholder</div>
     ));
   };
 
@@ -16,7 +18,7 @@ const Profile = () => {
     <div className="profile-container">
       {/* Header Section */}
       <div className="profile-header">
-        <div className="profile-avatar" onClick={() => navigate("/menu")}> 
+        <div className="profile-avatar" onClick={() => navigate("/menu")}>
           GearGrid
         </div>
         <div className="profile-info">
@@ -33,12 +35,15 @@ const Profile = () => {
           <span><strong>380</strong> Following</span>
         </div>
         <div className="profile-actions">
-          <button className="edit-btn">Edit Profile</button>
-          <button className="archive-btn">View Archive</button>
+          <button className="profile-btn">Edit Profile</button>
+          <button className="profile-btn" onClick={() => navigate("/archive")}>
+            View Archive
+          </button>
         </div>
       </div>
 
-      <hr className="profile-divider" />
+      {/* Divider Below Stats */}
+      <hr className="profile-image-divider" />
 
       {/* Tabs for Posts, Saved, Tagged */}
       <div className="profile-tabs">
@@ -62,7 +67,7 @@ const Profile = () => {
         </button>
       </div>
 
-     
+      {/* Dynamic Image Grid */}
       <div className="profile-builds-container">
         <div className="profile-builds">{renderImages()}</div>
       </div>

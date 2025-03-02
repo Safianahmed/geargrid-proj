@@ -187,3 +187,9 @@ body {
 .menu-links a:hover {
     color: #0095f6;
 }
+
+.profile-stats-divider {
+    width: 80%;  
+    border-bottom: 2px solid #ccc;  
+    margin: 15px 0;
+}

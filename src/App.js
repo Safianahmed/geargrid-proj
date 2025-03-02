@@ -4,7 +4,8 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
 import Navbar from "./components/Navbar";
-import Profile from "./components/Profile"; // ✅ Import Profile Page
+import Profile from "./components/Profile";
+import Archive from "./components/Archive";
 import "./styles.css";
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/menu" element={<Navbar />} />
-        <Route path="/profile" element={<Profile />} /> {/* ✅ Profile Page Route */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/archive" element={<Archive />} />
       </Routes>
     </Router>
   );

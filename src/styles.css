@@ -187,3 +187,40 @@ body {
 .menu-links a:hover {
     color: #0095f6;
 }
+
+
+/* Navbar Container */
+.navbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px;
+    background-color: transparent; 
+    box-shadow: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+/* Logo (left-aligned) */
+.navbar-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0095f6;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Menu Button (top-right corner) */
+.menu-btn {
+    font-size: 20px;
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}

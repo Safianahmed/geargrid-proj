@@ -187,3 +187,49 @@ body {
 .menu-links a:hover {
     color: #0095f6;
 }
+
+.events-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 20px 20px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.event {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  width: 90%;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.event-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-name {
+  font-size: 2em;
+  margin: 0;
+}
+
+.event-description,
+.event-time,
+.event-location,
+.event-theme {
+  margin: 10px 0;
+  font-size: 1.2em;
+}

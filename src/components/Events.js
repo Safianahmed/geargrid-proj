@@ -18,6 +18,14 @@ const events = [
     location: 'Location 2',
     theme: 'Theme 2'
   },
+  {
+    image: 'carevent3.jpg',
+    name: 'Event 3',
+    description: 'Description for Event 3',
+    time: '7:00 PM - 10:00 PM',
+    location: 'Location 3',
+    theme: 'Theme 3'
+  },
   // Add more events as needed
 ];
 

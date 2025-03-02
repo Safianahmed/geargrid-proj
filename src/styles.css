@@ -2,14 +2,14 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
+    background-color: #fafafa; 
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #fafafa;
 }
 
-/* Outer container that holds everything */
+/* Authentication Pages */
 .auth-container {
     display: flex;
     flex-direction: column;
@@ -19,72 +19,65 @@ body {
     height: 100vh;
 }
 
-/* Main authentication box (login/signup/forgot password) */
 .auth-box {
     background: white;
     padding: 40px;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    width: 500px; 
+    width: 500px;
     text-align: center;
     margin-bottom: 15px;
     border: 1px solid #dbdbdb;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
 }
 
-/* Brand Name - Enlarged and centered */
 .brand-name {
     font-family: 'Times New Roman', sans-serif;
-    font-size: 42px; 
+    font-size: 42px;
     font-weight: bold;
     margin-bottom: 25px;
 }
 
-/* Input Fields - Keeping original size */
 .auth-box input {
     display: block;
-    width: 400px; 
-    margin: 12px auto; 
-    padding: 15px; 
+    width: 400px;
+    margin: 12px auto;
+    padding: 15px;
     border: 1px solid #dbdbdb;
     border-radius: 8px;
-    font-size: 18px; 
+    font-size: 18px;
     background-color: #fafafa;
 }
 
-/* Login / Signup Button - Same size */
 .auth-btn {
     background-color: #0095f6;
     color: white;
-    padding: 16px; 
+    padding: 16px;
     border: none;
-    width: 400px; 
+    width: 400px;
     cursor: pointer;
     margin-top: 12px;
     border-radius: 5px;
     font-weight: bold;
-    font-size: 20px; 
+    font-size: 20px;
 }
 
 .auth-btn:hover {
     background-color: #0073e6;
 }
 
-/* Forgot Password & Back to Login Links */
-.forgot-password,
-.back-login {
+.forgot-password, .back-login {
     color: #00376b;
-    font-size: 18px; 
+    font-size: 18px;
     text-decoration: none;
     display: block;
     margin-top: 14px;
     font-weight: bold;
 }
 
-/* OR Divider */
 .or-divider {
     display: flex;
     align-items: center;
@@ -102,13 +95,12 @@ body {
     margin: 0 10px;
 }
 
-/* Signup Box - Keeping it same size as login */
 .signup-box {
     background: white;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    width: 500px; 
+    width: 500px;
     text-align: center;
     font-size: 18px;
     font-weight: normal;
@@ -120,4 +112,78 @@ body {
     text-decoration: none;
     font-weight: bold;
     font-size: 18px;
+}
+
+/* Menu Page Background */
+.menu-page {
+    background-color: black; 
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* White Container */
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: white; 
+    padding: 40px;
+    border-radius: 12px;
+    width: 85vw;
+    height: 90vh;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    color: black; 
+}
+
+/* Adjusted Logo Circle */
+.navbar-logo {
+    width: 110px;
+    height: 110px;
+    background-color: #0095f6;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 110px;
+    border-radius: 50%;
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Menu Links */
+.menu-links {
+    list-style: none;
+    padding: 0;
+    margin-top: 100px;
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 150px;
+}
+
+.menu-links li {
+    margin: 22px 0;
+}
+
+.menu-links a {
+    text-decoration: none;
+    color: black; 
+    font-style: italic;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+    font-size: 28px;
+}
+
+.menu-links a:hover {
+    color: #0095f6;
 }

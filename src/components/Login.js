@@ -1,7 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles.css";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="auth-container">
       <div className="auth-box">
@@ -9,11 +12,15 @@ const Login = () => {
         <form>
           <input type="text" placeholder="Phone number, username, or email" required />
           <input type="password" placeholder="Password" required />
-          <button type="submit" className="auth-btn">Log In</button>
+          <button type="button" className="auth-btn" onClick={() => navigate("/menu")}>
+            Log In
+          </button>
         </form>
-        <p className="forgot-password"><a href="/forgot-password">Forgot password?</a></p>
+        <p>
+          <a href="/forgot-password" className="forgot-password">Forgot password?</a>
+        </p>
       </div>
-      <div className="signup-box">
+      <div className="auth-box signup-box">
         <p>Don't have an account? <a href="/signup">Sign up</a></p>
       </div>
     </div>

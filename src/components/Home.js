@@ -1,11 +1,21 @@
-import React from "react";
-import "../styles.css";
+import React, { useEffect } from "react";
+import "../Home.css"; 
 
 const Home = () => {
+  useEffect(() => {
+    document.body.classList.add("home-page"); 
+    return () => document.body.classList.remove("home-page"); 
+  }, []);
+
   return (
     <div className="home-container">
-      <h1>THE ONLY CAR EVENT PLATFORM YOU'LL EVER NEED</h1>
-      <p>- BUILT FOR ENTHUSIASTS, BY ENTHUSIASTS</p>
+      <div className="overlay"></div> 
+      <div className="content">
+        <h1 className="fade-in">GEARGRID</h1>
+        <h2 className="fade-in">THE ONLY CAR EVENT PLATFORM YOU’LL EVER NEED</h2>
+        <p className="fade-in">THE FUTURE OF CAR EVENTS & COMMUNITY</p>
+        <p className="fade-in last-line">—BUILT FOR ENTHUSIASTS, BY ENTHUSIASTS.</p>
+      </div>
     </div>
   );
 };

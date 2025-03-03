@@ -27,6 +27,7 @@
     cursor: pointer;
     position: relative;
     right: 40px; /* Slightly adjust for alignment */
+    padding-right: 15px; /* Align it symmetrically with the logo */
   }
   
   /* Menu Bars - Keep Size and Alignment */
@@ -36,9 +37,57 @@
     background-color: rgb(2, 1, 1); /* White color */
     border-radius: 10px;
   }
-  
-  /* Adjust spacing so it matches the logo */
-  .menu-icon {
-    padding-right: 15px; /* Align it symmetrically with the logo */
-  }
-  
+
+/*added for home page brighteness of header*/
+/* Home page effect */
+.home-page .menu-icon .bar {
+  animation: glow 1.5s infinite alternate;
+}
+
+/* Keyframes to animate brightness */
+@keyframes glow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(3); }
+}
+
+@keyframes flicker {
+  0% { filter: brightness(20); }
+  50% { filter: brightness(20); }
+  100% { filter: brightness(20); }
+}
+
+/* Apply bright effect ONLY when on the Home Page */
+.home-page .header-logo {
+  animation: flicker 2s ease-in-out forwards;
+}
+
+
+/* overlay menu bar for home page*/
+
+/* Add white overlay bars on the home page */
+.home-page .menu-icon {
+  position: relative; /* Ensure stacking */
+}
+
+.home-page .menu-icon::before,
+.home-page .menu-icon::after {
+  content: "";
+  width: 30px;
+  height: 3px;
+  background-color: white; /* White overlay */
+  border-radius: 10px;
+  position: absolute;
+  left: 0;
+}
+
+.home-page .menu-icon::before {
+  top: 0;
+}
+
+.home-page .menu-icon::after {
+  bottom: 0;
+}
+
+.home-page .menu-icon .bar:nth-child(2) {
+  background-color: white; /* Middle white bar */
+}

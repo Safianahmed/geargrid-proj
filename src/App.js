@@ -7,11 +7,14 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Membership from "./components/Membership";
+import Header from "./components/Header";
+
 import "./styles.css";
 
 function App() {
   return (
     <Router>
+      <Header /> {/* Header will now appear on all pages */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
@@ -21,6 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/membership" element={<Membership />} />
+        < Route path="/header" element={<Header />} />
       </Routes>
     </Router>
   );

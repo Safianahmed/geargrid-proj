@@ -1,0 +1,44 @@
+/* Header Container */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed; /* Keeps it at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 25px; /* Adjusted for consistent spacing */
+    background: transparent;
+    z-index: 1000; /* Keeps it above content */
+  }
+  
+  /* Logo Styling - Bigger and Properly Positioned */
+  .header-logo {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+  }
+  
+  /* Menu Icon (Three-line Hamburger) */
+  .menu-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+    right: 40px; /* Slightly adjust for alignment */
+  }
+  
+  /* Menu Bars - Keep Size and Alignment */
+  .bar {
+    width: 30px; /* Slightly wider */
+    height: 3px;
+    background-color: rgb(2, 1, 1); /* White color */
+    border-radius: 10px;
+  }
+  
+  /* Adjust spacing so it matches the logo */
+  .menu-icon {
+    padding-right: 15px; /* Align it symmetrically with the logo */
+  }
+  

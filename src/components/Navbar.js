@@ -1,23 +1,41 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import "../styles.css";
+import { Link, useNavigate } from "react-router-dom";
+import "../Navbar.css"; 
 
-const Navbar = () => {
+const Menu = ({ closeMenu }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="menu-page">
+    <div className="menu-overlay">
+      {/* Left Side - Car Image */}
+      <div className="menu-image"></div>
+
+      {/* Right Side - Sidebar Menu */}
       <div className="menu-container">
-        <div className="navbar-logo">GearGrid</div>
+        {/* Close Button - ✅ Removed Extra Mini X, Now Only 1 */}
+        <div className="close-icon" onClick={closeMenu}>
+        </div>
+
+        {/* Menu Links */}
         <ul className="menu-links">
-          <li><Link to="/login">Log In</Link></li>
-          <li><Link to="/events">Events</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/membership">Membership</Link></li>
-          <li><Link to="/businesses">Businesses</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
+          {[
+            { path: "/login", label: "LOG IN" },
+            { path: "/events", label: "EVENTS" },
+            { path: "/profile", label: "PROFILE" },
+            { path: "/membership", label: "MEMBERSHIP" },
+            { path: "/businesses", label: "BUSINESSES" },
+            { path: "/contact", label: "CONTACT" },
+          ].map((item, index) => (
+            <li key={index} onClick={() => navigate(item.path)}>
+              <Link to={item.path} className="menu-link">
+                {item.label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
   );
 };
 
-export default Navbar;
+export default Menu;

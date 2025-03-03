@@ -1,19 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles.css";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="menu-page">
       <div className="menu-container">
-        <div className="navbar-logo">GearGrid</div>
+        {/* GearGrid Circle Button - Navigates to Home */}
+        <div 
+          className="navbar-logo" 
+          onClick={() => navigate("/")} 
+          role="button" 
+          tabIndex={0}
+        >
+          GearGrid
+        </div>
+
         <ul className="menu-links">
-          <li><Link to="/login">Log In</Link></li>
-          <li><Link to="/events">Events</Link></li>
-          <li><Link to="/profile">Profile</Link></li>
-          <li><Link to="/membership">Membership</Link></li>
-          <li><Link to="/businesses">Businesses</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
+          <li><a href="/login">Log In</a></li>
+          <li><a href="/events">Events</a></li>
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/membership">Membership</a></li>
+          <li><a href="/businesses">Businesses</a></li>
+          <li><a href="/contact">Contact</a></li>
         </ul>
       </div>
     </div>

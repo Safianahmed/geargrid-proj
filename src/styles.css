@@ -114,14 +114,23 @@ body {
     font-size: 18px;
 }
 
-/* Menu Page Background */
+/* Navbar Overlay - Fullscreen */
 .menu-page {
-    background-color: black; 
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: white; 
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 300;
+}
+
+/* Ensure Home Page Does Not Show Under Navbar */
+.menu-page ~ .home-container {
+    display: none; 
 }
 
 /* White Container */
@@ -141,24 +150,7 @@ body {
     color: black; 
 }
 
-/* Adjusted Logo Circle */
-.navbar-logo {
-    width: 110px;
-    height: 110px;
-    background-color: #0095f6;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    line-height: 110px;
-    border-radius: 50%;
-    position: absolute;
-    top: 30px;
-    left: 40px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Menu Links */
+/* Navbar Menu Links */
 .menu-links {
     list-style: none;
     padding: 0;
@@ -188,21 +180,54 @@ body {
     color: #0095f6;
 }
 
-/* Divider for profile stats */
-.profile-stats-divider {
-    width: 80%;  
-    border-bottom: 2px solid #ccc;  
-    margin: 15px 0;
+/* Remove GearGrid Button from All Pages */
+.geargrid-logo,
+.navbar-logo {
+    display: none !important; /* Hide GearGrid on all pages including Navbar */
 }
 
-/* Ensure the Events Page is Not Cut Off */
-.events-container {
-    padding-top: 100px; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 15px; 
+/* ✅ GearGrid Circle Button - ONLY on Profile Page */
+.profile-container .geargrid-logo {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    width: 110px;
+    height: 110px;
+    background-color: #0095f6;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 110px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.profile-container .geargrid-logo:hover {
+    background-color: #0073e6;
+}
+
+/* Hamburger Menu Button (☰) - Bigger & Right-Aligned */
+.hamburger-menu {
+    position: absolute;
+    top: 20px;
+    right: 30px; 
+    font-size: 40px; 
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 150;
+    background: none;
+    border: none;
+    color: black;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Add Hover Effect */
+.hamburger-menu:hover {
+    transform: scale(1.1); 
 }
 
 /* Event Cards - Make Them Smaller */
@@ -252,26 +277,4 @@ body {
     font-size: 12px;
     font-weight: 500;
     margin: 3px 0;
-}
-/* GearGrid Circle Button - Match Navbar */
-.geargrid-logo {
-    position: absolute;
-    top: 30px; 
-    left: 40px; 
-    width: 110px; 
-    height: 110px; 
-    background-color: #0095f6; 
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    line-height: 110px; 
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease-in-out;
-}
-
-.geargrid-logo:hover {
-    background-color: #0073e6; 
 }

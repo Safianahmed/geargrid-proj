@@ -188,8 +188,90 @@ body {
     color: #0095f6;
 }
 
+/* Divider for profile stats */
 .profile-stats-divider {
     width: 80%;  
     border-bottom: 2px solid #ccc;  
     margin: 15px 0;
+}
+
+/* Ensure the Events Page is Not Cut Off */
+.events-container {
+    padding-top: 100px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 15px; 
+}
+
+/* Event Cards - Make Them Smaller */
+.event {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px; 
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px; 
+}
+
+/* Event Image - Make It Smaller */
+.event-image {
+    width: 100%;
+    height: 180px; 
+    object-fit: cover;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Event Details */
+.event-details {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Event Name */
+.event-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+/* Event Description */
+.event-description {
+    font-size: 12px; 
+    color: #666;
+    margin-bottom: 5px;
+}
+
+/* Event Time, Location, and Theme */
+.event-time, .event-location, .event-theme {
+    font-size: 12px;
+    font-weight: 500;
+    margin: 3px 0;
+}
+/* GearGrid Circle Button - Match Navbar */
+.geargrid-logo {
+    position: absolute;
+    top: 30px; 
+    left: 40px; 
+    width: 110px; 
+    height: 110px; 
+    background-color: #0095f6; 
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 110px; 
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.geargrid-logo:hover {
+    background-color: #0073e6; 
 }

@@ -1,0 +1,60 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles.css";
+
+const events = [
+  {
+    image: "carevent1.jpg",
+    name: "Event 1",
+    description: "Description for Event 1",
+    time: "10:00 AM - 2:00 PM",
+    location: "Location 1",
+    theme: "Theme 1",
+  },
+  {
+    image: "carevent2.jpg",
+    name: "Event 2",
+    description: "Description for Event 2",
+    time: "3:00 PM - 6:00 PM",
+    location: "Location 2",
+    theme: "Theme 2",
+  },
+  {
+    image: "carevent3.jpg",
+    name: "Event 3",
+    description: "Description for Event 3",
+    time: "7:00 PM - 10:00 PM",
+    location: "Location 3",
+    theme: "Theme 3",
+  },
+];
+
+const Events = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="events-page">
+      {}
+      <div className="geargrid-logo" onClick={() => navigate("/menu")}>
+        GearGrid
+      </div>
+
+      <div className="events-container">
+        {events.map((event, index) => (
+          <div key={index} className="event">
+            <img src={event.image} alt={event.name} className="event-image" />
+            <div className="event-details">
+              <h2 className="event-name">{event.name}</h2>
+              <p className="event-description">{event.description}</p>
+              <p className="event-time">{event.time}</p>
+              <p className="event-location">{event.location}</p>
+              <p className="event-theme">{event.theme}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Events;

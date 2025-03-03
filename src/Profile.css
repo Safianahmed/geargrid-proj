@@ -1,14 +1,16 @@
+/* Fix Profile Page Getting Cut Off */
 .profile-container {
-    background-color: #E5E5E5; 
+    background-color: #E5E5E5;
     color: black;
     width: 100vw;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding-top: 120px; 
     overflow-y: auto;
 }
+
 
 /* Profile Header */
 .profile-header {

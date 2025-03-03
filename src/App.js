@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Membership from "./components/Membership";
+import Events from "./components/Events"; // ✅ Import Events component
 import Header from "./components/Header";
 
 import "./styles.css";
@@ -24,6 +25,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/membership" element={<Membership />} />
+        <Route path="/events" element={<Events />} />  {/* ✅ New route for Events */}
         < Route path="/header" element={<Header />} />
       </Routes>
     </Router>

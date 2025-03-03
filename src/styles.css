@@ -183,7 +183,7 @@ body {
 /* Remove GearGrid Button from All Pages */
 .geargrid-logo,
 .navbar-logo {
-    display: none !important; /* Hide GearGrid on all pages including Navbar */
+    display: none !important; 
 }
 
 /* ✅ GearGrid Circle Button - ONLY on Profile Page */
@@ -210,27 +210,26 @@ body {
     background-color: #0073e6;
 }
 
-/* Hamburger Menu Button (☰) - Bigger & Right-Aligned */
-.hamburger-menu {
-    position: absolute;
-    top: 20px;
-    right: 30px; 
-    font-size: 40px; 
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 150;
-    background: none;
-    border: none;
-    color: black;
-    transition: transform 0.2s ease-in-out;
+/* ✅ Center Events Page */
+.events-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    width: 100vw; 
 }
 
-/* Add Hover Effect */
-.hamburger-menu:hover {
-    transform: scale(1.1); 
+/* ✅ Ensure Events Are Centered */
+.events-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 20px; 
+    width: 100%; 
 }
 
-/* Event Cards - Make Them Smaller */
+/* Event Cards */
 .event {
     display: flex;
     flex-direction: column;
@@ -244,7 +243,7 @@ body {
     padding: 10px; 
 }
 
-/* Event Image - Make It Smaller */
+/* Event Image */
 .event-image {
     width: 100%;
     height: 180px; 

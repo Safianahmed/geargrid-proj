@@ -12,7 +12,7 @@ const Menu = ({ closeMenu }) => {
 
       {/* Right Side - Sidebar Menu */}
       <div className="menu-container">
-        {/* Close Button - ✅ Removed Extra Mini X, Now Only 1 */}
+        {}
         <div className="close-icon" onClick={closeMenu}>
         </div>
 

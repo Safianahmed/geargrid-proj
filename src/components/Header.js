@@ -12,7 +12,7 @@ const Header = () => {
         src="/logo-transparent.png"
         alt="Logo"
         className="header-logo"
-        onClick={() => navigate("/Home")} // Navigate to Home
+        onClick={() => navigate("/home")} // Navigate to Home
         style={{ cursor: "pointer" }} // Make it look clickable
       />
 

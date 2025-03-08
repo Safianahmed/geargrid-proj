@@ -4,7 +4,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: "Oswald", sans-serif; /* Elegant condensed font */
+  font-family: "Oswald", sans-serif; 
 }
 
 /* Header */
@@ -33,9 +33,9 @@ html, body, #root {
 
 .bar1, .bar2, .bar3 {
   width: 35px;
-  height: 4px; /* Reduce height for better proportions */
+  height: 4px;
   background-color: #333;
-  margin: 8px 0; /* Increase margin to separate lines */
+  margin: 8px 0;
   transition: 0.4s;
 }
 
@@ -85,31 +85,37 @@ html, body, #root {
   position: relative;
 }
 
-/* Navigation links */
+/* Restore Original Menu Button Sizes */
 .menu-links {
   list-style: none;
   padding: 0;
-  margin: 0;
-  text-align: right;
+  margin-top: 100px;
+  font-size: 26px; 
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 150px;
 }
 
 .menu-links li {
-  font-size: 24px;
-  margin: 20px 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  font-weight: bold;
+  margin: 22px 0;
+  font-size: 28px; 
 }
 
 /* Links */
 .menu-links li a {
   text-decoration: none;
-  color: #333;
-  padding: 10px 15px;
-  transition: all 0.3s ease;
-  position: relative;
+  color: black;
+  font-style: italic;
   font-weight: bold;
+  transition: color 0.3s ease-in-out;
+  font-size: 32px; 
+}
+
+/* Hover effect */
+.menu-links a:hover {
+  color: #0095f6;
 }
 
 /* Hidden grid icon */

@@ -5,6 +5,11 @@ import "../css/styles.css";
 const Login = () => {
   const navigate = useNavigate();
 
+  const handleLogin = () => {
+    localStorage.setItem("isAuthenticated", "true"); 
+    navigate("/menu"); 
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-box">
@@ -12,7 +17,7 @@ const Login = () => {
         <form>
           <input type="text" placeholder="Phone number, username, or email" required />
           <input type="password" placeholder="Password" required />
-          <button type="button" className="auth-btn" onClick={() => navigate("/menu")}>
+          <button type="button" className="auth-btn" onClick={handleLogin}>
             Log In
           </button>
         </form>

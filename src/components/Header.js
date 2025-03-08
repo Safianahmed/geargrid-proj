@@ -1,23 +1,49 @@
-import React from "react";
-import { useNavigate } from "react-router-dom"; // Import navigation hook
-import "../css/Header.css"; // Import CSS for styling
+import React, { useState, useEffect } from "react"; 
+import { useNavigate, useLocation } from "react-router-dom"; 
+import "../css/Header.css";
+
 
 const Header = () => {
-  const navigate = useNavigate(); // React Router navigation function
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname === "/home") {
+      setIsAuthenticated(false); 
+    }
+  }, [location.pathname]);
+
+  const handleMenuClick = () => {
+    if (location.pathname === "/home" || !isAuthenticated) {
+      navigate("/login"); 
+    } else {
+      navigate("/menu"); 
+    }
+  };
+
+  const handleLogoClick = () => {
+    navigate("/home"); 
+    setIsAuthenticated(false); 
+  };
+
+  useEffect(() => {
+    if (location.pathname === "/menu") {
+      setIsAuthenticated(true);
+    }
+  }, [location.pathname]);
 
   return (
     <header className="header">
-      {/* Clickable Logo - Navigates to Home */}
       <img
         src="/logo-transparent.png"
         alt="Logo"
         className="header-logo"
-        onClick={() => navigate("/home")} // Navigate to Home
-        style={{ cursor: "pointer" }} // Make it look clickable
+        onClick={handleLogoClick}
+        style={{ cursor: "pointer" }}
       />
 
-      {/* Clickable Three-line Menu - Navigates to Menu Page */}
-      <div className="menu-icon" onClick={() => navigate("/menu")}>
+      <div className="menu-icon" onClick={handleMenuClick}>
         <div className="bar"></div>
         <div className="bar"></div>
         <div className="bar"></div>

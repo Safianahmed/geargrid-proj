@@ -33,9 +33,9 @@ html, body, #root {
 
 .bar1, .bar2, .bar3 {
   width: 35px;
-  height: 5px;
+  height: 4px; /* Reduce height for better proportions */
   background-color: #333;
-  margin: 6px 0;
+  margin: 8px 0; /* Increase margin to separate lines */
   transition: 0.4s;
 }
 
@@ -68,7 +68,7 @@ html, body, #root {
 .menu-image {
   width: 50%;
   height: 100%;
-  background: url("IMG_0015.jpeg") no-repeat center center;
+  background: url("../images/IMG_0015.jpeg") no-repeat center center;
   background-size: cover;
 }
 

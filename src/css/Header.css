@@ -42,6 +42,7 @@
 /* Home page effect */
 .home-page .menu-icon .bar {
   animation: glow 1.5s infinite alternate;
+  background-color: white;
 }
 
 /* Keyframes to animate brightness */
@@ -71,13 +72,7 @@
 
 .home-page .menu-icon::before,
 .home-page .menu-icon::after {
-  content: "";
-  width: 30px;
-  height: 3px;
-  background-color: white; /* White overlay */
-  border-radius: 10px;
-  position: absolute;
-  left: 0;
+  content: none;
 }
 
 .home-page .menu-icon::before {

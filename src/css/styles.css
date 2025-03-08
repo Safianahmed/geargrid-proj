@@ -186,7 +186,7 @@ body {
     display: none !important; 
 }
 
-/* ✅ GearGrid Circle Button - ONLY on Profile Page */
+/* GearGrid Circle Button - ONLY on Profile Page */
 .profile-container .geargrid-logo {
     position: absolute;
     top: 30px;
@@ -210,7 +210,7 @@ body {
     background-color: #0073e6;
 }
 
-/* ✅ Center Events Page */
+/* Center Events Page */
 .events-page {
     display: flex;
     justify-content: center;
@@ -219,7 +219,7 @@ body {
     width: 100vw; 
 }
 
-/* ✅ Ensure Events Are Centered */
+/* Events Are Centered */
 .events-container {
     display: flex;
     flex-direction: column; 

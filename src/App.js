@@ -9,7 +9,6 @@ import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Events from "./components/Events"; 
 import Header from "./components/Header"; 
-import "./styles.css";
 
 function App() {
   return (

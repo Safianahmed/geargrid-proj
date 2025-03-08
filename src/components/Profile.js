@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../Profile.css";
+import "../css/Profile.css";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");

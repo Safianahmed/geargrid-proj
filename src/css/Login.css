@@ -2,11 +2,16 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #fafafa; 
+}
+
+/* Apply background only for auth pages */
+.auth-page {
+    background: url('../images/backgroundforlogin.jpg') no-repeat center center/cover;
+    width: 100%;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
 /* Authentication Pages */
@@ -19,6 +24,7 @@ body {
     height: 100vh;
 }
 
+/* Authentication Box */
 .auth-box {
     background: white;
     padding: 40px;
@@ -34,6 +40,7 @@ body {
     align-items: center;
 }
 
+/* Brand Name */
 .brand-name {
     font-family: 'Times New Roman', sans-serif;
     font-size: 42px;
@@ -41,6 +48,7 @@ body {
     margin-bottom: 25px;
 }
 
+/* Input Fields */
 .auth-box input {
     display: block;
     width: 400px;
@@ -52,6 +60,7 @@ body {
     background-color: #fafafa;
 }
 
+/* Login Button */
 .auth-btn {
     background-color: #0095f6;
     color: white;
@@ -69,7 +78,8 @@ body {
     background-color: #0073e6;
 }
 
-.forgot-password, .back-login {
+/* Forgot Password Link */
+.forgot-password {
     color: #00376b;
     font-size: 18px;
     text-decoration: none;
@@ -78,23 +88,7 @@ body {
     font-weight: bold;
 }
 
-.or-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 20px 0;
-    color: #999;
-    font-size: 16px;
-}
-
-.or-divider::before,
-.or-divider::after {
-    content: "";
-    flex: 1;
-    border-bottom: 1px solid #dbdbdb;
-    margin: 0 10px;
-}
-
+/* Sign Up Box */
 .signup-box {
     background: white;
     padding: 20px;
@@ -105,6 +99,7 @@ body {
     font-size: 18px;
     font-weight: normal;
     border: 1px solid #dbdbdb;
+    margin-top: 10px;
 }
 
 .signup-box a {
@@ -112,4 +107,13 @@ body {
     text-decoration: none;
     font-weight: bold;
     font-size: 18px;
+}
+
+.back-login {
+    color: #00376b;
+    font-size: 18px;
+    text-decoration: none;
+    display: block;
+    margin-top: 14px;
+    font-weight: bold; 
 }

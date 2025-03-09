@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/Login.css"; // Corrected path to Login.css
+import "../css/Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.classList.add("auth-page");
+    return () => document.body.classList.remove("auth-page");
+  }, []);
 
   const handleLogin = () => {
     localStorage.setItem("isAuthenticated", "true");

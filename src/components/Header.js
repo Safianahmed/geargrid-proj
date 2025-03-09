@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import "../css/Header.css";
 
-
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +32,10 @@ const Header = () => {
     }
   }, [location.pathname]);
 
+  // List of auth-related pages where the menu should be hidden
+  const authPages = ["/login", "/signup", "/forgot-password"];
+  const isAuthPage = authPages.includes(location.pathname);
+
   return (
     <header className="header">
       <img
@@ -43,11 +46,14 @@ const Header = () => {
         style={{ cursor: "pointer" }}
       />
 
-      <div className="menu-icon" onClick={handleMenuClick}>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-      </div>
+      {/* Hide menu icon on auth pages */}
+      {!isAuthPage && (
+        <div className="menu-icon" onClick={handleMenuClick}>
+          <div className="bar"></div>
+          <div className="bar"></div>
+          <div className="bar"></div>
+        </div>
+      )}
     </header>
   );
 };

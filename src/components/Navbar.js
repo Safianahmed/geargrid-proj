@@ -16,10 +16,9 @@ const Menu = ({ closeMenu }) => {
         <div className="close-icon" onClick={closeMenu}>
         </div>
 
-        {/* Menu Links */}
+        {/* Menu Links (Removed "LOG IN") */}
         <ul className="menu-links">
           {[
-            { path: "/login", label: "LOG IN" },
             { path: "/events", label: "EVENTS" },
             { path: "/profile", label: "PROFILE" },
             { path: "/membership", label: "MEMBERSHIP" },

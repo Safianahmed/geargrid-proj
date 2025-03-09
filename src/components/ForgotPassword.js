@@ -1,7 +1,12 @@
-import React from "react";
-import "../css/styles.css";
+import React, { useEffect } from "react";
+import "../css/Login.css";
 
 const ForgotPassword = () => {
+  useEffect(() => {
+    document.body.classList.add("auth-page");
+    return () => document.body.classList.remove("auth-page");
+  }, []);
+
   return (
     <div className="auth-container">
       <div className="auth-box">

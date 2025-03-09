@@ -1,0 +1,105 @@
+import React, { useState, useEffect } from "react";
+import "../css/Contact.css";
+
+const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    interest: "General Inquiry",
+    message: "",
+  });
+
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(""); 
+
+  const [isVisible, setIsVisible] = useState(false); 
+
+  useEffect(() => {
+    setTimeout(() => setIsVisible(true), 100);
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log("Sending message:", formData); 
+      setSubmitted(true);
+      setFormData({ name: "", email: "", interest: "General Inquiry", message: "" });
+    } catch (err) {
+      setError("There was a problem submitting the form. Please try again later.");
+    }
+  };
+
+  return (
+    <div className="contact-page">
+      <div className={`contact-container ${isVisible ? "slide-down" : ""}`}>
+        <h2>Contact Us</h2>
+        <p>Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>
+
+        {!submitted ? (
+          <form onSubmit={handleSubmit} className="contact-form">
+            <div className="input-group">
+              <label>Your Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label>Your Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label>What are you interested in?</label>
+              <select name="interest" value={formData.interest} onChange={handleChange}>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Opportunities">Opportunities</option>
+                <option value="Business Partnerships">Business Partnerships</option>
+                <option value="Technical Support">Technical Support</option>
+              </select>
+            </div>
+
+            <div className="input-group">
+              <label>Your Message</label>
+              <textarea
+                name="message"
+                placeholder="Type your message here..."
+                value={formData.message}
+                onChange={handleChange}
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" className="submit-btn">Send Message</button>
+          </form>
+        ) : (
+          <div className="confirmation-box">
+            <h3>Thank You!</h3>
+            <p>Your message has been sent successfully. We’ll get back to you soon.</p>
+          </div>
+        )}
+
+        {error && <p className="error-message">{error}</p>}
+      </div>
+    </div>
+  );
+};
+
+export default Contact;

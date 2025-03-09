@@ -3,13 +3,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed; /* Keeps it at the top */
+    position: fixed; 
     top: 0;
     left: 0;
     width: 100%;
-    padding: 15px 25px; /* Adjusted for consistent spacing */
+    padding: 15px 25px; 
     background: transparent;
-    z-index: 1000; /* Keeps it above content */
+    z-index: 1000; 
   }
   
   /* Logo Styling - Bigger and Properly Positioned */
@@ -26,15 +26,15 @@
     gap: 6px;
     cursor: pointer;
     position: relative;
-    right: 40px; /* Slightly adjust for alignment */
-    padding-right: 15px; /* Align it symmetrically with the logo */
+    right: 40px; 
+    padding-right: 15px; 
   }
   
   /* Menu Bars - Keep Size and Alignment */
   .bar {
-    width: 30px; /* Slightly wider */
+    width: 30px; 
     height: 3px;
-    background-color: rgb(2, 1, 1); /* White color */
+    background-color: rgb(2, 1, 1); 
     border-radius: 10px;
   }
 
@@ -67,7 +67,7 @@
 
 /* Add white overlay bars on the home page */
 .home-page .menu-icon {
-  position: relative; /* Ensure stacking */
+  position: relative; 
 }
 
 .home-page .menu-icon::before,
@@ -84,5 +84,5 @@
 }
 
 .home-page .menu-icon .bar:nth-child(2) {
-  background-color: white; /* Middle white bar */
+  background-color: white; 
 }

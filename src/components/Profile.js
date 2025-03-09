@@ -10,7 +10,8 @@ const Profile = () => {
   const renderImages = () => {
     let count = activeTab === "posts" ? 6 : 9; 
     return Array.from({ length: count }, (_, index) => (
-      <div key={index} className="build-placeholder">Image Placeholder</div>
+      <div key={index} className="build-placeholder" onClick={() => navigate("/car-build")}
+      style={{cursor: "pointer"}} >Image Placeholder</div>
     ));
   };
 

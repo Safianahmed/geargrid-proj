@@ -9,6 +9,7 @@ import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Events from "./components/Events"; 
 import Header from "./components/Header"; 
+import CarBuild from "./components/CarBuild.js";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/archive" element={<Archive />} />
         <Route path="/events" element={<Events />} />  
         <Route path="/home" element={<Home />} />
+        <Route path="/car-build" element={<CarBuild />} />
       </Routes>
     </Router>
   );

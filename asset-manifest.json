@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/geargrid-proj/static/css/main.0d54c279.css",
+    "main.js": "/geargrid-proj/static/js/main.e5862c22.js",
+    "static/js/453.f9ff05e7.chunk.js": "/geargrid-proj/static/js/453.f9ff05e7.chunk.js",
+    "static/media/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.jpg": "/geargrid-proj/static/media/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.15d1d59ccc317ac1f019.jpg",
+    "static/media/IMG_0015.jpeg": "/geargrid-proj/static/media/IMG_0015.690796461692b7001e18.jpeg",
+    "static/media/backgroundforlogin.jpg": "/geargrid-proj/static/media/backgroundforlogin.1ded1e7d0b67a649fd5a.jpg",
+    "index.html": "/geargrid-proj/index.html",
+    "main.0d54c279.css.map": "/geargrid-proj/static/css/main.0d54c279.css.map",
+    "main.e5862c22.js.map": "/geargrid-proj/static/js/main.e5862c22.js.map",
+    "453.f9ff05e7.chunk.js.map": "/geargrid-proj/static/js/453.f9ff05e7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0d54c279.css",
+    "static/js/main.e5862c22.js"
+  ]
+}

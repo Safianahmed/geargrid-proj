@@ -8,7 +8,8 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Events from "./components/Events"; 
-import Header from "./components/Header"; 
+import Header from "./components/Header";
+import Contact from "./components/Contact";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/events" element={<Events />} />  
+        <Route path="/contact" element={<Contact />} />
         <Route path="/home" element={<Home />} />
       </Routes>
     </Router>

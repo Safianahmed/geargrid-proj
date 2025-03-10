@@ -11,6 +11,7 @@ import Events from "./components/Events";
 import Header from "./components/Header";
 import Contact from "./components/Contact";
 import Businesses from "./components/Businesses";
+import Membership from "./components/Membership"
 import CarBuild from "./components/CarBuild.js";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/events" element={<Events />} />  
         <Route path="/businesses" element={<Businesses />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/membership" element={<Membership />} />
         <Route path="/home" element={<Home />} />
         <Route path="/car-build" element={<CarBuild />} />
       </Routes>

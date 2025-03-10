@@ -1,31 +1,37 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/styles.css";
+import "../css/Events.css";
 
 const events = [
   {
     image: "carevent1.jpg",
-    name: "Event 1",
-    description: "Description for Event 1",
+    name: "Classic Car Meet",
+    description: "Join us for a nostalgic gathering of vintage car lovers, where classic muscle cars, lowriders, and restored beauties take center stage.",
     time: "10:00 AM - 2:00 PM",
-    location: "Location 1",
-    theme: "Theme 1",
+    location: "📍 Sunset Park, CA",
+    theme: "🚗 Classic Cars",
+    attendees: "500+ Registered",
+    organizer: "Hosted by Classic Car Club",
   },
   {
     image: "carevent2.jpg",
-    name: "Event 2",
-    description: "Description for Event 2",
+    name: "Tuner Expo 2024",
+    description: "The biggest showcase of modified imports, street racers, and custom-built track beasts. Meet top tuners and see jaw-dropping mods!",
     time: "3:00 PM - 6:00 PM",
-    location: "Location 2",
-    theme: "Theme 2",
+    location: "📍 Downtown LA",
+    theme: "🏁 Tuner Cars",
+    attendees: "1.2K Registered",
+    organizer: "Organized by Speed Society",
   },
   {
     image: "carevent3.jpg",
-    name: "Event 3",
-    description: "Description for Event 3",
+    name: "Supercar Rally",
+    description: "An exclusive rally where luxury and performance meet. Get a chance to drive alongside some of the world's most iconic supercars.",
     time: "7:00 PM - 10:00 PM",
-    location: "Location 3",
-    theme: "Theme 3",
+    location: "🏎️ Beverly Hills",
+    theme: "💎 Supercars",
+    attendees: "Limited to 50 Owners",
+    organizer: "Presented by Luxury Motors Club",
   },
 ];
 
@@ -34,10 +40,7 @@ const Events = () => {
 
   return (
     <div className="events-page">
-      {}
-      <div className="geargrid-logo" onClick={() => navigate("/menu")}>
-        GearGrid
-      </div>
+      <h1 className="events-title">🔥 Upcoming Car Events</h1>
 
       <div className="events-container">
         {events.map((event, index) => (
@@ -46,9 +49,13 @@ const Events = () => {
             <div className="event-details">
               <h2 className="event-name">{event.name}</h2>
               <p className="event-description">{event.description}</p>
-              <p className="event-time">{event.time}</p>
-              <p className="event-location">{event.location}</p>
-              <p className="event-theme">{event.theme}</p>
+              <div className="event-info">
+                <span>⏰ {event.time}</span>
+                <span>📍 {event.location}</span>
+                <span>👥 {event.attendees}</span>
+                <span>🏆 {event.organizer}</span>
+              </div>
+              <button className="register-button">Register Now 🚗</button>
             </div>
           </div>
         ))}

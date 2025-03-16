@@ -12,10 +12,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/signin', {
+      const response = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
       });
 
       const data = await response.json();
@@ -28,6 +31,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      alert(`Login failed: ${error.message}`);
     }
   };
 

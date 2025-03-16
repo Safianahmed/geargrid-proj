@@ -24,19 +24,19 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_NAME:', process.env.DB_NAME);
+// console.log('DB_HOST:', process.env.DB_HOST);
+// console.log('DB_USER:', process.env.DB_USER);
+// console.log('DB_NAME:', process.env.DB_NAME);
 
-pool.getConnection()
-  .then(connection => {
-    console.log('Database connected successfully!');
-    connection.release();
-  })
-  .catch(err => {
-    console.error('Database connection failed:', err);
-    process.exit(1);
-  });
+// pool.getConnection()
+//   .then(connection => {
+//     console.log('Database connected successfully!');
+//     connection.release();
+//   })
+//   .catch(err => {
+//     console.error('Database connection failed:', err);
+//     process.exit(1);
+//   });
 
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
@@ -68,9 +68,9 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-app.get('/', async (req, res) => {
-  res.send('Hello World!');
-});
+// app.get('/', async (req, res) => {
+//   res.send('Hello World!');
+// });
 
 const PORT = process.env.SERVER_PORT || 3001;
 app.listen(PORT, () => {
@@ -78,34 +78,36 @@ app.listen(PORT, () => {
 });
 
 //endpoint for Logging in a user
-// app.post('/api/login', async (req, res) => {
-//   try {
-//     console.log('Received login request:', req.body); 
-//     const { email, password } = req.body;
+app.post('/api/login', async (req, res) => {
+  try {
+    console.log('Received login request:', req.body); 
+    const { email, password } = req.body;
     
-//     //find the user
-//     const [users] = await pool.execute(
-//       'SELECT * FROM users WHERE email = ?',
-//       [email]
-//     );
+    //find the user
+    const [users] = await pool.execute(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
     
-//     if (users.length === 0) {
-//       return res.status(401).json({ success: false, message: 'Invalid credentials' });
-//     }
+    if (users.length === 0) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
     
-//     const user = users[0];
+    const user = users[0];
+    console.log('Retrieved user:', user);
     
-//     //verify password
-//     if (password !== user.password) {
-//       return res.status(401).json({ success: false, message: 'Invalid credentials' });
-//     }
+    // verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
     
-//     res.json({ success: true, username: user.username });
-//   } catch (error) {
-//     console.error('Error during login:', error);
-//     res.status(500).json({ success: false, message: 'Login failed' });
-//   }
-// });
+    res.json({ success: true, username: user.username });
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, message: 'Login failed' });
+  }
+});
 
 app.get('/test-db', async (req, res) => {
   try {

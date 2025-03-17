@@ -8,13 +8,12 @@ const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === "/home") {
-      setIsAuthenticated(false); 
-    }
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
   }, [location.pathname]);
 
   const handleMenuClick = () => {
-    if (location.pathname === "/home" || !isAuthenticated) {
+    if (!isAuthenticated) {
       navigate("/login"); 
     } else {
       navigate("/menu"); 
@@ -25,12 +24,6 @@ const Header = () => {
     navigate("/home"); 
     setIsAuthenticated(false); 
   };
-
-  useEffect(() => {
-    if (location.pathname === "/menu") {
-      setIsAuthenticated(true);
-    }
-  }, [location.pathname]);
 
   // List of auth-related pages where the menu should be hidden
   const authPages = ["/login", "/signup", "/forgot-password"];

@@ -36,7 +36,7 @@ const events = [
 ];
 
 const Events = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   return (
     <div className="events-page">
@@ -55,7 +55,12 @@ const Events = () => {
                 <span>👥 {event.attendees}</span>
                 <span>🏆 {event.organizer}</span>
               </div>
-              <button className="register-button">Register Now 🚗</button>
+              <button
+                className="register-button"
+                onClick={() => navigate("/register")} 
+              >
+                Register Now 🚗
+              </button>
             </div>
           </div>
         ))}

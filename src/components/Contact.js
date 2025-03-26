@@ -10,13 +10,22 @@ const Contact = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [ticketNumber, setTicketNumber] = useState(""); 
   const [error, setError] = useState(""); 
-
   const [isVisible, setIsVisible] = useState(false); 
+  const [previousRequests, setPreviousRequests] = useState([]); 
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
   }, []);
+
+  
+  useEffect(() => {
+    if (formData.email) {
+      const storedRequests = JSON.parse(localStorage.getItem(formData.email)) || [];
+      setPreviousRequests(storedRequests);
+    }
+  }, [formData.email]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,11 +33,36 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); 
+
+  
+    const newTicketNumber = `TICKET-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  
+    const submissionData = { ...formData, ticketNumber: newTicketNumber };
 
     try {
-      console.log("Sending message:", formData); 
-      setSubmitted(true);
-      setFormData({ name: "", email: "", interest: "General Inquiry", message: "" });
+      const response = await fetch("https://formspree.io/f/mwplpnzy", { 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (response.ok) {
+        setTicketNumber(newTicketNumber);
+        setSubmitted(true);
+
+       
+        const updatedRequests = [...previousRequests, { ticketNumber: newTicketNumber, reason: formData.interest }];
+        localStorage.setItem(formData.email, JSON.stringify(updatedRequests));
+        setPreviousRequests(updatedRequests);
+
+        setFormData({ name: "", email: "", interest: "General Inquiry", message: "" });
+      } else {
+        setError("An error occurred while submitting your request.");
+      }
     } catch (err) {
       setError("There was a problem submitting the form. Please try again later.");
     }
@@ -39,6 +73,20 @@ const Contact = () => {
       <div className={`contact-container ${isVisible ? "slide-down" : ""}`}>
         <h2>Contact Us</h2>
         <p>Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>
+
+        {}
+        {previousRequests.length > 0 && (
+          <div className="previous-tickets">
+            <h4>Your Previous Requests</h4>
+            <ul>
+              {previousRequests.map((req, index) => (
+                <li key={index}>
+                  <strong>Ticket #{req.ticketNumber}</strong> - {req.reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {!submitted ? (
           <form onSubmit={handleSubmit} className="contact-form">
@@ -92,7 +140,9 @@ const Contact = () => {
         ) : (
           <div className="confirmation-box">
             <h3>Thank You!</h3>
-            <p>Your message has been sent successfully. We’ll get back to you soon.</p>
+            <p>Your request has been submitted successfully.</p>
+            <p><strong>Ticket Number: {ticketNumber}</strong></p>
+            <button className="submit-btn" onClick={() => setSubmitted(false)}>Submit Another Request</button>
           </div>
         )}
 

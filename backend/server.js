@@ -28,15 +28,15 @@ const pool = mysql.createPool({
 // console.log('DB_USER:', process.env.DB_USER);
 // console.log('DB_NAME:', process.env.DB_NAME);
 
-// pool.getConnection()
-//   .then(connection => {
-//     console.log('Database connected successfully!');
-//     connection.release();
-//   })
-//   .catch(err => {
-//     console.error('Database connection failed:', err);
-//     process.exit(1);
-//   });
+pool.getConnection()
+  .then(connection => {
+    console.log('Database connected successfully!');
+    connection.release();
+  })
+  .catch(err => {
+    console.error('Database connection failed:', err);
+    process.exit(1);
+  });
 
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {

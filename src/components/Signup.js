@@ -14,7 +14,49 @@ const Signup = () => {
     email: '',
     password: ''
   });
+  const [passwordError, setPasswordError] = useState('');
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    console.log('Password: ', password);
+    console.log('Validation Results:', {
+      minLength: password.length >= minLength,
+      hasUppercase,
+      hasLowercase,
+      hasNumber,
+      hasSpecialChar,
+    });
+
+    if (password.length < minLength) {
+      return `Password must be at least ${minLength} characters long.`;
+    }
+    if (!hasUppercase) {
+      return 'Password must include at least one uppercase letter.';
+    }
+    if (!hasLowercase) {
+      return 'Password must include at least one lowercase letter.';
+    }
+    if (!hasNumber) {
+      return 'Password must include at least one number.';
+    }
+    if (!hasSpecialChar) {
+      return 'Password must include at least one special character.';
+    }
+    return '';
+  };
+
+  const handlePasswordChange = (e) => {
+    const password = e.target.value;
+    setFormData({ ...formData, password });
+    const error = validatePassword(password);
+    setPasswordError(error);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,12 +114,13 @@ const Signup = () => {
                 required
             />
             <input
-                type="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handlePasswordChange}
+              required
             />
+            {passwordError && <p className="error-message">{passwordError}</p>}
             <button type="submit" className="auth-btn">Sign Up</button>
           </form>
       </div>

@@ -38,6 +38,16 @@ pool.getConnection()
     process.exit(1);
   });
 
+  app.get('/api/events', async (req, res) => {
+    try {
+      const [events] = await pool.execute('SELECT * FROM Events');
+      res.json({ success: true, events });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch events' });
+    }
+  });
+
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
   try {

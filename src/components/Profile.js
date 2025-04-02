@@ -48,25 +48,38 @@ const Profile = () => {
 
       {/* Tabs for Posts, Saved, Tagged */}
       <div className="profile-tabs">
-        <button 
-          className={`tab-button ${activeTab === "posts" ? "active" : "inactive"}`}
-          onClick={() => setActiveTab("posts")}
-        >
-          POSTS
-        </button>
-        <button 
-          className={`tab-button ${activeTab === "saved" ? "active" : "inactive"}`}
-          onClick={() => setActiveTab("saved")}
-        >
-          SAVED
-        </button>
-        <button 
-          className={`tab-button ${activeTab === "tagged" ? "active" : "inactive"}`}
-          onClick={() => setActiveTab("tagged")}
-        >
-          TAGGED
-        </button>
-      </div>
+  <div className="tab-left-section">
+    <button 
+      className={`tab-button ${activeTab === "posts" ? "active" : "inactive"}`}
+      onClick={() => setActiveTab("posts")}
+    >
+      POSTS
+    </button>
+
+    {/* ➕ Add Car Button */}
+    <button 
+      className="add-car-button" 
+      onClick={() => navigate("/add-build")}
+      title="Add Car Build"
+    >
+      +
+    </button>
+  </div>
+
+  <button 
+    className={`tab-button ${activeTab === "saved" ? "active" : "inactive"}`}
+    onClick={() => setActiveTab("saved")}
+  >
+    SAVED
+  </button>
+  <button 
+    className={`tab-button ${activeTab === "tagged" ? "active" : "inactive"}`}
+    onClick={() => setActiveTab("tagged")}
+  >
+    TAGGED
+  </button>
+</div>
+
 
       {/* Dynamic Image Grid */}
       <div className="profile-builds-container">

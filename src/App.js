@@ -13,6 +13,8 @@ import Contact from "./components/Contact";
 import Businesses from "./components/Businesses";
 import Membership from "./components/Membership"
 import CarBuild from "./components/CarBuild.js";
+import EditBuild from "./components/Editbuild.js"; 
+import AddBuild from "./components/Addbuild.js";
 
 function App() {
   return (
@@ -32,6 +34,9 @@ function App() {
         <Route path="/membership" element={<Membership />} />
         <Route path="/home" element={<Home />} />
         <Route path="/car-build" element={<CarBuild />} />
+        <Route path="/edit-build/:id" element={<EditBuild />} />
+        <Route path="/add-build" element={<AddBuild />} />
+
       </Routes>
     </Router>
   );

@@ -1,0 +1,61 @@
+.add-build-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 2rem;
+    background-color: #121212;
+    color: #f5f5f5;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+  
+  .add-build-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  
+  .add-build-form label,
+  .mod-category h3 {
+    font-weight: 600;
+  }
+  
+  .add-build-form select,
+  .add-build-form textarea {
+    margin-top: 0.5rem;
+    padding: 0.7rem;
+    background-color: #1e1e1e;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 0.5rem;
+  }
+  
+  .mod-section {
+    margin-top: 1.5rem;
+  }
+  
+  .mod-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  
+  .mod-options label {
+    background: #2a2a2a;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .add-build-form button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: #007aff;
+    color: white;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  

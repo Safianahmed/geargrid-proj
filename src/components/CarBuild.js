@@ -79,7 +79,9 @@ const CarBuild = ({ car }) => {
                 ))}
             </Slider>
 
-            <button className="edit-button">Edit Build</button>
+            <button className="edit-button" onClick={() => navigate(`/edit-build/${carData.id}`)}>
+                Edit Build
+            </button>
             
             <div className="description-section">
                 <h2 className="section-title">Description</h2>

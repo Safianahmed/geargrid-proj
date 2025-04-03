@@ -129,27 +129,17 @@ const Signup = () => {
             <span
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              style={{ cursor: "pointer" }}
             >
               {showPassword ? (
-                // Eye-off icon (password visible)
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.89 1 12c.6-1.49 1.38-2.87 2.3-4.11" />
-                  <path d="M1 1l22 22" />
-                  <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
-                </svg>
+                <i className="fa fa-eye-slash"></i>
               ) : (
-                // Eye icon (password hidden)
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12C3.73 7.55 8 4 12 4s8.27 3.55 11 8c-2.73 4.45-7 8-11 8S3.73 16.45 1 12z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
+                <i className="fa fa-eye"></i>
               )}
             </span>
-            </div>
-            {passwordError && <p className="error-message">{passwordError}</p>}
-            <button type="submit" className="auth-btn">Sign Up</button>
-          </form>
+          </div>
+          {passwordError && <p className="error-message">{passwordError}</p>}
+          <button type="submit" className="auth-btn">Sign Up</button>
+        </form>
       </div>
       <div className="signup-box">
         <p>Already have an account? <a href="/login">Log In</a></p>

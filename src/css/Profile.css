@@ -118,22 +118,35 @@
 }
 
 .profile-builds {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 105%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: flex-start;
+    padding: 24px;
 }
 
-/* Bigger Image Placeholder */
 .build-placeholder {
-    width: 250px;
-    height: 250px;
+    width: 280px; 
     background-color: #d3d3d3;
-    border-radius: 5px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    font-size: 18px;
-    color: #555;
-    font-weight: bold;
-}
+    padding: 16px;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }  
+
+.build-placeholder:hover {
+    transform: scale(1.03);
+  }
+
+.car-thumbnail {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }

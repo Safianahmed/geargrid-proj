@@ -128,3 +128,9 @@ app.get('/test-db', async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 });
+
+
+//-----------------------CAR BUILD ROUTES-----------------------//
+const createCarBuildRoutes = require('./routes/carBuilds');
+// Registering the custom car builds routes at `/api/builds`
+app.use('/api/builds', createCarBuildRoutes(pool));

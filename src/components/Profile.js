@@ -104,7 +104,18 @@ const Profile = () => {
   useEffect(() => {
     const fetchBuilds = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/builds?userId=${userId}`);
+        const token = localStorage.getItem("token"); 
+        if (!token) {
+          console.error("No token found.");
+          return;
+        }
+
+        const res = await fetch(`http://localhost:3001/api/builds?userId=${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         const data = await res.json();
         if (data.success) {
           setBuilds(data.builds);

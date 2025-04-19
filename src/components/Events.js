@@ -42,7 +42,18 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/events');
+        const token = localStorage.getItem('token'); //retrives the token
+        if (!token) {
+          console.error('No token found.');
+          return;
+        }
+
+        const response = await fetch('http://localhost:3001/api/events' , {
+          headers: {
+            Authorization: `Bearer ${token}` //adds the token to the header of the request
+          }
+        });
+        
         const data = await response.json();
         if (data.success) {
           setEvents(data.events);

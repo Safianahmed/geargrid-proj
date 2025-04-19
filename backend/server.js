@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
@@ -36,17 +36,30 @@ pool.getConnection()
   .catch(err => {
     console.error('Database connection failed:', err);
     process.exit(1);
-  });
+});
 
-  app.get('/api/events', async (req, res) => {
-    try {
-      const [events] = await pool.execute('SELECT * FROM Events');
-      res.json({ success: true, events });
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      res.status(500).json({ success: false, message: 'Failed to fetch events' });
-    }
-  });
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; //use to extract token
+  
+    if (!token) return res.status(401).json({ success: false, message: 'Token required' });
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+      req.user = user;
+      next();
+    });
+};
+
+app.get('/api/events', authenticateToken, async (req, res) => {
+  try {
+    const [events] = await pool.execute('SELECT * FROM Events');
+    res.json({ success: true, events });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch events' });
+  }
+});
 
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
@@ -78,10 +91,6 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// app.get('/', async (req, res) => {
-//   res.send('Hello World!');
-// });
-
 const PORT = process.env.SERVER_PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -112,7 +121,13 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
     
-    res.json({ success: true, username: user.username });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } //expiration time
+    );
+
+    res.json({ success: true, token, username: user.username });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });
@@ -129,6 +144,7 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 //-----------------------CAR BUILD ROUTES-----------------------//
 const createCarBuildRoutes = require('./routes/carBuilds');

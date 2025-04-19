@@ -1,124 +1,112 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../css/CarBuild.css';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import Slider from 'react-slick';
+import '../css/CarBuild.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import carImage1 from '../images/911_GT3_R_.avif';
-import carImage2 from '../images/interior.jpeg';
-import carImage3 from '../images/turbo.jpg.webp';
-import carImage4 from '../images/ECUtune.jpg.webp';
-import carImage5 from '../images/fiberhood.jpg';
 
-const CarBuild = ({ car }) => {
-    const navigate = useNavigate();
-    
-    const defaultCar = {
-        name: "Porsche 911",
-        model: "GT3 RS",
-        images: [
-            carImage1, 
-            carImage2
-        ],
-        description: "This build showcases a high-performance Porsche 911 GT3 RS with carefully selected modifications to enhance both aesthetics and performance.",
-        categories: [
-            {
-                name: "Performance Upgrades",
-                mods: [
-                    { name: "Turbo Upgrade", description: "Increased boost pressure", image: carImage3 },
-                    { name: "ECU Tune", description: "Improved fuel mapping", image: carImage4 }
-                ]
-            },
-            {
-                name: "Exterior Mods",
-                mods: [
-                    { name: "Carbon Fiber Hood", description: "Lighter weight for better performance", image: carImage5 }
-                ]
-            }
-        ],
-        gallery: [
-            "https://via.placeholder.com/300x200?text=Gallery+Image+1",
-            "https://via.placeholder.com/300x200?text=Gallery+Image+2",
-            "https://via.placeholder.com/300x200?text=Gallery+Image+3",
-            "https://via.placeholder.com/300x200?text=Gallery+Image+4",
-            "https://via.placeholder.com/300x200?text=Gallery+Image+5",
-            "https://via.placeholder.com/300x200?text=Gallery+Image+6"
-        ]
+const CarBuild = () => {
+  const { id } = useParams(); 
+  const navigate = useNavigate();
+  const [build, setBuild] = useState(null);
+  const [mods, setMods] = useState({});
+  const [gallery, setGallery] = useState([]); // placeholder for later
+
+  const loggedInUserId = 1; // will need to be replaced with actual user auth context
+
+  useEffect(() => {
+    const fetchBuild = async () => {
+      try {
+        const buildRes = await axios.get(`http://localhost:3001/api/builds/${id}`);
+        setBuild(buildRes.data.build);
+
+        const modRes = await axios.get(`http://localhost:3001/api/builds/${id}/mods`);
+        const groupedMods = {};
+        modRes.data.mods.forEach(mod => {
+          if (!groupedMods[mod.category]) groupedMods[mod.category] = [];
+          groupedMods[mod.category].push(mod);
+        });
+        setMods(groupedMods);
+
+        // Placeholder for image gallery 
+        setGallery([]); 
+      } catch (err) {
+        console.error('Failed to load build', err);
+      }
     };
 
-    const carData = car || defaultCar;
+    fetchBuild();
+  }, [id]);
 
-    const settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,  
-        slidesToScroll: 1,
-        adaptiveHeight: true,
-        responsive: [
-            {
-                breakpoint: 768, // For mobile, show 1 image
-                settings: {
-                    slidesToShow: 1
-                }
-            }
-        ]
-    };    
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    adaptiveHeight: true
+  };
 
-    return (
-        <div className="car-build-page">
-            <div className="car-header">
-                <h1>{carData.name} {carData.model}</h1>
-            </div>
-            
-            <Slider {...settings} className="car-image-slider">
-                {carData.images.map((image, index) => (
-                    <div key={index} className="slider-item">
-                        <img src={image} alt={`Car build ${index}`} className="car-image" />
-                    </div>
-                ))}
-            </Slider>
+  if (!build) return <div>Loading build...</div>;
 
-            <button className="edit-button" onClick={() => navigate(`/edit-build/${carData.id}`)}>
-                Edit Build
-            </button>
-            
-            <div className="description-section">
-                <h2 className="section-title">Description</h2>
-                <textarea className="car-description" defaultValue={carData.description} />
-            </div>
+  return (
+    <div className="car-build-page">
+      <div className="car-header">
+        <h1>{build.car_name} {build.model}</h1>
+      </div>
 
-            <div className="modifications">
-                {carData.categories.map((category, index) => (
-                    <div key={index} className="category">
-                        <h2>{category.name}</h2>
-                        <div className="mods-container">
-                            {category.mods.map((mod, modIndex) => (
-                                <div key={modIndex} className="mod-item">
-                                    <img src={mod.image} alt={mod.name} className="mod-image" />
-                                    <div className="mod-info">
-                                        <h3>{mod.name}</h3>
-                                        <p>{mod.description}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="gallery-section">
-                <h2 className="gallery-title">Gallery</h2>
-                <div className="gallery-grid">
-                    {carData.gallery.map((image, index) => (
-                        <img key={index} src={image} alt={`Gallery ${index}`} className="gallery-image" />
-                    ))}
-                </div>
-            </div>
-
-            <button className="username-button" onClick={() => navigate('/profile')}>Back to Profile</button>
+      <Slider {...sliderSettings} className="car-image-slider">
+        <div className="slider-item">
+          <img src={build.cover_image || "https://via.placeholder.com/600x400"} alt="Cover 1" className="car-image" />
         </div>
-    );
+        {/* Optional second image - for now repeat */}
+        <div className="slider-item">
+          <img src={build.cover_image || "https://via.placeholder.com/600x400"} alt="Cover 2" className="car-image" />
+        </div>
+      </Slider>
+
+      {loggedInUserId === build.user_id && (
+        <button className="edit-button" onClick={() => navigate(`/edit-build/${build.id}`)}>
+          Edit Build
+        </button>
+      )}
+
+      <div className="description-section">
+        <h2 className="section-title">Description</h2>
+        <textarea className="car-description" defaultValue={build.description || ''} readOnly />
+      </div>
+
+      <div className="modifications">
+        {Object.entries(mods).map(([category, modsInCategory]) => (
+          <div key={category} className="category">
+            <h2>{category}</h2>
+            <div className="mods-container">
+              {modsInCategory.map((mod, index) => (
+                <div key={index} className="mod-item">
+                  {mod.image_url && <img src={mod.image_url} alt={mod.mod_name} className="mod-image" />}
+                  <div className="mod-info">
+                    <h3>{mod.mod_name}</h3>
+                    <p>{mod.mod_note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="gallery-section">
+        <h2 className="gallery-title">Gallery</h2>
+        <div className="gallery-grid">
+          {gallery.map((img, index) => (
+            <img key={index} src={img} alt={`Gallery ${index}`} className="gallery-image" />
+          ))}
+        </div>
+      </div>
+
+      <button className="username-button" onClick={() => navigate('/profile')}>Back to Profile</button>
+    </div>
+  );
 };
 
 export default CarBuild;

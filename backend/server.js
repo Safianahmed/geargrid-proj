@@ -4,6 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 //const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 

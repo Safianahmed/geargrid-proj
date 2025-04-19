@@ -1,120 +1,122 @@
+// remodeled for testing purposes
+// This component allows users to add a car build with various details and modifications.
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../css/AddBuild.css';
 
-const carOptions = [
-  { make: "Porsche", model: "911 GT3 RS" },
-  { make: "Nissan", model: "GTR R35" },
-  { make: "BMW", model: "M4 Competition" },
-  { make: "Toyota", model: "Supra MK5" }
-];
+const carData = {
+  BMW: ['M3', 'M4 Competition'],
+  Porsche: ['911 GT3 RS', 'Cayman S'],
+  Toyota: ['Supra MK5', 'Supra MK4'],
+  Nissan: ['GTR R35']
+};
 
-const presetCategories = [
-  {
-    name: "Performance",
-    mods: [
-      "ECU Tune", "Turbo Upgrade", "Cold Air Intake", "Exhaust System"
-    ]
-  },
-  {
-    name: "Exterior",
-    mods: [
-      "Carbon Fiber Hood", "Widebody Kit", "Rear Diffuser", "Spoiler"
-    ]
-  },
-  {
-    name: "Interior",
-    mods: [
-      "Bucket Seats", "Roll Cage", "Steering Wheel", "Shift Knob"
-    ]
-  }
+const exteriorMods = [
+  'Widebody Kit',
+  'Carbon Fiber Hood',
+  'Spoiler',
+  'Aftermarket Bumper',
+  'Underglow Lights'
 ];
 
 const AddBuild = () => {
+  const [brand, setBrand] = useState('');
+  const [model, setModel] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedMods, setSelectedMods] = useState([]);
+  const [userId] = useState(1); 
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    make: '',
-    model: '',
-    description: '',
-    selectedMods: {},
-    gallery: []
-  });
-
-  const handleCarChange = (e) => {
-    const [make, model] = e.target.value.split('|');
-    setFormData({ ...formData, make, model });
+  const handleModChange = (mod) => {
+    setSelectedMods((prev) =>
+      prev.includes(mod) ? prev.filter((m) => m !== mod) : [...prev, mod]
+    );
   };
 
-  const handleDescriptionChange = (e) => {
-    setFormData({ ...formData, description: e.target.value });
-  };
-
-  const handleModToggle = (category, mod) => {
-    const currentMods = formData.selectedMods[category] || [];
-    const updatedMods = currentMods.includes(mod)
-      ? currentMods.filter(m => m !== mod)
-      : [...currentMods, mod];
-
-    setFormData({
-      ...formData,
-      selectedMods: { ...formData.selectedMods, [category]: updatedMods }
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting Build:', formData);
 
-    // You'll send this to backend next week
-    navigate('/profile');
+    const mods = {
+      Exterior: selectedMods.map(mod => ({
+        mod_name: mod,
+        image_url: '',
+        mod_note: ''
+      }))
+    };
+
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('car_name', brand);
+    formData.append('model', model);
+    formData.append('description', description);
+    formData.append('mods', JSON.stringify(mods));
+
+    try {
+      await axios.post('http://localhost:3001/api/builds', formData);
+      navigate('/profile');
+    } catch (err) {
+      console.error('Submit Error:', err.response?.data || err.message);
+      alert('Failed to submit build');
+    }
   };
 
   return (
-    <div className="add-build-container">
-      <h1>Add a New Car Build</h1>
-      <form className="add-build-form" onSubmit={handleSubmit}>
-        <label>
-          Select Car:
-          <select onChange={handleCarChange} defaultValue="">
-            <option value="" disabled>Select a car</option>
-            {carOptions.map((car, index) => (
-              <option key={index} value={`${car.make}|${car.model}`}>
-                {car.make} {car.model}
-              </option>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '2rem',
+      minHeight: '100vh'
+    }}>
+      <div style={{ maxWidth: '500px', width: '100%' }}>
+        <h2 style={{ textAlign: 'center' }}>Add a Car Build</h2>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <label>Car Brand</label>
+          <select value={brand} onChange={(e) => {
+            setBrand(e.target.value);
+            setModel('');
+          }} required style={{ width: '100%', marginBottom: '1rem' }}>
+            <option value="">-- Select Brand --</option>
+            {Object.keys(carData).map(b => (
+              <option key={b} value={b}>{b}</option>
             ))}
           </select>
-        </label>
 
-        <label>
-          Description:
-          <textarea value={formData.description} onChange={handleDescriptionChange} />
-        </label>
+          <label>Car Model</label>
+          <select value={model} onChange={(e) => setModel(e.target.value)} required disabled={!brand}
+            style={{ width: '100%', marginBottom: '1rem' }}>
+            <option value="">-- Select Model --</option>
+            {brand && carData[brand].map(m => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
 
-        <div className="mod-section">
-          <h2>Choose Mods by Category</h2>
-          {presetCategories.map((category, i) => (
-            <div key={i} className="mod-category">
-              <h3>{category.name}</h3>
-              <div className="mod-options">
-                {category.mods.map((mod, j) => (
-                  <label key={j}>
-                    <input
-                      type="checkbox"
-                      checked={formData.selectedMods[category.name]?.includes(mod) || false}
-                      onChange={() => handleModToggle(category.name, mod)}
-                    />
-                    {mod}
-                  </label>
-                ))}
-              </div>
+          <label>Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            style={{ width: '100%', marginBottom: '1rem' }}
+          />
+
+          <h4>Exterior Mods</h4>
+          {exteriorMods.map((mod) => (
+            <div key={mod}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedMods.includes(mod)}
+                  onChange={() => handleModChange(mod)}
+                />{' '}
+                {mod}
+              </label>
             </div>
           ))}
-        </div>
 
-        {/* For now skip image upload, add later */}
-        <button type="submit">Create Build</button>
-      </form>
+          <br />
+          <button type="submit" style={{ marginTop: '1rem' }}>Submit Build</button>
+        </form>
+      </div>
     </div>
   );
 };

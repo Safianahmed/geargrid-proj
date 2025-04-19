@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom"; // import link to navigate to individual business pages
 import "../css/Businesses.css";
 
 const businesses = [
@@ -69,18 +70,23 @@ const Businesses = () => {
         </button>
       </div>
       <div className="businesses-list">
-        {filteredBusinesses.map((business, index) => (
-          <div key={index} className="business-card">
-            <h3>{business.name}</h3>
-            <p>
-              <strong>Category:</strong> {business.category}
-            </p>
-            <p>
-              <strong>Address:</strong> {business.address}
-            </p>
-            <p>{business.description}</p>
-          </div>
-        ))}
+      {filteredBusinesses.map((business, index) => (
+        <div key={index} className="business-card">
+          <h3>
+            <Link to={`/businesses/${encodeURIComponent(business.name)}`}> {/* link to the individual business page using business name */}
+              {business.name}
+            </Link>
+          </h3>
+          <p>
+            <strong>Category:</strong> {business.category}
+          </p>
+          <p>
+            <strong>Address:</strong> {business.address}
+          </p>
+          <p>{business.description}</p>
+        </div>
+      ))}
+
       </div>
     </div>
   );

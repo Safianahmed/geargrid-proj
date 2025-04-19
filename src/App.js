@@ -11,6 +11,7 @@ import Events from "./components/Events";
 import Header from "./components/Header";
 import Contact from "./components/Contact";
 import Businesses from "./components/Businesses";
+import BusinessDetail from "./components/BusinessDetail";
 import Membership from "./components/Membership"
 import CarBuild from "./components/CarBuild.js";
 import EditBuild from "./components/Editbuild.js"; 
@@ -30,6 +31,7 @@ function App() {
         <Route path="/archive" element={<Archive />} />
         <Route path="/events" element={<Events />} />  
         <Route path="/businesses" element={<Businesses />} />
+        <Route path="/businesses/:name" element={<BusinessDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/membership" element={<Membership />} />
         <Route path="/home" element={<Home />} />

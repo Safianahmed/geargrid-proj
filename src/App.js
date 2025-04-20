@@ -12,15 +12,16 @@ import Header from "./components/Header";
 import Contact from "./components/Contact";
 import Businesses from "./components/Businesses";
 import BusinessDetail from "./components/BusinessDetail";
-import Membership from "./components/Membership"
-import CarBuild from "./components/CarBuild.js";
-import EditBuild from "./components/Editbuild.js"; 
-import AddBuild from "./components/Addbuild.js";
+import Membership from "./components/Membership";
+import CarBuild from "./components/CarBuild";
+import EditBuild from "./components/Editbuild"; 
+import AddBuild from "./components/Addbuild";
+import RegisterEvent from "./components/RegisterEvent";
 
 function App() {
   return (
     <Router>
-      <Header /> {/* Header will now appear on all pages */}
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} /> 
         <Route path="/login" element={<Login />} />
@@ -30,6 +31,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/events" element={<Events />} />  
+        <Route path="/register" element={<RegisterEvent />} />
         <Route path="/businesses" element={<Businesses />} />
         <Route path="/businesses/:name" element={<BusinessDetail />} />
         <Route path="/contact" element={<Contact />} />
@@ -38,7 +40,6 @@ function App() {
         <Route path="/car-build/:id" element={<CarBuild />} />
         <Route path="/edit-build/:id" element={<EditBuild />} />
         <Route path="/add-build" element={<AddBuild />} />
-
       </Routes>
     </Router>
   );

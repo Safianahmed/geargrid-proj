@@ -1,13 +1,11 @@
-/* General Reset */
 html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: "Oswald", sans-serif; 
+  font-family: "Oswald", sans-serif;
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -19,13 +17,11 @@ html, body, #root {
   z-index: 100;
 }
 
-/* Logo */
 .logo img {
   width: 60px;
   cursor: pointer;
 }
 
-/* Menu Button */
 .menu-icon {
   display: inline-block;
   cursor: pointer;
@@ -39,7 +35,6 @@ html, body, #root {
   transition: 0.4s;
 }
 
-/* Transform into X */
 .change .bar1 {
   transform: translate(0, 11px) rotate(-45deg);
 }
@@ -52,7 +47,6 @@ html, body, #root {
   transform: translate(0, -11px) rotate(45deg);
 }
 
-/* Menu Overlay */
 .menu-overlay {
   display: flex;
   width: 100vw;
@@ -62,9 +56,9 @@ html, body, #root {
   left: 0;
   background: rgba(255, 255, 255, 0.95);
   transition: opacity 0.4s ease-in-out;
+  z-index: 1;
 }
 
-/* Left side - Car image */
 .menu-image {
   width: 50%;
   height: 100%;
@@ -72,7 +66,6 @@ html, body, #root {
   background-size: cover;
 }
 
-/* Right side - Sidebar menu */
 .menu-container {
   width: 50%;
   height: 100%;
@@ -85,12 +78,11 @@ html, body, #root {
   position: relative;
 }
 
-/* Restore Original Menu Button Sizes */
 .menu-links {
   list-style: none;
   padding: 0;
   margin-top: 100px;
-  font-size: 26px; 
+  font-size: 26px;
   font-weight: bold;
   display: flex;
   flex-direction: column;
@@ -100,25 +92,25 @@ html, body, #root {
 
 .menu-links li {
   margin: 22px 0;
-  font-size: 28px; 
+  font-size: 28px;
 }
 
-/* Links */
-.menu-links li a {
+.menu-links li a,
+.menu-links li span {
   text-decoration: none;
   color: black;
   font-style: italic;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
-  font-size: 32px; 
+  font-size: 32px;
+  cursor: pointer;
 }
 
-/* Hover effect */
-.menu-links a:hover {
-  color: #0095f6;
+.menu-links li a:hover,
+.menu-links li span:hover {
+  color: #ff6600;
 }
 
-/* Hidden grid icon */
 .grid-icon {
   font-size: 20px;
   opacity: 0;
@@ -127,7 +119,6 @@ html, body, #root {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Hover effect */
 .menu-links li:hover {
   transform: translateX(-10px);
 }
@@ -137,6 +128,43 @@ html, body, #root {
   transform: translateX(-5px);
 }
 
-.menu-links li a:hover {
-  color: #ff6600;
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.logout-modal {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 10000;
+}
+
+.logout-modal button {
+  margin: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-modal button:first-child {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.logout-modal button:last-child {
+  background-color: #ccc;
+  color: black;
 }

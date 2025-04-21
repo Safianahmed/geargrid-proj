@@ -29,7 +29,7 @@ const Login = () => {
 
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem('token', data.token); //stores the toekn
+        localStorage.setItem('token', data.token); 
         localStorage.setItem('username', data.username);
         navigate('/profile');
       } else {

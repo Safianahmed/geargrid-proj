@@ -1,5 +1,3 @@
-// remodeled for testing purposes
-// This component allows users to add a car build with various details and modifications.
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';

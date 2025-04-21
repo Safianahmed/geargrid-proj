@@ -1,37 +1,62 @@
-import React from "react";
+// File: Navbar.js
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../css/Navbar.css"; 
+import "../css/Navbar.css";
 
 const Menu = ({ closeMenu }) => {
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    navigate("/login");
+  };
+
+  const handleCancel = () => {
+    setShowLogoutModal(false);
+  };
+
+  const menuItems = [
+    { path: "/events", label: "EVENTS" },
+    { path: "/profile", label: "PROFILE" },
+    { path: "/membership", label: "MEMBERSHIP" },
+    { path: "/businesses", label: "BUSINESSES" },
+    { path: "/contact", label: "CONTACT" },
+  ];
 
   return (
     <div className="menu-overlay">
-      {/* Left Side - Car Image */}
       <div className="menu-image"></div>
-
-      {/* Right Side - Sidebar Menu */}
       <div className="menu-container">
-        {}
-        <div className="close-icon" onClick={closeMenu}>
-        </div>
-
-        {/* Menu Links (Removed "LOG IN") */}
+        <div className="close-icon" onClick={closeMenu}></div>
         <ul className="menu-links">
-          {[
-            { path: "/events", label: "EVENTS" },
-            { path: "/profile", label: "PROFILE" },
-            { path: "/membership", label: "MEMBERSHIP" },
-            { path: "/businesses", label: "BUSINESSES" },
-            { path: "/contact", label: "CONTACT" },
-          ].map((item, index) => (
+          {menuItems.map((item, index) => (
             <li key={index} onClick={() => navigate(item.path)}>
               <Link to={item.path} className="menu-link">
                 {item.label}
               </Link>
             </li>
           ))}
+          <li>
+            <span className="logout-link" onClick={handleLogoutClick}>
+              LOG OUT
+            </span>
+          </li>
         </ul>
+
+        {showLogoutModal && (
+          <div className="logout-modal-overlay">
+            <div className="logout-modal">
+              <p>Are you sure you want to log out?</p>
+              <button onClick={handleLogout}>Yes</button>
+              <button onClick={handleCancel}>Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

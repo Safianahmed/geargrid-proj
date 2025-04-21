@@ -11,9 +11,9 @@ const CarBuild = () => {
   const navigate = useNavigate();
   const [build, setBuild] = useState(null);
   const [mods, setMods] = useState({});
-  const [gallery, setGallery] = useState([]); // placeholder for later
+  const [gallery, setGallery] = useState([]); 
 
-  const loggedInUserId = 1; // will need to be replaced with actual user auth context
+  const loggedInUserId = 1; 
 
   useEffect(() => {
     const fetchBuild = async () => {

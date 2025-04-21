@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // import link to navigate to individual business pages
+import { Link } from "react-router-dom"; 
 import "../css/Businesses.css";
 
 const businesses = [

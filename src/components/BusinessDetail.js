@@ -1,54 +1,71 @@
 // src/components/BusinessDetail.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../css/BusinessDetail.css";
 
 // hardcoded sample businesses
-const businesses = [
-  {
-    name: "Joe's Auto Repair",
-    category: "Automotive",
-    address: "123 Main St, USA",
-    description: "Expert auto repair services.",
-  },
-  {
-    name: "Good Year",
-    category: "Automotive",
-    address: "1234 Main St, USA",
-    description: "Expert auto repair services.",
-  },
-  {
-    name: "Michelin",
-    category: "Manufacturing",
-    address: "12345 Main St, USA",
-    description: "Tires and car products.",
-  },
-];
+// const businesses = [
+//   {
+//     name: "Joe's Auto Repair",
+//     category: "Automotive",
+//     address: "123 Main St, USA",
+//     description: "Expert auto repair services.",
+//   },
+//   {
+//     name: "Good Year",
+//     category: "Automotive",
+//     address: "1234 Main St, USA",
+//     description: "Expert auto repair services.",
+//   },
+//   {
+//     name: "Michelin",
+//     category: "Manufacturing",
+//     address: "12345 Main St, USA",
+//     description: "Tires and car products.",
+//   },
+// ];
 
 // main component for displaying individual business page
 const BusinessDetail = () => {
   const { name } = useParams();
+  const [business, setBusiness] = useState(null);
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  // decode and match businesss name to a business in list 
-  const business = businesses.find((b) => b.name === decodeURIComponent(name));
 
+  useEffect(() => {
+    const fetchBusiness = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/businesses/${encodeURIComponent(name)}`);
+        const data = await response.json();
+        if (data.success) {
+          setBusiness(data.business);
+        } else {
+          console.error('Failed to fetch business:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching business:', error);
+      }
+    };
+
+    fetchBusiness();
+  }, [name]);
+  
   // if not found, display message 
   if (!business) {
     return <h2>Business not found</h2>;
   }
 
-  // map business categories to corresponding banner image paths
-  const categoryBanners = {
-    Automotive: "/banners/automotive.jpg",
-    Manufacturing: "/banners/manufacture.jpg",
-    "Home Services": "/banners/homeservice.webp",
-  };
+  // // map business categories to corresponding banner image paths
+  // const categoryBanners = {
+  //   Automotive: "/banners/automotive.jpg",
+  //   Manufacturing: "/banners/manufacture.jpg",
+  //   "Home Services": "/banners/homeservice.webp",
+  // };
   
-  // dynamically select banner image based on business category
-  const bannerSrc = categoryBanners[business.category] || "/banners/default.jpg";
+  // // dynamically select banner image based on business category
+  // const bannerSrc = categoryBanners[business.category] || "/banners/default.jpg";
     
     // handle comment submission 
     const handleCommentSubmit = (e) => {
@@ -66,7 +83,7 @@ const BusinessDetail = () => {
       <div className="business-detail-container">
         {/* display the banner image */}
         <img
-          src={bannerSrc}
+          src={business.image_url} // use the banner URL from the business object
           alt={`${business.category} banner`}
           className="business-banner"
         />

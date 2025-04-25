@@ -50,7 +50,9 @@ const AddBuild = () => {
     formData.append('mods', JSON.stringify(mods));
 
     try {
-      await axios.post('http://localhost:3001/api/builds', formData);
+      await axios.post('http://localhost:3001/api/builds', formData, {
+        withCredentials: true,
+      });
       navigate('/profile');
     } catch (err) {
       console.error('Submit Error:', err.response?.data || err.message);

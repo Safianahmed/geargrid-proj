@@ -18,10 +18,14 @@ const CarBuild = () => {
   useEffect(() => {
     const fetchBuild = async () => {
       try {
-        const buildRes = await axios.get(`http://localhost:3001/api/builds/${id}`);
+        const buildRes = await axios.get(`http://localhost:3001/api/builds/${id}` , {
+          withCredentials: true,
+        });
         setBuild(buildRes.data.build);
 
-        const modRes = await axios.get(`http://localhost:3001/api/builds/${id}/mods`);
+        const modRes = await axios.get(`http://localhost:3001/api/builds/${id}/mods` , {
+          withCredentials: true,
+        });
         const groupedMods = {};
         modRes.data.mods.forEach(mod => {
           if (!groupedMods[mod.category]) groupedMods[mod.category] = [];

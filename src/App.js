@@ -17,6 +17,8 @@ import CarBuild from "./components/CarBuild";
 import EditBuild from "./components/Editbuild"; 
 import AddBuild from "./components/Addbuild";
 import RegisterEvent from "./components/RegisterEvent";
+import EditProfile from "./components/EditProfile";
+
 
 function App() {
   return (
@@ -40,6 +42,7 @@ function App() {
         <Route path="/car-build/:id" element={<CarBuild />} />
         <Route path="/edit-build/:id" element={<EditBuild />} />
         <Route path="/add-build" element={<AddBuild />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
       </Routes>
     </Router>
   );

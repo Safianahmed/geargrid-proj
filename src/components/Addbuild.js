@@ -1,120 +1,129 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
-const carData = {
-  BMW: ['M3', 'M4 Competition'],
-  Porsche: ['911 GT3 RS', 'Cayman S'],
-  Toyota: ['Supra MK5', 'Supra MK4'],
-  Nissan: ['GTR R35']
-};
-
-const exteriorMods = [
-  'Widebody Kit',
-  'Carbon Fiber Hood',
-  'Spoiler',
-  'Aftermarket Bumper',
-  'Underglow Lights'
-];
+import { vehicleData } from '../data/vehicleData';
+import '../css/AddBuild.css';
 
 const AddBuild = () => {
+  const [vehicleType, setVehicleType] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [bodyStyle, setBodyStyle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedMods, setSelectedMods] = useState([]);
-  const [userId] = useState(1); 
-  const navigate = useNavigate();
 
-  const handleModChange = (mod) => {
-    setSelectedMods((prev) =>
-      prev.includes(mod) ? prev.filter((m) => m !== mod) : [...prev, mod]
-    );
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const mods = {
-      Exterior: selectedMods.map(mod => ({
-        mod_name: mod,
-        image_url: '',
-        mod_note: ''
-      }))
-    };
-
-    const formData = new FormData();
-    formData.append('user_id', userId);
-    formData.append('car_name', brand);
-    formData.append('model', model);
-    formData.append('description', description);
-    formData.append('mods', JSON.stringify(mods));
-
-    try {
-      await axios.post('http://localhost:3001/api/builds', formData);
-      navigate('/profile');
-    } catch (err) {
-      console.error('Submit Error:', err.response?.data || err.message);
-      alert('Failed to submit build');
-    }
+    const buildData = { vehicleType, brand, model, bodyStyle, description };
+    console.log("Submitting build:", buildData);
+    // TODO: Submit buildData to backend via axios
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '2rem',
-      minHeight: '100vh'
-    }}>
-      <div style={{ maxWidth: '500px', width: '100%' }}>
-        <h2 style={{ textAlign: 'center' }}>Add a Car Build</h2>
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <label>Car Brand</label>
-          <select value={brand} onChange={(e) => {
-            setBrand(e.target.value);
-            setModel('');
-          }} required style={{ width: '100%', marginBottom: '1rem' }}>
-            <option value="">-- Select Brand --</option>
-            {Object.keys(carData).map(b => (
-              <option key={b} value={b}>{b}</option>
+    <div style={{ maxWidth: '600px', margin: '50px auto', padding: '20px' }}>
+      <h2 style={{ textAlign: 'center' }}>Add a New Build</h2>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+        {/* Vehicle Type */}
+        <div>
+          <label>Vehicle Type</label>
+          <select
+            value={vehicleType}
+            onChange={(e) => {
+              setVehicleType(e.target.value);
+              setBrand('');
+              setModel('');
+            }}
+            style={{ width: '100%', padding: '8px' }}
+          >
+            <option value="">-- Select Type --</option>
+            {Object.keys(vehicleData).map((type) => (
+              <option key={type} value={type}>{type}</option>
             ))}
           </select>
+        </div>
 
-          <label>Car Model</label>
-          <select value={model} onChange={(e) => setModel(e.target.value)} required disabled={!brand}
-            style={{ width: '100%', marginBottom: '1rem' }}>
-            <option value="">-- Select Model --</option>
-            {brand && carData[brand].map(m => (
-              <option key={m} value={m}>{m}</option>
-            ))}
+        {/* Brand */}
+        {vehicleType && (
+          <div>
+            <label>Brand</label>
+            <select
+              value={brand}
+              onChange={(e) => {
+                setBrand(e.target.value);
+                setModel('');
+              }}
+              style={{ width: '100%', padding: '8px' }}
+            >
+              <option value="">-- Select Brand --</option>
+              {Object.keys(vehicleData[vehicleType]).map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Model + Custom Input */}
+        {brand && (
+          <div>
+            <label>Model</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <select
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                style={{ flex: 1, padding: '8px' }}
+              >
+                <option value="">-- Select Model --</option>
+                {vehicleData[vehicleType][brand].map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Or type model"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                style={{ flex: 1, padding: '8px' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Body Style */}
+        <div>
+          <label>Body Style</label>
+          <select
+            value={bodyStyle}
+            onChange={(e) => setBodyStyle(e.target.value)}
+            style={{ width: '100%', padding: '8px' }}
+          >
+            <option value="">-- Select Body Style --</option>
+            <option value="Coupe">Coupe</option>
+            <option value="Sedan">Sedan</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="SUV">SUV</option>
+            <option value="Wagon">Wagon</option>
+            <option value="Convertible">Convertible</option>
+            <option value="Pickup Truck">Pickup Truck</option>
+            <option value="Van">Van</option>
+            <option value="Motorcycle">Motorcycle</option>
+            <option value="Other">Other</option>
           </select>
+        </div>
 
+        {/* Description */}
+        <div>
           <label>Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            style={{ width: '100%', marginBottom: '1rem' }}
+            placeholder="Describe your build..."
+            rows="4"
+            style={{ width: '100%', padding: '10px' }}
           />
+        </div>
 
-          <h4>Exterior Mods</h4>
-          {exteriorMods.map((mod) => (
-            <div key={mod}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedMods.includes(mod)}
-                  onChange={() => handleModChange(mod)}
-                />{' '}
-                {mod}
-              </label>
-            </div>
-          ))}
-
-          <br />
-          <button type="submit" style={{ marginTop: '1rem' }}>Submit Build</button>
-        </form>
-      </div>
+        <button type="submit" style={{ padding: '10px', backgroundColor: '#111', color: 'white', border: 'none' }}>
+          Submit Build
+        </button>
+      </form>
     </div>
   );
 };

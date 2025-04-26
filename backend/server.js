@@ -61,6 +61,32 @@ app.get('/api/events', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/businesses', async (req, res) => {
+  try {
+    const [businesses] = await pool.execute('SELECT * FROM businesses');
+    res.json({ success: true, businesses });
+  } catch (error) {
+    console.error('Error fetching businesses:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch businesses' });
+  }
+});
+
+app.get('/api/businesses/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const [businesses] = await pool.execute('SELECT * FROM businesses WHERE name = ?', [name]);
+
+    if (businesses.length === 0) {
+      return res.status(404).json({ success: false, message: 'Business not found' });
+    }
+
+    res.json({ success: true, business: businesses[0] });
+  } catch (error) {
+    console.error('Error fetching business:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch business' });
+  }
+});
+
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
   try {

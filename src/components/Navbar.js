@@ -11,9 +11,30 @@ const Menu = ({ closeMenu }) => {
     setShowLogoutModal(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutModal(false);
-    navigate("/login");
+    try {
+      const response = await fetch('http://localhost:3001/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      const data = await response.json();
+      if (data.success) {
+        localStorage.removeItem('username');
+        localStorage.removeItem('userId');
+        navigate("/login");
+      } else {
+        console.error('Logout failed on server:', data.message);
+        localStorage.removeItem('username');
+        localStorage.removeItem('userId');
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error('Logout fetch error:', error);
+       localStorage.removeItem('username');
+       localStorage.removeItem('userId');
+       navigate("/login");
+    }
   };
 
   const handleCancel = () => {

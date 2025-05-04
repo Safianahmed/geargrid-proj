@@ -31,9 +31,9 @@ const Menu = ({ closeMenu }) => {
       }
     } catch (error) {
       console.error('Logout fetch error:', error);
-       localStorage.removeItem('username');
-       localStorage.removeItem('userId');
-       navigate("/login");
+      localStorage.removeItem('username');
+      localStorage.removeItem('userId');
+      navigate("/login");
     }
   };
 
@@ -44,7 +44,6 @@ const Menu = ({ closeMenu }) => {
   const menuItems = [
     { path: "/events", label: "EVENTS" },
     { path: "/profile", label: "PROFILE" },
-    { path: "/membership", label: "MEMBERSHIP" },
     { path: "/businesses", label: "BUSINESSES" },
     { path: "/contact", label: "CONTACT" },
   ];

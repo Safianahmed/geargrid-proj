@@ -24,13 +24,14 @@ const Login = () => {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
-        })
+        }),
+        credentials: 'include'
       });
 
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem('token', data.token); 
         localStorage.setItem('username', data.username);
+        localStorage.setItem('userId', data.userId);
         navigate('/profile');
       } else {
         alert(data.message);

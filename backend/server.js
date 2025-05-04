@@ -3,6 +3,7 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 require('dotenv').config();
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -10,8 +11,12 @@ const bcrypt = require('bcryptjs');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true, 
+}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 //create a connection pool to the MySQL database
 const pool = mysql.createPool({
@@ -39,8 +44,7 @@ pool.getConnection()
 });
 
 const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; //use to extract token
+    const token = req.cookies.token;
   
     if (!token) return res.status(401).json({ success: false, message: 'Token required' });
   
@@ -117,6 +121,15 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+app.post('/api/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  });
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
 const PORT = process.env.SERVER_PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -153,12 +166,21 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '1h' } //expiration time
     );
 
-    res.json({ success: true, token, username: user.username });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 3600000, // 1 hour 
+      sameSite: 'Strict', 
+    });
+
+    res.json({ success: true, username: user.username, userId: user.id });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });
   }
 });
+
+
 
 app.get('/test-db', async (req, res) => {
   try {

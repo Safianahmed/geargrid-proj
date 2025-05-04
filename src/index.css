@@ -11,3 +11,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* full height layout so the footer sticks to the bottom */
+html, body, #root {
+  height: 100%; /* full height to push footer to bottom */
+  margin: 0;
+}
+
+/* main container wrapping  entire app */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* content area */
+.app-content {
+  flex: 1;  /* push footer to bottom if the content is short */
+}

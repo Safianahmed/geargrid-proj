@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -9,6 +10,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
+
+//-----------------------FOR UPLOADS FOLDER-----------------------//
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 app.use(cors({
@@ -170,7 +174,7 @@ app.post('/api/login', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600000, // 1 hour 
-      sameSite: 'Strict', 
+      sameSite: 'Lax', //'Strict', 
     });
 
     res.json({ success: true, username: user.username, userId: user.id });
@@ -195,6 +199,4 @@ app.get('/test-db', async (req, res) => {
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 //-----------------------CAR BUILD ROUTES-----------------------//
-const createCarBuildRoutes = require('./routes/carBuilds');
-// Registering the custom car builds routes at `/api/builds`
-app.use('/api/builds', createCarBuildRoutes(pool));
+app.use('/api/builds', require('./routes/carBuilds')(pool));

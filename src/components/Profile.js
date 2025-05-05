@@ -94,19 +94,30 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/Profile.css";
 
+const API_BASE = "http://localhost:3001";
+
+// Utility to turn cover_image into a full URL
+// or return a default image if path is empty
+function resolveImageUrl(path) {
+  if (!path) return "/default-car.jpg";
+  if (path.startsWith("/uploads")) {
+    return `${API_BASE}${path}`;
+  }
+  return "/default-car.jpg";
+}
+
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const [builds, setBuilds] = useState([]);
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId") || 1;
 
   // Fetch builds from backend
   useEffect(() => {
     const fetchBuilds = async () => {
       try {
 
-        const res = await fetch(`http://localhost:3001/api/builds?userId=${userId}`, {
-          credentials: "include",
+        const res = await fetch(`/api/builds`, {
+          credentials: "include", // Include cookies to authenticate user
         });
 
         const data = await res.json();
@@ -121,7 +132,8 @@ const Profile = () => {
     };
 
     fetchBuilds();
-  }, [userId]);
+    console.log("Document cookie:", document.cookie);
+  }, []);
 
   // Render image grid
   const renderImages = () => {
@@ -135,7 +147,7 @@ const Profile = () => {
         style={{ cursor: "pointer" }}
       >
         <img
-          src={build.cover_image || "/default-car.jpg"}
+          src={resolveImageUrl(build.cover_image)}
           alt={build.car_name}
           className="car-thumbnail"
         />

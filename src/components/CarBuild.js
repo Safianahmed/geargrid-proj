@@ -18,30 +18,28 @@ const CarBuild = () => {
   useEffect(() => {
     const fetchBuild = async () => {
       try {
-        const buildRes = await axios.get(`http://localhost:3001/api/builds/${id}` , {
-          withCredentials: true,
-        });
-        setBuild(buildRes.data.build);
-
-        const modRes = await axios.get(`http://localhost:3001/api/builds/${id}/mods` , {
-          withCredentials: true,
-        });
-        const groupedMods = {};
-        modRes.data.mods.forEach(mod => {
-          if (!groupedMods[mod.category]) groupedMods[mod.category] = [];
-          groupedMods[mod.category].push(mod);
-        });
-        setMods(groupedMods);
-
-        // Placeholder for image gallery 
-        setGallery([]); 
+        const { data } = await axios.get(
+          `http://localhost:3001/api/builds/${id}`,
+          { withCredentials: true }
+        );
+        console.log('Build response:', data);
+  
+        if (!data.success) {
+          throw new Error(data.message || 'Build fetch failed');
+        }
+  
+        setBuild(data.build);
+        setMods(data.mods);
+        setGallery(data.build.galleryImages || []);
       } catch (err) {
         console.error('Failed to load build', err);
+        // you could set an error state here and render it
       }
     };
-
+  
     fetchBuild();
   }, [id]);
+  
 
   const sliderSettings = {
     dots: true,
@@ -102,8 +100,8 @@ const CarBuild = () => {
       <div className="gallery-section">
         <h2 className="gallery-title">Gallery</h2>
         <div className="gallery-grid">
-          {gallery.map((img, index) => (
-            <img key={index} src={img} alt={`Gallery ${index}`} className="gallery-image" />
+          {gallery.map((src, idx) => (
+            <img key={idx} src={src} alt={`Gallery ${idx+1}`} className="gallery-image" />
           ))}
         </div>
       </div>

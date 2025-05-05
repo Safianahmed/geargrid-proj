@@ -1,172 +1,305 @@
+const express = require('express');
 //for file uploads using multer
 const multer = require('multer');
 const path = require('path');
 
+// Middleware to handle file uploads
+const uploadsDir = path.join(__dirname, '..', 'uploads'); 
+
+// Configure multer to store files in the uploads directory
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads'));
-  },
-  filename: (req, file, cb) => {
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename:    (req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, `${Date.now()}-${file.fieldname}${ext}`);
   }
 });
-const upload = multer({ storage });
 
-// Import the Express framework
-const express = require('express');
+const upload = multer({ storage });
 
 // Returns a configured router for car builds
 function createCarBuildRoutes(pool) {
   const router = express.Router();
 
-  /**
-   * @route   GET /api/builds
-   * @desc    Fetch all car builds for a specific user
-   * @query   userId (required)
-   */
-  router.get('/', async (req, res) => {
-    const { userId } = req.query;
+// Middleware to ensure the user is authenticated via cookies
+const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 
-    if (!userId) {
-      return res.status(400).json({ success: false, message: 'Missing userId' });
-    }
 
-    try {
-      const [builds] = await pool.execute(
-        'SELECT * FROM builds WHERE user_id = ?', 
-        [userId]
-      );
-      res.json({ success: true, builds });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Server error' });
-    }
-  });
-
-  /**
-   * @route   GET /api/builds/:id
-   * @desc    Fetch a single build by its ID
-   */
-  router.get('/:id', async (req, res) => {
-    try {
-      const [builds] = await pool.execute(
-        'SELECT * FROM builds WHERE id = ?', 
-        [req.params.id]
-      );
-
-      if (builds.length === 0) {
-        return res.status(404).json({ success: false, message: 'Build not found' });
-      }
-
-      res.json({ success: true, build: builds[0] });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Server error' });
-    }
-  });
-
-  /**
- * @route   POST /api/builds
- * @desc    Create a new car build with file upload + mods
- * @form    multipart/form-data with fields:
- *          user_id, car_name, model, description, mods, customMods
- *          coverImage (file), galleryImages[] (files)
+/**
+ * @route   GET /api/builds
+ * @desc    Fetch all car builds for the currently logged-in user
  */
-router.post('/', upload.fields([
-  { name: 'coverImage', maxCount: 1 },           // Single cover image
-  { name: 'galleryImages', maxCount: 10 }        // Up to 10 gallery images
-]), async (req, res) => {
+router.get('/', ensureAuthenticated, async (req, res) => {
   try {
-    // Destructure text fields from the form body
-    const {
-      user_id,
-      car_name,
-      model,
-      description,
-      mods,         // JSON stringified object of mods
-      customMods    // Optional custom mod notes
-    } = req.body;
+    console.log('token cookie:', req.cookies.token);
+    console.log('eq.userId:', req.userId);
 
-    // Validate required fields
-    if (!user_id || !car_name) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
-    // Get uploaded file path for cover image (if exists)
-    const coverImagePath = req.files['coverImage']?.[0]?.filename || null;
-
-    // Step 1: Insert into builds table
-    const [buildResult] = await pool.execute(
-      'INSERT INTO builds (user_id, car_name, model, description, cover_image) VALUES (?, ?, ?, ?, ?)',
-      [user_id, car_name, model, description, `/uploads/${coverImagePath}`]
+    const [rows] = await pool.execute(
+      'SELECT * FROM builds WHERE user_id = ?',
+      [req.userId]
     );
 
-    const buildId = buildResult.insertId;
-
-    // Step 2: Insert each selected mod into build_mods table
-    const parsedMods = JSON.parse(mods);  
-
-    for (const category in parsedMods) {
-      for (const mod of parsedMods[category]) {
-        await pool.execute(
-          'INSERT INTO build_mods (build_id, category, mod_name, image_url, mod_note) VALUES (?, ?, ?, ?, ?)',
-          [buildId, category, mod.mod_name, mod.image_url, mod.mod_note]
-        );
-      }
-    }
-
-    // gallery image upload later
-
-    res.status(201).json({ success: true, buildId });
+    return res.json({ success: true, builds: rows });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: 'Server error during build creation' });
+    console.error('Error in GET /api/builds:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-  /**
-   * @route   PUT /api/builds/:id
-   * @desc    Update an existing car build
-   * @body    { car_name, model, description, cover_image }
-   */
-  router.put('/:id', async (req, res) => {
-    const { car_name, model, description, cover_image } = req.body;
 
-    try {
-      const [result] = await pool.execute(
-        'UPDATE builds SET car_name = ?, model = ?, description = ?, cover_image = ? WHERE id = ?', 
-        [car_name, model, description, cover_image, req.params.id]
-      );
+/** IN PROGRESS
+ * @route   GET /api/builds/:id
+ * @desc    Fetch a single build (with covers, gallery & mods)
+ */
+router.get('/:id', ensureAuthenticated, async (req, res, next) => {
+  const buildId = req.params.id;
+  const userId  = req.userId;
 
-      res.json({ success: true, message: 'Build updated successfully' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Failed to update build' });
+  try {
+    // Get the build row
+    const [[build]] = await pool.execute(
+      `SELECT * 
+         FROM builds 
+        WHERE id = ? AND user_id = ?`,
+      [buildId, userId]
+    );
+
+    if (!build) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Build not found or access denied' });
     }
-  });
 
-  /**
-   * @route   DELETE /api/builds/:id
-   * @desc    Delete a car build by its ID
-   */
-  router.delete('/:id', async (req, res) => {
+    // Assemble cover & gallery 
+    const coverImages   = [build.cover_image, build.cover_image2].filter(Boolean);
+    const galleryImages = [
+      build.gallery_image1,
+      build.gallery_image2,
+    ].filter(Boolean);
+
+    // Fetch all the mods for this build
+    const [modRows] = await pool.execute(
+      `SELECT id, category, mod_name, image_url, mod_note
+         FROM build_mods 
+        WHERE build_id = ?`,
+      [buildId]
+    );
+
+    // Group them by category
+    const mods = modRows.reduce((acc, m) => {
+      if (!acc[m.category]) acc[m.category] = [];
+      acc[m.category].push(m);
+      return acc;
+    }, {});
+
+    // Send back both the build and the grouped mods
+    return res.json({
+      success: true,
+      build: {
+        ...build,
+        coverImages,
+        galleryImages
+      },
+      mods   
+    });
+
+  } catch (err) {
+    console.error('Error fetching build:', err);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Server error while fetching build' });
+  }
+});
+
+
+/** IN PROGRESS - mods not showing up in mod table
+ * @route   POST /api/builds
+ * @desc    Create a new car build with optional file uploads and mods
+ * @access  Protected (requires valid JWT via ensureAuthenticated)
+ * @form    multipart/form-data
+ */
+router.post(
+  '/',
+  ensureAuthenticated, 
+  upload.fields([
+    { name: 'coverImages',    maxCount: 2  },   
+    { name: 'galleryImages', maxCount: 10 },
+    { name: 'modImages',     maxCount: 50 }    
+  
+  ]),
+  async (req, res) => {
     try {
-      const [result] = await pool.execute(
-        'DELETE FROM builds WHERE id = ?', 
-        [req.params.id]
-      );
+      const userId = req.userId;
+      const {
+        car_name,
+        model,
+        description = null,
+        bodyStyle   = null,
+        mods        = '{}',
+        customMods  = '[]'
+      } = req.body;
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: 'Build not found' });
+      // Validate required text fields
+      if (!car_name?.trim() || !model?.trim()) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Both car_name and model are required.' });
       }
 
-      res.json({ success: true, message: 'Build deleted successfully' });
+      // Parse JSON-encoded mods
+      let parsedMods, parsedCustomMods;
+      try {
+        parsedMods       = JSON.parse(mods);
+        parsedCustomMods = JSON.parse(customMods);
+      } catch (parseErr) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Failed to parse mods data as JSON.' });
+      }
+
+      // Build file paths for up to 2 cover images
+      const coverFiles = (req.files.coverImages || [])
+      .map(f => `/uploads/${f.filename}`);
+
+      const coverImage1 = coverFiles[0] || null;
+      const coverImage2 = coverFiles[1] || null;
+
+      // Insert the main build record
+      const [buildResult] = await pool.execute(
+        `INSERT INTO builds
+           (user_id, car_name, model, description, body_style, cover_image, cover_image2)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [userId, car_name, model, description, bodyStyle, coverImage1, coverImage2]
+      );
+      const buildId = buildResult.insertId;
+
+      // Insert build_mods entries
+      const modInserts = [];
+      for (const category in parsedMods) {
+        if (!Array.isArray(parsedMods[category])) continue;
+        for (const mod of parsedMods[category]) {
+          modInserts.push(
+            pool.execute(
+              `INSERT INTO build_mods
+                 (build_id, category, mod_name, image_url, mod_note)
+               VALUES (?, ?, ?, ?, ?)`,
+              [
+                buildId,
+                category,
+                mod.mod_name,
+                mod.image_url || null,
+                mod.mod_note  || null
+              ]
+            )
+          );
+        }
+      }
+
+      // Insert any custom mods
+      if (Array.isArray(parsedCustomMods)) {
+        for (const custom of parsedCustomMods) {
+          modInserts.push(
+            pool.execute(
+              `INSERT INTO build_mods
+                 (build_id, category, mod_name, image_url, mod_note)
+               VALUES (?, ?, ?, ?, ?)`,
+              [
+                buildId,
+                custom.category || 'custom',
+                custom.mod_name,
+                custom.image_url || null,
+                custom.mod_note  || null
+              ]
+            )
+          );
+        }
+      }
+
+      await Promise.all(modInserts);
+
+      return res
+        .status(201)
+        .json({ success: true, buildId });
+
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Failed to delete build' });
+      console.error('Error creating build:', err);
+      return res
+        .status(500)
+        .json({ success: false, message: 'Server error during build creation.' });
     }
-  });
+  }
+);
+
+
+/** NEEDS TESTING & IMPLEMENTING 
+ * @route   PUT /api/builds/:id
+ * @desc    Update an existing car build
+ * @body    { car_name, model, description, cover_image }
+ * @auth    Only the logged-in user who owns the build can update it
+ */
+router.put('/:id', ensureAuthenticated, async (req, res) => {
+  const userId = req.userId; 
+
+  const { car_name, model, description, cover_image } = req.body;
+
+  try {
+    // Confirm the build exists and belongs to the current user
+    const [existing] = await pool.execute(
+      'SELECT * FROM builds WHERE id = ? AND user_id = ?', 
+      [req.params.id, userId]
+    );
+
+    // If no build is found for this user, deny update access
+    if (existing.length === 0) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to update this build' });
+    }
+
+    // Proceed to update the build with new data
+    await pool.execute(
+      'UPDATE builds SET car_name = ?, model = ?, description = ?, cover_image = ? WHERE id = ?', 
+      [car_name, model, description, cover_image, req.params.id]
+    );
+
+    res.json({ success: true, message: 'Build updated successfully' });
+  } catch (err) {
+    console.error('Error updating build:', err);
+    res.status(500).json({ success: false, message: 'Failed to update build' });
+  }
+});
+
+/** NEEDS TESTING & IMPLEMENTING 
+ * @route   DELETE /api/builds/:id
+ * @desc    Delete a car build by its ID
+ * @auth    Only the logged-in user who owns the build can delete it
+ */
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
+  const userId = req.userId; 
+
+  try {
+    // Verify that the build exists and belongs to the current user
+    const [build] = await pool.execute(
+      'SELECT * FROM builds WHERE id = ? AND user_id = ?', 
+      [req.params.id, userId]
+    );
+
+    // If not found or not owned by the user, deny deletion
+    if (build.length === 0) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to delete this build' });
+    }
+
+    // Proceed to delete the build
+    const [result] = await pool.execute(
+      'DELETE FROM builds WHERE id = ?', 
+      [req.params.id]
+    );
+
+    res.json({ success: true, message: 'Build deleted successfully' });
+
+  } catch (err) {
+    console.error('Error deleting build:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete build' });
+  }
+});
 
   // Return the router to be used in server.js
   return router;

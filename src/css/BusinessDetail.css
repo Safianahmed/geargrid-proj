@@ -2,52 +2,77 @@
 
 /* container for business detail page */
 .business-detail-container {
-  max-width: 600px;
-  margin: 80px auto;
+  max-width: 800px;
+  margin: 100px auto;
   padding: 32px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  text-align: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
 }
 
 /* main business name heading */
 .business-detail-container h1 {
   font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #1e3a8a; /* navy */
+  color: #1e3a8a;
+  margin-bottom: 16px;
 }
 
-/* paragraph styling */
+/* general paragraph styling */
 .business-detail-container p {
-  font-size: 1.2rem;
-  margin: 10px 0;
+  font-size: 1.1rem;
   color: #333;
 }
 
-/* bold labels */
+/* bold labels inside paragraphs */
 .business-detail-container strong {
-  color: #4b5563; /* gray */
+  color: #4b5563;
 }
 
-/* image banner styling */
+/* banner image at the top */
 .business-banner {
   width: 100%;
-  height: 220px;
+  height: 250px;
   object-fit: cover;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-radius: 20px;
   margin-bottom: 24px;
 }
 
-/* review section */
+/* services list section */
+.services-list {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.services-list h3 {
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.services-list ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.services-list li {
+  margin-bottom: 6px;
+}
+
+/* Average rating display */
+/* .rating-overview {
+  margin: 20px 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+} */
+
+/* review submission section */
 .review-section {
   margin-top: 40px;
   text-align: left;
 }
 
-/* star rating buttons */
+/* star rating buttons (clickable stars) */
 .star-rating button {
   font-size: 24px;
   background: none;
@@ -69,26 +94,119 @@
 /* comment textarea */
 textarea {
   width: 100%;
-  height: 80px;
-  margin-top: 10px;
-  margin-bottom: 10px;
   padding: 10px;
+  margin: 10px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
 
-/* submit button styling */
+/* file upload input */
+input[type="file"] {
+  margin-bottom: 10px;
+}
+
+/* submit review button */
 button[type="submit"] {
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: #1e3a8a;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-/* individual comment display */
-.comments-section .comment {
-  padding: 10px 0;
-  border-top: 1px solid #eee;
+button[type="submit"]:hover {
+  background-color: #374ea2;
+}
+
+/* reviews Section */
+.comments-section {
+  margin-top: 60px;
+  text-align: left;
+}
+
+/* centered average rating */
+.reviews-summary {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.average-rating h1 {
+  font-size: 4rem;
+  margin: 0;
+  color: #1e3a8a;
+}
+
+.average-rating span {
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.average-rating p {
+  font-size: 1rem;
+  color: #888;
+  margin-top: 8px;
+}
+
+/* grid of review cards */
+.reviews-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 30px;
+}
+
+/* individual review card */
+.review-card {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* review card hover effect */
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* top of the review card: stars,date */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* star ratings */
+.stars {
+  color: gold;
+  font-size: 1.2rem;
+}
+
+/* review date */
+.review-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* text inside review card */
+.review-text {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* uploaded image inside review */
+.review-image {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
 }

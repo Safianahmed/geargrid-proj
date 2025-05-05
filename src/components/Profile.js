@@ -1,95 +1,3 @@
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import "../css/Profile.css";
-
-// const Profile = () => {
-//   const [activeTab, setActiveTab] = useState("posts");
-//   const navigate = useNavigate();
-
-//   // Renders different image counts based on selected tab
-//   const renderImages = () => {
-//     let count = activeTab === "posts" ? 6 : 9; 
-//     return Array.from({ length: count }, (_, index) => (
-//       <div key={index} className="build-placeholder" onClick={() => navigate("/car-build")}
-//       style={{cursor: "pointer"}} >Image Placeholder</div>
-//     ));
-//   };
-
-//   return (
-//     <div className="profile-container">
-//       {/* Header Section */}
-//       <div className="profile-header">
-//         <div className="profile-avatar" onClick={() => navigate("/menu")}>
-//           GearGrid
-//         </div>
-//         <div className="profile-info">
-//           <h2 className="profile-username">Username</h2>
-//           <p className="profile-bio">Short bio or description about the user.</p>
-//         </div>
-//       </div>
-
-//       {/* Stats & Actions */}
-//       <div className="profile-stats-container">
-//         <div className="profile-stats">
-//           <span><strong>_</strong> Posts</span>
-//           <span><strong>_</strong> Followers</span>
-//           <span><strong>_</strong> Following</span>
-//         </div>
-//         <div className="profile-actions">
-//           <button className="profile-btn">Edit Profile</button>
-//           <button className="profile-btn" onClick={() => navigate("/archive")}>
-//             View Archive
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Divider Below Stats */}
-//       <hr className="profile-image-divider" />
-
-//       {/* Tabs for Posts, Saved, Tagged */}
-//       <div className="profile-tabs">
-//   <div className="tab-left-section">
-//     <button 
-//       className={`tab-button ${activeTab === "posts" ? "active" : "inactive"}`}
-//       onClick={() => setActiveTab("posts")}
-//     >
-//       POSTS
-//     </button>
-
-//     {/* ➕ Add Car Button */}
-//     <button 
-//       className="add-car-button" 
-//       onClick={() => navigate(`/car-build/${build.id}`)}
-//       title="Add Car Build"
-//     >
-//       +
-//     </button>
-//   </div>
-
-//   <button 
-//     className={`tab-button ${activeTab === "saved" ? "active" : "inactive"}`}
-//     onClick={() => setActiveTab("saved")}
-//   >
-//     SAVED
-//   </button>
-//   <button 
-//     className={`tab-button ${activeTab === "tagged" ? "active" : "inactive"}`}
-//     onClick={() => setActiveTab("tagged")}
-//   >
-//     TAGGED
-//   </button>
-// </div>
-
-
-//       {/* Dynamic Image Grid */}
-//       <div className="profile-builds-container">
-//         <div className="profile-builds">{renderImages()}</div>
-//       </div>
-//     </div>
-//   );
-// };
-
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/Profile.css";
@@ -107,11 +15,14 @@ function resolveImageUrl(path) {
 }
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("current");
   const [builds, setBuilds] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch builds from backend
+  const storedUsername = localStorage.getItem("username") || "Username";
+  const storedName = localStorage.getItem("name") || "Name";
+  const storedBio = localStorage.getItem("bio") || "Short bio or description about the user.";
+
   useEffect(() => {
     const fetchBuilds = async () => {
       try {
@@ -119,7 +30,6 @@ const Profile = () => {
         const res = await fetch(`/api/builds`, {
           credentials: "include", // Include cookies to authenticate user
         });
-
         const data = await res.json();
         if (data.success) {
           setBuilds(data.builds);
@@ -135,10 +45,8 @@ const Profile = () => {
     console.log("Document cookie:", document.cookie);
   }, []);
 
-  // Render image grid
   const renderImages = () => {
-    const displayedBuilds = activeTab === "posts" ? builds.slice(0, 6) : builds;
-
+    const displayedBuilds = activeTab === "current" ? builds.slice(0, 6) : builds;
     return displayedBuilds.map((build) => (
       <div
         key={build.id}
@@ -157,74 +65,62 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-container">
-      {/* Header Section */}
-      <div className="profile-header">
-        <div className="profile-avatar" onClick={() => navigate("/menu")}>
-          GearGrid
+    <>
+      <div className="profile-container">
+        {/* Header */}
+        <div className="profile-header">
+          <div className="profile-avatar" onClick={() => navigate("/menu")}>GearGrid</div>
+          <div className="profile-main-info">
+            <div className="username-row">
+              <h2 className="profile-username">{storedUsername}</h2>
+              <button className="profile-action-btn" onClick={() => navigate("/edit-profile")}>
+                Edit Profile
+              </button>
+            </div>
+            <div className="profile-stats">
+              <span><strong>_</strong> Followers</span>
+              <span><strong>_</strong> Following</span>
+            </div>
+            <div className="profile-name">{storedName}</div>
+            <div className="profile-bio">{storedBio}</div>
+          </div>
         </div>
-        <div className="profile-info">
-          <h2 className="profile-username">Username</h2>
-          <p className="profile-bio">Short bio or description about the user.</p>
-        </div>
-      </div>
 
-      {/* Stats & Actions */}
-      <div className="profile-stats-container">
-        <div className="profile-stats">
-          <span><strong>_</strong> Posts</span>
-          <span><strong>_</strong> Followers</span>
-          <span><strong>_</strong> Following</span>
-        </div>
-        <div className="profile-actions">
-          <button className="profile-btn">Edit Profile</button>
-          <button className="profile-btn" onClick={() => navigate("/archive")}>
-            View Archive
-          </button>
-        </div>
-      </div>
+        {/* Divider */}
+        <hr className="profile-divider" />
 
-      {/* Divider */}
-      <hr className="profile-image-divider" />
-
-      {/* Tabs */}
-      <div className="profile-tabs">
-        <div className="tab-left-section">
+        {/* Tabs */}
+        <div className="profile-tabs">
           <button 
-            className={`tab-button ${activeTab === "posts" ? "active" : "inactive"}`}
-            onClick={() => setActiveTab("posts")}
+            className={`tab-button ${activeTab === "current" ? "active" : ""}`}
+            onClick={() => setActiveTab("current")}
           >
-            POSTS
+            CURRENT CARS
           </button>
-
           <button 
-            className="add-car-button" 
-            onClick={() => navigate("/add-build")} 
-            title="Add Car Build"
+            className={`tab-button ${activeTab === "previous" ? "active" : ""}`}
+            onClick={() => setActiveTab("previous")}
           >
-            +
+            PREVIOUSLY OWNED
           </button>
         </div>
 
-        <button 
-          className={`tab-button ${activeTab === "saved" ? "active" : "inactive"}`}
-          onClick={() => setActiveTab("saved")}
-        >
-          SAVED
-        </button>
-        <button 
-          className={`tab-button ${activeTab === "tagged" ? "active" : "inactive"}`}
-          onClick={() => setActiveTab("tagged")}
-        >
-          TAGGED
-        </button>
+        {/* Car Builds */}
+        <div className="profile-builds-container">
+          <div className="profile-builds">
+            {renderImages()}
+          </div>
+        </div>
       </div>
 
-      {/* Builds Grid */}
-      <div className="profile-builds-container">
-        <div className="profile-builds">{renderImages()}</div>
+      {/* Bottom Navigation */}
+      <div className="bottom-nav">
+        <div className="nav-icon" onClick={() => navigate("/")}>🏠</div>
+        <div className="nav-icon">🔍</div>
+        <div className="nav-icon" onClick={() => navigate("/add-build")}>➕</div>
+        <div className="nav-icon">❤️</div>
       </div>
-    </div>
+    </>
   );
 };
 

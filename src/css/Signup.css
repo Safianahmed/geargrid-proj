@@ -1,14 +1,9 @@
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 5px;
-}
-
 .password-container {
+  position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
-  
 
 .password-container input {
   width: 100%;
@@ -17,15 +12,16 @@
 
 .toggle-password {
   position: absolute;
-  right: 1090px;
-  top: 51%;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  margin-left: 5px;
+  color: #333;
 }
-  
+
 .toggle-password:focus {
   outline: none;
 }

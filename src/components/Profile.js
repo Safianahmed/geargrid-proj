@@ -89,7 +89,7 @@ const Profile = () => {
   };
 
   const renderImages = () => {
-    const displayedBuilds = activeTab === "current" ? builds.slice(0, 6) : builds;
+    const displayedBuilds = builds;
     return displayedBuilds.map((build) => (
       <div
         key={build.id}

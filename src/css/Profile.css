@@ -142,18 +142,21 @@
   }
   
   .profile-builds-container {
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
   }
   
   .profile-builds {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 40px;
-    justify-content: center;
+    justify-items: center;
     padding: 20px;
+    width: 100%;
+    max-width: 1400px;
   }
+  
   
   .build-placeholder {
     width: 320px;

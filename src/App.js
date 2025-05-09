@@ -18,6 +18,7 @@ import EditBuild from "./components/Editbuild";
 import AddBuild from "./components/Addbuild";
 import RegisterEvent from "./components/RegisterEvent";
 import EditProfile from "./components/EditProfile";
+import AddBusiness from './components/AddBusiness';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const AppContent = () => {
@@ -46,6 +47,7 @@ const AppContent = () => {
           <Route path="/car-build/:id" element={<CarBuild />} />
           <Route path="/edit-build/:id" element={<EditBuild />} />
           <Route path="/add-build" element={<AddBuild />} />
+          <Route path="/add-business" element={<AddBusiness />} />
         </Routes>
       </main>
 

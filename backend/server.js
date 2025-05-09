@@ -44,15 +44,15 @@ pool.getConnection()
 });
 
 const authenticateToken = (req, res, next) => {
-    const token = req.cookies.token;
-  
-    if (!token) return res.status(401).json({ success: false, message: 'Token required' });
-  
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ success: false, message: 'Invalid or expired token' });
-      req.user = user;
-      next();
-    });
+  const token = req.cookies.token;
+
+  if (!token) return res.status(401).json({ success: false, message: 'Token required' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+    req.user = user;
+    next();
+  });
 };
 
 app.get('/api/events', authenticateToken, async (req, res) => {

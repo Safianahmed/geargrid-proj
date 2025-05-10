@@ -91,6 +91,101 @@ app.get('/api/businesses/:name', async (req, res) => {
   }
 });
 
+app.get('/api/businesses/:businessId/reviews', async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const [reviews] = await pool.execute(
+      `SELECT br.*, u.username 
+      FROM business_reviews br 
+      JOIN users u ON br.user_id = u.id 
+      WHERE br.business_id = ? 
+      ORDER BY br.create_time DESC`,
+      [businessId]
+    );
+    res.json({ success: true, reviews });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch reviews' });
+  }
+});
+
+app.post('/api/businesses/:businessId/reviews', async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId || !rating) {
+      return res.status(400).json({ success: false, message: 'User ID and rating are required.' });
+    }
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5.' });
+    }
+
+    const [existingReviews] = await pool.execute(
+      'SELECT id FROM business_reviews WHERE business_id = ? AND user_id = ?',
+      [businessId, userId]
+    );
+
+    if (existingReviews.length > 0) {
+      return res.status(409).json({ success: false, message: 'You have already reviewed this business.' });
+    }
+
+    const [result] = await pool.execute(
+      'INSERT INTO business_reviews (business_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
+      [businessId, userId, rating, comment || null]
+    );
+    const [newReview] = await pool.execute(
+        `SELECT br.*, u.username 
+         FROM business_reviews br
+         JOIN users u ON br.user_id = u.id 
+         WHERE br.id = ?`, 
+        [result.insertId]
+    );
+    res.status(201).json({ success: true, message: 'Review submitted successfully.', review: newReview[0] });
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({ success: false, message: 'Failed to submit review.' });
+  }
+});
+
+app.put('/api/reviews/:reviewId', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId || !rating) {
+      return res.status(400).json({ success: false, message: 'User ID and rating are required for update.' });
+    }
+    if (rating < 1 || rating > 5) {
+        return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5.' });
+    }
+
+    const [reviews] = await pool.execute('SELECT user_id FROM business_reviews WHERE id = ?', [reviewId]);
+    if (reviews.length === 0) {
+      return res.status(404).json({ success: false, message: 'Review not found.' });
+    }
+    if (reviews[0].user_id !== userId) {
+      return res.status(403).json({ success: false, message: 'You are not authorized to edit this review.' });
+    }
+
+    await pool.execute(
+      'UPDATE business_reviews SET rating = ?, comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [rating, comment || null, reviewId]
+    );
+    const [updatedReview] = await pool.execute(
+        `SELECT br.*, u.username 
+         FROM business_reviews br
+         JOIN users u ON br.user_id = u.id 
+         WHERE br.id = ?`, 
+        [reviewId]
+    );
+    res.json({ success: true, message: 'Review updated successfully.', review: updatedReview[0] });
+  } catch (error) {
+    console.error('Error updating review:', error);
+    res.status(500).json({ success: false, message: 'Failed to update review.' });
+  }
+});
+
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
   try {

@@ -72,6 +72,73 @@
   text-align: left;
 }
 
+.review-section form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.review-section form button {
+  margin-top: 10px;
+}
+
+.review-section form button.cancel-edit-btn {
+  background-color: #6c757d;
+  margin-left: 10px;
+}
+
+.review-section form button.cancel-edit-btn:hover {
+  background-color: #5a6268;
+}
+
+.review-section form textarea {
+  resize: none;
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.edit-review-btn {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+
+.edit-review-btn:hover {
+  background-color: #e0a800;
+}
+
+.review-username {
+  font-weight: bold;
+}
+
+.review-edited {
+  font-style: italic;
+  font-size: 0.75rem;
+  color: #888;
+  margin-left: 5px;
+}
+
+.review-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+
 /* star rating buttons (clickable stars) */
 .star-rating button {
   font-size: 24px;

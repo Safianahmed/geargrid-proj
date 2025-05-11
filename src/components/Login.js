@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "../css/Login.css";
 
 const Login = () => {
-
   useEffect(() => {
     document.body.classList.add("auth-page");
     return () => document.body.classList.remove("auth-page");
@@ -31,7 +30,7 @@ const Login = () => {
 
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem('username', data.username);
+        // ❌ Do not set username from backend at all
         localStorage.setItem('userId', data.userId);
         navigate('/profile');
       } else {

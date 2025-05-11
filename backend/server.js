@@ -201,8 +201,8 @@ app.post('/api/signup', async (req, res) => {
     
     //insert into database
     const [result] = await pool.execute(
-      'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-      [req.body.username, req.body.email, hashedPassword]
+      'INSERT INTO users (username, email, password_hash, display_name) VALUES (?, ?, ?, ?)',
+      [req.body.username, req.body.email, hashedPassword, req.body.username]
     );
 
     console.log('User created successfully:', result);
@@ -256,7 +256,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, displayName: user.display_name },
       process.env.JWT_SECRET,
       { expiresIn: '1h' } //expiration time
     );
@@ -268,7 +268,7 @@ app.post('/api/login', async (req, res) => {
       sameSite: 'Strict', 
     });
 
-    res.json({ success: true, username: user.username, userId: user.id });
+    res.json({ success: true, username: user.username, userId: user.id, displayName: user.display_name });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });

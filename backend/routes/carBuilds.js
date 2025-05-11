@@ -77,68 +77,91 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 
 
 /** IN PROGRESS
+ /**
  * @route   GET /api/builds/:id
  * @desc    Fetch a single build (with covers, gallery & mods)
+ * @access  Protected (requires valid JWT via ensureAuthenticated)
  */
-router.get('/:id', ensureAuthenticated, async (req, res, next) => {
+router.get('/:id', ensureAuthenticated, async (req, res) => {
   const buildId = req.params.id;
   const userId  = req.userId;
 
   try {
-    // Get the build row
-    const [[build]] = await pool.execute(
-      `SELECT * 
-         FROM builds 
-        WHERE id = ? AND user_id = ?`,
+    // 1) Fetch build row
+    const [[row]] = await pool.execute(
+      `SELECT
+         id,
+         user_id,
+         ownership_status AS ownership,
+         car_name,
+         model,
+         description,
+         body_style       AS bodyStyle,
+         cover_image,
+         cover_image2
+       FROM builds
+       WHERE id = ? AND user_id = ?`,
       [buildId, userId]
     );
 
-    if (!build) {
+    if (!row) {
       return res
         .status(404)
         .json({ success: false, message: 'Build not found or access denied' });
     }
 
-    // Assemble cover & gallery 
-    const coverImages   = [build.cover_image, build.cover_image2].filter(Boolean);
-    const galleryImages = [
-      build.gallery_image1,
-      build.gallery_image2,
-    ].filter(Boolean);
-
-    // Fetch all the mods for this build
-    const [modRows] = await pool.execute(
-      `SELECT id, category, mod_name, image_url, mod_note
-         FROM build_mods 
+    // 2) Fetch gallery images
+    const [galleryRows] = await pool.execute(
+      `SELECT image_url
+         FROM build_gallery
         WHERE build_id = ?`,
       [buildId]
     );
+    const galleryImages = galleryRows.map(r => r.image_url);
 
-    // Group them by category
-    const mods = modRows.reduce((acc, m) => {
-      if (!acc[m.category]) acc[m.category] = [];
-      acc[m.category].push(m);
-      return acc;
-    }, {});
+    // 3) Fetch mods with original column names
+    const [modRows] = await pool.execute(
+      `SELECT
+         id,
+         category,
+         sub_category,
+         mod_name,
+         image_url,
+         mod_note
+       FROM build_mods
+       WHERE build_id = ?`,
+      [buildId]
+    );
 
-    // Send back both the build and the grouped mods
+    // 4) Assemble response
+    const build = {
+      id:           row.id,
+      user_id:      row.user_id,
+      ownership:    row.ownership,
+      car_name:     row.car_name,
+      model:        row.model,
+      description:  row.description,
+      bodyStyle:    row.bodyStyle,
+      cover_image:  row.cover_image,
+      cover_image2: row.cover_image2,
+      // convenience array if you ever need it
+      coverImages:  [row.cover_image, row.cover_image2].filter(Boolean),
+      galleryImages
+    };
+
     return res.json({
       success: true,
-      build: {
-        ...build,
-        coverImages,
-        galleryImages
-      },
-      mods   
+      build,
+      mods: modRows
     });
-
   } catch (err) {
-    console.error('Error fetching build:', err);
+    console.error('Error in GET /api/builds/:id:', err);
     return res
       .status(500)
       .json({ success: false, message: 'Server error while fetching build' });
   }
 });
+
 
 
 /** IN PROGRESS - mods not showing up in mod table
@@ -147,91 +170,122 @@ router.get('/:id', ensureAuthenticated, async (req, res, next) => {
  * @access  Protected (requires valid JWT via ensureAuthenticated)
  * @form    multipart/form-data
  */
+/**
+/**
+ * @route   POST /api/builds
+ * @desc    Create a new car build with cover, gallery, and mods
+ * @access  Protected (requires valid JWT via ensureAuthenticated)
+ * @form    multipart/form-data
+ */
+/**
+ * @route   POST /api/builds
+ * @desc    Create a new car build with cover, gallery, and mods
+ * @access  Protected (requires valid JWT via ensureAuthenticated)
+ * @form    multipart/form-data
+ */
+/**
+ * @route   POST /api/builds
+ * @desc    Create a new car build with cover, gallery, and mods
+ * @access  Protected (requires valid JWT via ensureAuthenticated)
+ * @form    multipart/form-data
+ */
 router.post(
   '/',
   ensureAuthenticated,
   upload.fields([
-    { name: 'coverImages',  maxCount: 2  },
+    { name: 'coverImages',   maxCount: 2  },
     { name: 'galleryImages', maxCount: 10 },
-    { name: 'modImages',     maxCount: 50 }
+    { name: 'modImages',      maxCount: 50 }
   ]),
   async (req, res) => {
     try {
+      // --- Log exactly what Multer parsed ---
+      console.log('💾 [BUILD] all req.files keys:', Object.keys(req.files || {}));
+      console.log('💾 [BUILD] req.files.coverImages:', req.files.coverImages);
+      console.log('💾 [BUILD] req.files.galleryImages:', req.files.galleryImages);
+      console.log('💾 [BUILD] req.files.modImages:', req.files.modImages);
+
       const userId = req.userId;
       const {
-        ownership = "current",
+        ownership   = 'current',
         car_name,
         model,
         description = null,
         bodyStyle   = null,
-        mods        = '[]',      // default to empty array
-        customMods  = '[]'
+        mods        = '[]'
       } = req.body;
 
-      // *** LOG EVERYTHING ***
-      console.log('💾 [BUILD] userId:', userId);
-      console.log('💾 [BUILD] car_name, model:', car_name, model);
-      console.log('💾 [BUILD] raw req.body.mods:', mods);
-      console.log('💾 [BUILD] raw req.files.modImages:', req.files.modImages);
-      
-      // parse JSON
-      let parsedModsArray;
+      // --- Extract cover URLs ---
+      const coverFiles = req.files.coverImages || [];
+      const cover1 = coverFiles[0] ? `/uploads/${coverFiles[0].filename}` : null;
+      const cover2 = coverFiles[1] ? `/uploads/${coverFiles[1].filename}` : null;
+      console.log('💾 [BUILD] cover1, cover2 =', cover1, cover2);
+
+      // --- Parse mods JSON ---
+      let parsedModsArray = [];
       try {
         parsedModsArray = JSON.parse(mods);
       } catch (e) {
-        console.error('❌ Failed to JSON.parse(mods):', e);
+        console.error('❌ Bad mods JSON:', e);
         return res.status(400).json({ success:false, message:'Bad mods JSON' });
       }
-      console.log('💾 [BUILD] parsedModsArray:', parsedModsArray);
 
-      // Describe the files array
-      const modFiles = req.files.modImages || [];
-      console.log(`💾 [BUILD] modFiles.length = ${modFiles.length}`);
-
-       // validate ownership
-      if (!['current','previous'].includes(ownership)) {
-        return res.status(400).json({ success:false, message:'Invalid ownership' });
-      }
-
-      // Insert builds row (omitting code for brevity) …
+      // --- Insert build row with covers ---
       const [buildResult] = await pool.execute(
         `INSERT INTO builds
-           (user_id, ownership_status, car_name, model, description, body_style, cover_image, cover_image2)
+           (user_id, ownership_status, car_name, model,
+            description, body_style, cover_image, cover_image2)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [ userId, ownership, car_name, model, description, bodyStyle, null, null ]
+        [ userId, ownership, car_name, model,
+          description, bodyStyle, cover1, cover2 ]
       );
       const buildId = buildResult.insertId;
       console.log('💾 [BUILD] buildId =', buildId);
 
-      // Now loop your flat mods array
+      // --- Extract and insert gallery images ---
+      const galleryFiles = req.files.galleryImages || [];
+      const galleryUrls  = galleryFiles.map(f => `/uploads/${f.filename}`);
+      console.log('💾 [BUILD] galleryUrls =', galleryUrls);
+
+      for (const url of galleryUrls) {
+        await pool.execute(
+          `INSERT INTO build_gallery (build_id, image_url)
+             VALUES (?, ?)`,
+          [ buildId, url ]
+        );
+      }
+
+      // --- Extract and insert mod images ---
+      const modFiles = req.files.modImages || [];
       for (const [i, mod] of parsedModsArray.entries()) {
-        console.log(`🔨 [INSERT MOD #${i}]`, mod);
         const fileObj  = modFiles[i];
         const imageUrl = fileObj ? `/uploads/${fileObj.filename}` : null;
-
         await pool.execute(
           `INSERT INTO build_mods
              (build_id, category, sub_category, mod_name, image_url, mod_note)
            VALUES (?, ?, ?, ?, ?, ?)`,
           [
             buildId,
-            mod.main,            // category
-            mod.sub  || null,    // sub_category
-            mod.name,            // mod_name
-            imageUrl,            // image_url
-            mod.details || null  // mod_note
+            mod.main,
+            mod.sub      || null,
+            mod.name,
+            imageUrl,
+            mod.details  || null
           ]
         );
       }
 
       return res.status(201).json({ success:true, buildId });
-
     } catch (err) {
       console.error('🔥 [BUILD ERROR]:', err);
       return res.status(500).json({ success:false, message:'Server error' });
     }
   }
 );
+
+
+
+
 
 
 

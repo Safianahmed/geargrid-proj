@@ -278,3 +278,56 @@ body, html {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }
+
+/* ===== Modifications Section ===== */
+.car-build-page .modifications {
+  margin-top: 40px;
+}
+
+/* Main category wrapper */
+.car-build-page .category-block {
+  margin-bottom: 3rem;
+}
+
+/* Main category title */
+.car-build-page .category-block .category-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1rem;
+  border-left: 4px solid #5e83aa;
+  padding-left: 0.75rem;
+}
+
+/* Sub‐category wrapper */
+.car-build-page .sub-category-block {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+/* Sub category title */
+.car-build-page .sub-category-block .sub-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.25rem;
+}
+
+/* Mods container: tighter grid under each sub-category */
+.car-build-page .sub-category-block .mods-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* Individual mod card */
+.car-build-page .mod-item {
+  flex: none;            
+  width: auto;           
+  max-width: 100%;
+}

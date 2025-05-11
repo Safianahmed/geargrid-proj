@@ -3,22 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "./cropImage";
 import "../css/Profile.css";
-
-const API_BASE = "http://localhost:3001";
-
-// Utility to turn cover_image into a full URL
-// or return a default image if path is empty
-function resolveImageUrl(path) {
-  if (!path) return "/default-car.jpg";
-  if (path.startsWith("/uploads")) {
-    return `${API_BASE}${path}`;
-  }
-  return "/default-car.jpg";
-}
+import { API_BASE, resolveImageUrl } from '../utils/imageUrl';
 
 const Profile = () => {
+  const [currentBuilds, setCurrentBuilds]   = useState([]);
+  const [previousBuilds, setPreviousBuilds] = useState([]);
   const [activeTab, setActiveTab] = useState("current");
-  const [builds, setBuilds] = useState([]);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -49,7 +39,8 @@ const Profile = () => {
         });
         const data = await res.json();
         if (data.success) {
-          setBuilds(data.builds);
+          setCurrentBuilds(data.currentBuilds);
+          setPreviousBuilds(data.previousBuilds);
         } else {
           console.error("Failed to fetch builds:", data.message);
         }
@@ -58,7 +49,7 @@ const Profile = () => {
       }
     };
     fetchBuilds();
-  }, [userId]);
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -100,24 +91,22 @@ const Profile = () => {
     setShowAvatarMenu(true);
   };
 
-  const renderImages = () => {
-    const displayedBuilds = builds;
-    return displayedBuilds.map((build) => (
+  const renderImages = list =>
+    list.map(b => (
       <div
-        key={build.id}
+        key={b.id}
         className="build-placeholder"
-        onClick={() => navigate(`/car-build/${build.id}`)}
+        onClick={() => navigate(`/car-build/${b.id}`)}
         style={{ cursor: "pointer" }}
       >
         <img
-          src={resolveImageUrl(build.cover_image)}
-          alt={build.car_name}
+          src={resolveImageUrl(b.cover_image)}
+          alt={b.car_name}
           className="car-thumbnail"
         />
-        <span>{build.car_name}</span>
+        <span>{b.car_name}</span>
       </div>
     ));
-  };
 
   return (
     <>
@@ -215,11 +204,19 @@ const Profile = () => {
           <button className={`tab-button ${activeTab === "previous" ? "active" : ""}`} onClick={() => setActiveTab("previous")}>PREVIOUSLY OWNED</button>
         </div>
 
-        <div className="profile-builds-container">
-          <div className="profile-builds">
-            {renderImages()}
-          </div>
+      {/* Builds section */}
+      <div className="profile-builds-container">
+        <div className="profile-builds">
+          {activeTab === "current"
+            ? (currentBuilds.length
+                ? renderImages(currentBuilds)
+                : <p>No current builds.</p>)
+            : (previousBuilds.length
+                ? renderImages(previousBuilds)
+                : <p>No previous builds.</p>)
+          }
         </div>
+      </div>
       </div>
 
       <div className="bottom-nav">

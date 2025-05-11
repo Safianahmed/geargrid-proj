@@ -5,6 +5,7 @@ import { modCategories }   from '../data/modCategories';
 import '../css/AddBuild.css';
 
 const AddBuild = () => {
+  const [ownership, setOwnership] = useState('current'); 
   const [vehicleType, setVehicleType]     = useState('');
   const [brand, setBrand]                 = useState('');
   const [selectedModel, setSelectedModel] = useState('');
@@ -26,7 +27,12 @@ const AddBuild = () => {
     e.preventDefault();
     const finalModel = customModel || selectedModel;
 
+    if (!coverFiles[0]) {
+    alert("Please upload at least one cover image.");
+    return;
+  }
     const formData = new FormData();
+    formData.append('ownership', ownership);
     formData.append('car_name', `${brand} ${finalModel}`.trim());
     formData.append('model', finalModel);
     formData.append('bodyStyle', bodyStyle);
@@ -75,6 +81,30 @@ const AddBuild = () => {
         onSubmit={handleSubmit}
         style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
       >
+
+        {/* Ownership question */}
+      <fieldset>
+        <legend>Is this car currently owned or a previous car?</legend>
+        <label>
+          <input
+            type="radio"
+            name="ownership"
+            value="current"
+            checked={ownership === 'current'}
+            onChange={() => setOwnership('current')}
+          /> Currently owned
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="ownership"
+            value="previous"
+            checked={ownership === 'previous'}
+            onChange={() => setOwnership('previous')}
+          /> Previously owned
+        </label>
+      </fieldset>
+
         {/* Vehicle Type */}
         <div>
           <label>Vehicle Type</label>
@@ -394,36 +424,101 @@ const AddBuild = () => {
 
           {/* File Uploads Section */}
           <div className="upload-box">
-            {/* Cover Image Upload */}
-            <div>
-              <label>Cover Image</label>
-              <input
-                type="file"
-                name = "coverImages"
-                accept="image/*"
-                multiple
-                onChange={e => { const files = Array.from(e.target.files).slice(0, 2);
-                setCoverFiles(files);
-              }}            
-            />
-            </div>
-              
-            {/* Gallery Images Upload */}
-            <div style={{ marginTop: '12px' }}>
-              <label>Gallery Images (optional)</label>
-              <input
-                type="file"
-                name = "galleryImages"
-                accept="image/*"
-                multiple
-                onChange={e => setGalleryFiles(Array.from(e.target.files))}
-              />
-            </div>
-          </div>
+            <div className="file-picker-group">
+  <label className="picker-label">Cover Images (up to 2):</label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      setCoverFiles(prev => {
+        // Avoid dupes by name
+        const names = new Set(prev.map(f => f.name));
+        const next = [...prev];
+        if (!names.has(file.name)) {
+          next.push(file);
+        }
+        return next.slice(0, 2);
+      });
+    }}
+    className="picker-input"
+  />
+
+  <div className="preview-list">
+    {coverFiles.map((file, i) => {
+      const url = URL.createObjectURL(file);
+      return (
+        <div key={i} className="preview-item">
+          <button
+            type="button"
+            className="remove-btn"
+            onClick={() =>
+              setCoverFiles(prev => prev.filter((_, j) => j !== i))
+            }
+          >
+            ×
+          </button>
+          <img src={url} alt={file.name} className="preview-thumb" />
+          <span className="preview-name">{file.name}</span>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+{/* ————— GALLERY IMAGE PICKER ————— */}
+<div className="file-picker-group">
+  <label className="picker-label">Gallery Images (up to 10):</label>
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={e => {
+      const files = Array.from(e.target.files);
+      setGalleryFiles(prev => {
+        const names = new Set(prev.map(f => f.name));
+        const combined = [...prev];
+        for (let f of files) {
+          if (!names.has(f.name)) {
+            combined.push(f);
+            names.add(f.name);
+          }
+          if (combined.length >= 10) break;
+        }
+        return combined.slice(0, 10);
+      });
+    }}
+    className="picker-input"
+  />
+
+  <div className="preview-list">
+    {galleryFiles.map((file, i) => {
+      const url = URL.createObjectURL(file);
+      return (
+        <div key={i} className="preview-item">
+          <button
+            type="button"
+            className="remove-btn"
+            onClick={() =>
+              setGalleryFiles(prev => prev.filter((_, j) => j !== i))
+            }
+          >
+            ×
+          </button>
+          <img src={url} alt={file.name} className="preview-thumb" />
+          <span className="preview-name">{file.name}</span>
+        </div>
+      );
+    })}
+  </div>
+</div>
+</div>
 
         {/* Submit Button */}
         <button
           type="submit"
+          disabled={!coverFiles[0]}
           style={{
             padding: '10px',
             backgroundColor: '#111',
@@ -433,6 +528,12 @@ const AddBuild = () => {
           }}
         >
           Submit Build
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/profile')}
+        >
+          Cancel
         </button>
       </form>
     </div>

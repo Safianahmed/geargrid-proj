@@ -29,17 +29,46 @@ const ensureAuthenticated = require('../middleware/ensureAuthenticated');
  * @route   GET /api/builds
  * @desc    Fetch all car builds for the currently logged-in user
  */
+// router.get('/', ensureAuthenticated, async (req, res) => {
+//   try {
+//     const [rows] = await pool.execute(
+//       'SELECT * FROM builds WHERE user_id = ?',
+//       [req.userId]
+//     );
+
+//     return res.json({ success: true, builds: rows });
+//   } catch (err) {
+//     console.error('Error in GET /api/builds:', err);
+//     return res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// });
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {
-    console.log('token cookie:', req.cookies.token);
-    console.log('eq.userId:', req.userId);
+    const userId = req.userId;
 
-    const [rows] = await pool.execute(
-      'SELECT * FROM builds WHERE user_id = ?',
-      [req.userId]
+    // Current builds
+    const [currentRows] = await pool.execute(
+      `SELECT * 
+         FROM builds 
+        WHERE user_id = ? 
+          AND ownership_status = 'current'`,
+      [userId]
     );
 
-    return res.json({ success: true, builds: rows });
+    // Previous builds
+    const [previousRows] = await pool.execute(
+      `SELECT * 
+         FROM builds 
+        WHERE user_id = ? 
+          AND ownership_status = 'previous'`,
+      [userId]
+    );
+
+    return res.json({
+      success: true,
+      currentBuilds: currentRows,
+      previousBuilds: previousRows
+    });
   } catch (err) {
     console.error('Error in GET /api/builds:', err);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -120,115 +149,90 @@ router.get('/:id', ensureAuthenticated, async (req, res, next) => {
  */
 router.post(
   '/',
-  ensureAuthenticated, 
+  ensureAuthenticated,
   upload.fields([
-    { name: 'coverImages',    maxCount: 2  },   
+    { name: 'coverImages',  maxCount: 2  },
     { name: 'galleryImages', maxCount: 10 },
-    { name: 'modImages',     maxCount: 50 }    
-  
+    { name: 'modImages',     maxCount: 50 }
   ]),
   async (req, res) => {
     try {
       const userId = req.userId;
       const {
+        ownership = "current",
         car_name,
         model,
         description = null,
         bodyStyle   = null,
-        mods        = '{}',
+        mods        = '[]',      // default to empty array
         customMods  = '[]'
       } = req.body;
 
-      // Validate required text fields
-      if (!car_name?.trim() || !model?.trim()) {
-        return res
-          .status(400)
-          .json({ success: false, message: 'Both car_name and model are required.' });
-      }
-
-      // Parse JSON-encoded mods
-      let parsedMods, parsedCustomMods;
+      // *** LOG EVERYTHING ***
+      console.log('💾 [BUILD] userId:', userId);
+      console.log('💾 [BUILD] car_name, model:', car_name, model);
+      console.log('💾 [BUILD] raw req.body.mods:', mods);
+      console.log('💾 [BUILD] raw req.files.modImages:', req.files.modImages);
+      
+      // parse JSON
+      let parsedModsArray;
       try {
-        parsedMods       = JSON.parse(mods);
-        parsedCustomMods = JSON.parse(customMods);
-      } catch (parseErr) {
-        return res
-          .status(400)
-          .json({ success: false, message: 'Failed to parse mods data as JSON.' });
+        parsedModsArray = JSON.parse(mods);
+      } catch (e) {
+        console.error('❌ Failed to JSON.parse(mods):', e);
+        return res.status(400).json({ success:false, message:'Bad mods JSON' });
+      }
+      console.log('💾 [BUILD] parsedModsArray:', parsedModsArray);
+
+      // Describe the files array
+      const modFiles = req.files.modImages || [];
+      console.log(`💾 [BUILD] modFiles.length = ${modFiles.length}`);
+
+       // validate ownership
+      if (!['current','previous'].includes(ownership)) {
+        return res.status(400).json({ success:false, message:'Invalid ownership' });
       }
 
-      // Build file paths for up to 2 cover images
-      const coverFiles = (req.files.coverImages || [])
-      .map(f => `/uploads/${f.filename}`);
-
-      const coverImage1 = coverFiles[0] || null;
-      const coverImage2 = coverFiles[1] || null;
-
-      // Insert the main build record
+      // Insert builds row (omitting code for brevity) …
       const [buildResult] = await pool.execute(
         `INSERT INTO builds
-           (user_id, car_name, model, description, body_style, cover_image, cover_image2)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [userId, car_name, model, description, bodyStyle, coverImage1, coverImage2]
+           (user_id, ownership_status, car_name, model, description, body_style, cover_image, cover_image2)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [ userId, ownership, car_name, model, description, bodyStyle, null, null ]
       );
       const buildId = buildResult.insertId;
+      console.log('💾 [BUILD] buildId =', buildId);
 
-      // Insert build_mods entries
-      const modInserts = [];
-      for (const category in parsedMods) {
-        if (!Array.isArray(parsedMods[category])) continue;
-        for (const mod of parsedMods[category]) {
-          modInserts.push(
-            pool.execute(
-              `INSERT INTO build_mods
-                 (build_id, category, mod_name, image_url, mod_note)
-               VALUES (?, ?, ?, ?, ?)`,
-              [
-                buildId,
-                category,
-                mod.mod_name,
-                mod.image_url || null,
-                mod.mod_note  || null
-              ]
-            )
-          );
-        }
+      // Now loop your flat mods array
+      for (const [i, mod] of parsedModsArray.entries()) {
+        console.log(`🔨 [INSERT MOD #${i}]`, mod);
+        const fileObj  = modFiles[i];
+        const imageUrl = fileObj ? `/uploads/${fileObj.filename}` : null;
+
+        await pool.execute(
+          `INSERT INTO build_mods
+             (build_id, category, sub_category, mod_name, image_url, mod_note)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            buildId,
+            mod.main,            // category
+            mod.sub  || null,    // sub_category
+            mod.name,            // mod_name
+            imageUrl,            // image_url
+            mod.details || null  // mod_note
+          ]
+        );
       }
 
-      // Insert any custom mods
-      if (Array.isArray(parsedCustomMods)) {
-        for (const custom of parsedCustomMods) {
-          modInserts.push(
-            pool.execute(
-              `INSERT INTO build_mods
-                 (build_id, category, mod_name, image_url, mod_note)
-               VALUES (?, ?, ?, ?, ?)`,
-              [
-                buildId,
-                custom.category || 'custom',
-                custom.mod_name,
-                custom.image_url || null,
-                custom.mod_note  || null
-              ]
-            )
-          );
-        }
-      }
-
-      await Promise.all(modInserts);
-
-      return res
-        .status(201)
-        .json({ success: true, buildId });
+      return res.status(201).json({ success:true, buildId });
 
     } catch (err) {
-      console.error('Error creating build:', err);
-      return res
-        .status(500)
-        .json({ success: false, message: 'Server error during build creation.' });
+      console.error('🔥 [BUILD ERROR]:', err);
+      return res.status(500).json({ success:false, message:'Server error' });
     }
   }
 );
+
 
 
 /** NEEDS TESTING & IMPLEMENTING 

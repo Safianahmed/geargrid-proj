@@ -255,19 +255,25 @@ const CarBuild = () => {
       </section>
 
       <section className="gallery-section">
-        <h2 className="section-title">Gallery</h2>
-        <div className="gallery-grid">
-          {gallery.slice(0, 10).map((src, idx) => (
-            <img
-              key={idx}
-              src={src}
-              alt={`Gallery ${idx + 1}`}
-              className="gallery-image"
-            />
-          ))}
-          {gallery.length === 0 && <p>No gallery images uploaded.</p>}
-        </div>
-      </section>
+  <h2 className="section-title">Gallery</h2>
+  {gallery.length === 0 ? (
+    <p>No gallery images uploaded.</p>
+  ) : (
+    <div className="gallery-grid">
+      {gallery.slice(0, 10).map((rawUrl, idx) => {
+        const src = resolveImageUrl(rawUrl);
+        return (
+          <img
+            key={idx}
+            src={src}
+            alt={`Gallery ${idx + 1}`}
+            className="gallery-image"
+          />
+        );
+      })}
+    </div>
+  )}
+</section>
 
       <button className="username-button" onClick={() => navigate('/profile')}>
         Back to Profile

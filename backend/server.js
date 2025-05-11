@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -9,6 +10,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const app = express();
+
+//-----------------------FOR UPLOADS FOLDER-----------------------//
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 app.use(cors({
@@ -201,8 +205,8 @@ app.post('/api/signup', async (req, res) => {
     
     //insert into database
     const [result] = await pool.execute(
-      'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-      [req.body.username, req.body.email, hashedPassword]
+      'INSERT INTO users (username, email, password_hash, display_name) VALUES (?, ?, ?, ?)',
+      [req.body.username, req.body.email, hashedPassword, req.body.username]
     );
 
     console.log('User created successfully:', result);
@@ -256,7 +260,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, displayName: user.display_name },
       process.env.JWT_SECRET,
       { expiresIn: '1h' } //expiration time
     );
@@ -265,10 +269,10 @@ app.post('/api/login', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600000, // 1 hour 
-      sameSite: 'Strict', 
+      sameSite: 'Lax', //'Strict', 
     });
 
-    res.json({ success: true, username: user.username, userId: user.id });
+    res.json({ success: true, username: user.username, userId: user.id, displayName: user.display_name });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });
@@ -290,6 +294,4 @@ app.get('/test-db', async (req, res) => {
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 //-----------------------CAR BUILD ROUTES-----------------------//
-const createCarBuildRoutes = require('./routes/carBuilds');
-// Registering the custom car builds routes at `/api/builds`
-app.use('/api/builds', createCarBuildRoutes(pool));
+app.use('/api/builds', require('./routes/carBuilds')(pool));

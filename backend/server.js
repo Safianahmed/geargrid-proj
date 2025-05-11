@@ -48,15 +48,15 @@ pool.getConnection()
 });
 
 const authenticateToken = (req, res, next) => {
-    const token = req.cookies.token;
-  
-    if (!token) return res.status(401).json({ success: false, message: 'Token required' });
-  
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ success: false, message: 'Invalid or expired token' });
-      req.user = user;
-      next();
-    });
+  const token = req.cookies.token;
+
+  if (!token) return res.status(401).json({ success: false, message: 'Token required' });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+    req.user = user;
+    next();
+  });
 };
 
 app.get('/api/events', authenticateToken, async (req, res) => {
@@ -95,6 +95,101 @@ app.get('/api/businesses/:name', async (req, res) => {
   }
 });
 
+app.get('/api/businesses/:businessId/reviews', async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const [reviews] = await pool.execute(
+      `SELECT br.*, u.username 
+      FROM business_reviews br 
+      JOIN users u ON br.user_id = u.id 
+      WHERE br.business_id = ? 
+      ORDER BY br.create_time DESC`,
+      [businessId]
+    );
+    res.json({ success: true, reviews });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch reviews' });
+  }
+});
+
+app.post('/api/businesses/:businessId/reviews', async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId || !rating) {
+      return res.status(400).json({ success: false, message: 'User ID and rating are required.' });
+    }
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5.' });
+    }
+
+    const [existingReviews] = await pool.execute(
+      'SELECT id FROM business_reviews WHERE business_id = ? AND user_id = ?',
+      [businessId, userId]
+    );
+
+    if (existingReviews.length > 0) {
+      return res.status(409).json({ success: false, message: 'You have already reviewed this business.' });
+    }
+
+    const [result] = await pool.execute(
+      'INSERT INTO business_reviews (business_id, user_id, rating, comment) VALUES (?, ?, ?, ?)',
+      [businessId, userId, rating, comment || null]
+    );
+    const [newReview] = await pool.execute(
+        `SELECT br.*, u.username 
+         FROM business_reviews br
+         JOIN users u ON br.user_id = u.id 
+         WHERE br.id = ?`, 
+        [result.insertId]
+    );
+    res.status(201).json({ success: true, message: 'Review submitted successfully.', review: newReview[0] });
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({ success: false, message: 'Failed to submit review.' });
+  }
+});
+
+app.put('/api/reviews/:reviewId', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId || !rating) {
+      return res.status(400).json({ success: false, message: 'User ID and rating are required for update.' });
+    }
+    if (rating < 1 || rating > 5) {
+        return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5.' });
+    }
+
+    const [reviews] = await pool.execute('SELECT user_id FROM business_reviews WHERE id = ?', [reviewId]);
+    if (reviews.length === 0) {
+      return res.status(404).json({ success: false, message: 'Review not found.' });
+    }
+    if (reviews[0].user_id !== userId) {
+      return res.status(403).json({ success: false, message: 'You are not authorized to edit this review.' });
+    }
+
+    await pool.execute(
+      'UPDATE business_reviews SET rating = ?, comment = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [rating, comment || null, reviewId]
+    );
+    const [updatedReview] = await pool.execute(
+        `SELECT br.*, u.username 
+         FROM business_reviews br
+         JOIN users u ON br.user_id = u.id 
+         WHERE br.id = ?`, 
+        [reviewId]
+    );
+    res.json({ success: true, message: 'Review updated successfully.', review: updatedReview[0] });
+  } catch (error) {
+    console.error('Error updating review:', error);
+    res.status(500).json({ success: false, message: 'Failed to update review.' });
+  }
+});
+
 //endpoint for signup
 app.post('/api/signup', async (req, res) => {
   try {
@@ -110,8 +205,8 @@ app.post('/api/signup', async (req, res) => {
     
     //insert into database
     const [result] = await pool.execute(
-      'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-      [req.body.username, req.body.email, hashedPassword]
+      'INSERT INTO users (username, email, password_hash, display_name) VALUES (?, ?, ?, ?)',
+      [req.body.username, req.body.email, hashedPassword, req.body.username]
     );
 
     console.log('User created successfully:', result);
@@ -165,7 +260,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, displayName: user.display_name },
       process.env.JWT_SECRET,
       { expiresIn: '1h' } //expiration time
     );
@@ -177,7 +272,7 @@ app.post('/api/login', async (req, res) => {
       sameSite: 'Lax', //'Strict', 
     });
 
-    res.json({ success: true, username: user.username, userId: user.id });
+    res.json({ success: true, username: user.username, userId: user.id, displayName: user.display_name });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });

@@ -1,41 +1,41 @@
 /* Background Image Styling */
 .home-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background: url('../images/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.jpg') no-repeat center center/cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url('../images/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.jpg') no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
 }
 
 /* Dark Overlay for a Cooler Effect */
 .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6); 
-    z-index: 0; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); 
+  z-index: 0; 
 }
 
 /* Content Styling */
 .content {
-    position: relative;
-    z-index: 2;
-    color: #fff;
-    font-family: "Oswald", sans-serif; 
-    text-transform: uppercase;
-    letter-spacing: 2px;
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  font-family: "Oswald", sans-serif; 
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* Fade-in animation */
 .fade-in {
-    opacity: 0;
-    animation: fadeIn ease-in-out 1.5s forwards;
+  opacity: 0;
+  animation: fadeIn ease-in-out 1.5s forwards;
 }
 
 /* Delayed fade-in for sequential effect */
@@ -46,31 +46,30 @@
 
 /* Keyframes for Fade-in Effect */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
 /* Smoke-like animation effect */
 @keyframes smokeEffect {
-    0% { opacity: 0.2; transform: scale(1.05); }
-    50% { opacity: 0.4; transform: scale(1.1); }
-    100% { opacity: 0.1; transform: scale(1.15); }
+  0% { opacity: 0.2; transform: scale(1.05); }
+  50% { opacity: 0.4; transform: scale(1.1); }
+  100% { opacity: 0.1; transform: scale(1.15); }
 }
 
 /* Adding smoke animation to the background */
 .home-container::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: url('../images/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.jpg') no-repeat center center/cover;
-    opacity: 0.2;
-    animation: smokeEffect 5s infinite alternate ease-in-out;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url('../images/vecteezy_classic-modified-car-with-dark-smokie-background_26992802.jpg') no-repeat center center/cover;
+  opacity: 0.2;
+  animation: smokeEffect 5s infinite alternate ease-in-out;
 }
-

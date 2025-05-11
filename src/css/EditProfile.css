@@ -1,126 +1,178 @@
 .edit-profile-container {
-  max-width: 750px; /* wider container */
-  margin: 80px auto;
-  padding: 40px;
-  background: #fff;
-  border-radius: 12px;
-  font-family: 'Segoe UI', sans-serif;
-  color: black;
-}
-
-/* Top Card Section */
-.profile-top-card {
-  background: #f9f9f9;
-  padding: 30px;
-  border-radius: 12px;
-  width: 100%;
-  margin-bottom: 40px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  color: #000000;
+  width: 100vw;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 80px;
+  overflow-y: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.profile-preview {
+.profile-top-card {
   display: flex;
-  align-items: center;
-  gap: 30px;
+  justify-content: center;
   width: 100%;
-  max-width: 600px;
+  padding: 40px 20px;
+}
+
+.profile-preview.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-wrapper {
+  margin-bottom: 8px;
 }
 
 .avatar-preview {
-  width: 100px;
-  height: 100px;
-  background: black;
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   text-align: center;
-  line-height: 100px;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 50%;
 }
 
-.user-info {
-  flex-grow: 1;
+.avatar-placeholder-text {
+  color: #777;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.avatar-controls {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 8px;
+  align-items: center;
 }
 
-.user-username {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.user-name {
-  font-size: 18px;
-  color: #555;
-  margin-top: 4px;
+.change-photo-btn,
+.remove-photo-btn,
+.save-btn,
+.cancel-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .change-photo-btn {
-  background: none;
-  border: 1px solid #ccc;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s;
+  background-color: #f5f5f5;
+  color: #000;
 }
 
 .change-photo-btn:hover {
-  background-color: #eee;
+  background-color: #e0e0e0;
 }
 
-/* Form Section */
+.remove-photo-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.remove-photo-btn:hover {
+  background-color: #d32f2f;
+}
+
+.back-btn {
+  background-color: transparent;
+  border: none;
+  color: #1a3e94;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.back-btn:hover {
+  color: #0e245c;
+  text-decoration: underline;
+}
+
 .edit-profile-form {
+  width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+  margin-top: 30px;
+  padding: 0 20px;
 }
 
 .form-group label {
   font-weight: 600;
-  font-size: 16px;
 }
 
-.edit-profile-form input,
-.edit-profile-form textarea {
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+.form-group input,
+.form-group textarea {
   width: 100%;
-  resize: none;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
 .save-btn {
-  padding: 16px;
-  background-color: #0095f6;
+  background-color: #1a3e94;
   color: white;
   border: none;
-  font-weight: bold;
-  font-size: 18px;
-  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
 }
 
 .save-btn:hover {
-  background-color: #0077cc;
+  background-color: #15357a;
 }
 
-.success-message {
-  margin-top: 20px;
-  color: green;
-  font-weight: bold;
-  text-align: center;
+/* === Cropper Modal === */
+.cropper-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cropper-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  display: flex;
+  gap: 2rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+.cropper-box {
+  width: 300px;
+  height: 300px;
+  position: relative;
+}
+
+.cropper-controls-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
 }

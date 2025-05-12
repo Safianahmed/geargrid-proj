@@ -1,35 +1,26 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "./cropImage";
 import "../css/Profile.css";
-import { API_BASE, resolveImageUrl } from '../utils/imageUrl';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 const Profile = () => {
-  const [currentBuilds, setCurrentBuilds]   = useState([]);
+  const [currentBuilds, setCurrentBuilds] = useState([]);
   const [previousBuilds, setPreviousBuilds] = useState([]);
   const [activeTab, setActiveTab] = useState("current");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
-  const fileInputRef = useRef(null);
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [viewingFollowRequests, setViewingFollowRequests] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const navigate = useNavigate();
-
   const userId = localStorage.getItem("userId") || 1;
   const storedUsername = localStorage.getItem("username") || "Username";
   const storedName = localStorage.getItem("name") || "Name";
   const storedBio = localStorage.getItem("bio") || "Short bio or description about the user.";
-
-  useEffect(() => {
-    const storedAvatar = localStorage.getItem("avatar");
-    if (storedAvatar) {
-      setAvatarUrl(storedAvatar);
-    }
-  }, []);
+  const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatar") || "");
 
   useEffect(() => {
     const fetchBuilds = async () => {
@@ -49,47 +40,19 @@ const Profile = () => {
       }
     };
     fetchBuilds();
-  }, []);
+  }, [userId]);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith("image/")) {
-      setShowAvatarMenu(false); // closes modal immediately
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert("Please upload a valid image file.");
-    }
-  };
-
-  const onCropComplete = useCallback((_, croppedPixels) => {
-    setCroppedAreaPixels(croppedPixels);
-  }, []);
-
-  const handleCropSave = async () => {
-    try {
-      const croppedImageUrl = await getCroppedImg(imageSrc, croppedAreaPixels);
-      setAvatarUrl(croppedImageUrl);
-      localStorage.setItem("avatar", croppedImageUrl);
-      setImageSrc(null);
-      setShowAvatarMenu(false);
-    } catch (err) {
-      console.error("Failed to crop image:", err);
-    }
-  };
-
-  const removeAvatar = () => {
-    setAvatarUrl("");
-    localStorage.removeItem("avatar");
-    setShowAvatarMenu(false);
-  };
-
-  const handleAvatarClick = () => {
-    setShowAvatarMenu(true);
-  };
+  useEffect(() => {
+    const allItems = [
+      ...currentBuilds.map(b => b.car_name),
+      ...previousBuilds.map(b => b.car_name),
+      storedUsername
+    ];
+    const filtered = allItems.filter(item =>
+      item.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSearchResults(filtered);
+  }, [searchQuery, currentBuilds, previousBuilds, storedUsername]);
 
   const renderImages = list =>
     list.map(b => (
@@ -113,13 +76,11 @@ const Profile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-avatar-wrapper">
-            <div className="profile-avatar" onClick={handleAvatarClick}>
+            <div className="profile-avatar">
               {avatarUrl ? (
                 <img src={avatarUrl} alt="avatar" />
               ) : (
-                <div className="avatar-placeholder-text">
-                  Upload profile picture here
-                </div>
+                <div className="avatar-placeholder-text">Upload profile picture here</div>
               )}
             </div>
           </div>
@@ -137,66 +98,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {imageSrc && (
-          <div className="cropper-overlay">
-            <div className="cropper-container">
-              <div className="cropper-box">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  cropShape="round"
-                  showGrid={false}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-              <div className="cropper-controls-side">
-                <label>Zoom</label>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  value={zoom}
-                  onChange={(e) => setZoom(e.target.value)}
-                  className="zoom-slider"
-                />
-                <button className="save-btn" onClick={handleCropSave}>Save</button>
-                <button className="cancel-btn" onClick={() => setImageSrc(null)}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showAvatarMenu && (
-          <div className="avatar-menu-overlay" onClick={() => setShowAvatarMenu(false)}>
-            <div className="avatar-menu-box" onClick={(e) => e.stopPropagation()}>
-              <h3>Change Profile Photo</h3>
-              <button className="avatar-menu-option upload" onClick={() => fileInputRef.current.click()}>
-                Upload Photo
-              </button>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-              />
-              {avatarUrl && (
-                <button className="avatar-menu-option remove" onClick={removeAvatar}>
-                  Remove Current Photo
-                </button>
-              )}
-              <button className="avatar-menu-option cancel" onClick={() => setShowAvatarMenu(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
         <hr className="profile-divider" />
 
         <div className="profile-tabs">
@@ -204,26 +105,94 @@ const Profile = () => {
           <button className={`tab-button ${activeTab === "previous" ? "active" : ""}`} onClick={() => setActiveTab("previous")}>PREVIOUSLY OWNED</button>
         </div>
 
-      {/* Builds section */}
-      <div className="profile-builds-container">
-        <div className="profile-builds">
-          {activeTab === "current"
-            ? (currentBuilds.length
-                ? renderImages(currentBuilds)
-                : <p>No current builds.</p>)
-            : (previousBuilds.length
-                ? renderImages(previousBuilds)
-                : <p>No previous builds.</p>)
-          }
+        <div className="profile-builds-container">
+          <div className="profile-builds">
+            {activeTab === "current"
+              ? (currentBuilds.length ? renderImages(currentBuilds) : <p>No current builds.</p>)
+              : (previousBuilds.length ? renderImages(previousBuilds) : <p>No previous builds.</p>)}
+          </div>
         </div>
       </div>
-      </div>
+
+      {showSearchBar && (
+        <div className="search-panel">
+          <div className="notification-header back">
+            <span onClick={() => setShowSearchBar(false)}>&larr;</span>
+            <h2>Search</h2>
+          </div>
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              className="search-bar-input"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+            />
+            {searchQuery && (
+              <span className="clear-btn" onClick={() => setSearchQuery("")}>×</span>
+            )}
+          </div>
+          <h4 className="search-recent-title">Recent</h4>
+          <div className="search-results-panel">
+            {searchResults.length ? (
+              searchResults.map((result, idx) => (
+                <div key={idx} className="search-result-item">{result}</div>
+              ))
+            ) : (
+              <p className="no-recent">No recent searches.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showNotifications && (
+        <div className="notification-panel">
+          {!viewingFollowRequests ? (
+            <>
+              <div className="notification-header back">
+                <span onClick={() => setShowNotifications(false)}>&larr;</span>
+                <h2>Notifications</h2>
+              </div>
+              <div className="notification-requests" onClick={() => setViewingFollowRequests(true)}>
+                <div className="notification-avatar" />
+                <div className="notification-text">
+                  <strong>Follow requests</strong><br />
+                  No new requests
+                </div>
+              </div>
+              <div className="notification-section">
+                <h4>This Week</h4>
+                <div className="no-requests-text">No new activity this week.</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="notification-header back">
+                <span onClick={() => setViewingFollowRequests(false)}>&larr;</span>
+                <h2>Follow requests</h2>
+              </div>
+              <div className="no-requests-text">No follow requests.</div>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="bottom-nav">
-        <div className="nav-icon" onClick={() => navigate("/")}>🏠</div>
-        <div className="nav-icon">🔍</div>
-        <div className="nav-icon" onClick={() => navigate("/add-build")}>➕</div>
-        <div className="nav-icon">❤️</div>
+        <div className="nav-item" onClick={() => {
+          setShowSearchBar(true);
+          setShowNotifications(false);
+        }}>
+          🔍
+          <span className="nav-label">Search</span>
+        </div>
+        <div className="nav-item" onClick={() => navigate("/add-build")}>➕<span className="nav-label">Create</span></div>
+        <div className="nav-item" onClick={() => {
+          setShowNotifications(true);
+          setShowSearchBar(false);
+        }}>
+          ❤️<span className="nav-label">Notifications</span>
+        </div>
       </div>
     </>
   );

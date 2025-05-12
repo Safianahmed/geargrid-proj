@@ -356,4 +356,347 @@
   .avatar-menu-option:hover {
     background-color: #f5f5f5;
   }
+  .search-overlay {
+    position: fixed;
+    bottom: 60px;
+    width: 100%;
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #ccc;
+    z-index: 1001;
+  }
   
+  .search-input {
+    width: 90%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .search-results {
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0 20px;
+  }
+  
+  .search-results li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 22px;
+    cursor: pointer;
+    color: #000;
+    transition: transform 0.2s ease;
+  }
+  
+  .nav-item:hover {
+    transform: scale(1.1);
+    color: #ff3040;
+  }
+  
+  .nav-label {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 22px;
+    cursor: pointer;
+    color: #000;
+    transition: transform 0.2s ease;
+  }
+  
+  .nav-item:hover {
+    transform: scale(1.1);
+    color: #ff3040;
+  }
+  
+  .nav-label {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  .search-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 40px 20px;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e6e6e6;
+}
+
+  .search-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+  
+  .search-input-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar-input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background-color: #f2f2f2;
+  }
+  
+  .clear-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+  }
+  
+  .search-recent-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .search-results-panel {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+  
+  .search-result-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .search-result-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .no-recent {
+    color: #777;
+    font-size: 14px;
+  }
+  .notification-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 360px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid #eee;
+  }
+  
+  .notification-header {
+    margin-bottom: 20px;
+  }
+  
+  .notification-header.back {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notification-header.back span {
+    cursor: pointer;
+    font-size: 24px;
+  }
+  
+  .notification-section {
+    margin-bottom: 30px;
+  }
+  
+  .notification-requests {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notification-dot {
+    font-size: 24px;
+    color: #0095f6;
+    margin-left: auto;
+    padding-right: 10px;
+  }
+  
+  .notification-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .notification-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .notification-text {
+    flex: 1;
+    font-size: 14px;
+    color: #000;
+  }
+  
+  .follow-request-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .request-text {
+    flex-grow: 1;
+    font-size: 14px;
+  }
+  
+  .notification-actions button,
+  .following-btn,
+  .confirm-btn,
+  .delete-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .confirm-btn {
+    background-color: #0095f6;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .delete-btn {
+    background-color: #efefef;
+    color: #333;
+  }
+  
+  .following-btn {
+    background-color: #efefef;
+    color: #333;
+  }
+  /* ✅ Add at the bottom of Profile.css */
+
+.notification-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px; /* Match search panel */
+  height: 100vh;
+  background-color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 40px 20px;
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-right: 1px solid #eee;
+}
+
+.notification-header {
+  margin-bottom: 20px;
+}
+
+.notification-header.back {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-header.back span {
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.notification-section {
+  margin-bottom: 30px;
+}
+
+.notification-requests {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #eee;
+}
+
+.notification-text {
+  flex: 1;
+  font-size: 14px;
+  color: #000;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.following-btn {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  background-color: #efefef;
+  color: #333;
+}
+
+.no-requests-text {
+  font-size: 16px;
+  color: #777;
+  padding: 20px 0;
+  text-align: center;
+}

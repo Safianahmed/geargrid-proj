@@ -42,7 +42,7 @@ const Contact = () => {
     const submissionData = { ...formData, ticketNumber: newTicketNumber };
 
     try {
-      const response = await fetch("https://formspree.io/f/mwplpnzy", { 
+      const response = await fetch("https://formspree.io/f/mpwdypop", { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",

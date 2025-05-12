@@ -34,8 +34,7 @@ const AddBusiness = () => {
         };
 
         try {
-        //using formspree (not working atm, gmail doesnt work. either make a new account (might get terminated again) or dont use gmail), code taken from contact.js, might not work since i havent tested
-        const response = await fetch("https://formspree.io/f/mwplpnzy", {
+        const response = await fetch("https://formspree.io/f/mnndgpoo", {
             method: "POST",
             headers: {
             "Content-Type": "application/json",

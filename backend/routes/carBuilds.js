@@ -442,37 +442,58 @@ if (newGalleryFiles.length) {
 
 
 
-/** NEEDS TESTING & IMPLEMENTING 
+/**
  * @route   DELETE /api/builds/:id
- * @desc    Delete a car build by its ID
- * @auth    Only the logged-in user who owns the build can delete it
+ * @desc    Delete a build and its related gallery & mods
+ * @access  Protected (owner only)
  */
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
-  const userId = req.userId; 
+  const buildId = +req.params.id;
+  const userId  = req.userId;
+  const conn    = await pool.getConnection();
 
   try {
-    // Verify that the build exists and belongs to the current user
-    const [build] = await pool.execute(
-      'SELECT * FROM builds WHERE id = ? AND user_id = ?', 
-      [req.params.id, userId]
-    );
+    await conn.beginTransaction();
 
-    // If not found or not owned by the user, deny deletion
-    if (build.length === 0) {
-      return res.status(403).json({ success: false, message: 'Unauthorized to delete this build' });
+    // 1) Verify ownership
+    const [rows] = await conn.query(
+      `SELECT user_id FROM builds WHERE id = ? FOR UPDATE`,
+      [buildId]
+    );
+    if (!rows.length || rows[0].user_id !== userId) {
+      throw new Error('NOT_OWNER');
     }
 
-    // Proceed to delete the build
-    const [result] = await pool.execute(
-      'DELETE FROM builds WHERE id = ?', 
-      [req.params.id]
+    // 2) Delete related mods
+    await conn.query(
+      `DELETE FROM build_mods WHERE build_id = ?`,
+      [buildId]
     );
 
-    res.json({ success: true, message: 'Build deleted successfully' });
+    // 3) Delete gallery entries
+    await conn.query(
+      `DELETE FROM build_gallery WHERE build_id = ?`,
+      [buildId]
+    );
 
+
+    // 4) Delete the build row last
+    await conn.query(
+      `DELETE FROM builds WHERE id = ?`,
+      [buildId]
+    );
+
+    await conn.commit();
+    conn.release();
+    return res.json({ success: true });
   } catch (err) {
+    await conn.rollback();
+    conn.release();
+    if (err.message === 'NOT_OWNER') {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
     console.error('Error deleting build:', err);
-    res.status(500).json({ success: false, message: 'Failed to delete build' });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

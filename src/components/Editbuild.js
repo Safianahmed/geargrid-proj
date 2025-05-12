@@ -376,6 +376,37 @@ export default function EditBuild() {
         <div className="form-actions">
           <button type="submit" className="save-btn">Save Changes</button>
         </div>
+        <div className="form-actions delete-row">
+        <button
+        type="button"
+        className="delete-btn"
+        onClick={async () => {
+          if (!window.confirm('Are you sure you want to delete this build? This cannot be undone.')) {
+            return;
+          }
+          try {
+            const res = await axios.delete(
+              `${API_BASE}/api/builds/${id}`,
+              { withCredentials: true }
+            );
+            if (res.data.success) {
+              navigate('/profile');
+            } else {
+              alert(`Delete failed: ${res.data.message}`);
+            }
+          } catch (err) {
+            console.error('Delete error:', err.response || err);
+            const status = err.response?.status;
+            const msg    = err.response?.data?.message || err.message;
+            alert(`Delete failed: [${status}] ${msg}`);
+          }
+        }}
+      >
+        Delete Build
+      </button>
+            
+      </div>
+
       </form>
     </div>
   );

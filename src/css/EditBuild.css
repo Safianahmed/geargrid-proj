@@ -1,64 +1,276 @@
-.edit-build-container {
-    max-width: 700px;
-    margin: 50px auto;
-    padding: 2rem;
-    background-color: #1f1f1f;
-    color: #f0f0f0;
-    border-radius: 1rem;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .edit-build-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
-  
-  .edit-build-form label {
-    display: flex;
-    flex-direction: column;
-    font-size: 1rem;
-    font-weight: 500;
-  }
-  
-  .edit-build-form input,
-  .edit-build-form textarea {
-    margin-top: 0.5rem;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: none;
-    background-color: #2b2b2b;
-    color: #f0f0f0;
-    resize: vertical;
-  }
-  
-  .edit-build-form button {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .edit-build-form button[type="submit"] {
-    background-color: #007aff;
-    color: white;
-  }
-  
-  .edit-build-form button[type="submit"]:hover {
-    background-color: #005fd1;
-  }
-  
-  .edit-build-form button[type="button"] {
-    background-color: transparent;
-    color: #ccc;
-    border: 1px solid #555;
-  }
-  
-  .edit-build-form button[type="button"]:hover {
-    background-color: #333;
-  }
-  
+.edit-build-page {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: sans-serif;
+}
+.edit-build-page h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.model-row {
+  display: flex;
+  gap: 0.5rem;
+}
+textarea, select, input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.cover-slider img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.remove-btn {
+  margin-top: 0.5rem;
+  background: crimson;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.preview-list {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.preview-item img {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.preview-item button {
+  position: relative;
+  top: -15px;
+  left: 60px;
+  background: crimson;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Modifications */
+.category-block {
+  margin-bottom: 2rem;
+}
+.category-title {
+  font-size: 1.5rem;
+  border-left: 4px solid #5e83aa;
+  padding-left: 0.5rem;
+  margin-bottom: 1rem;
+}
+.sub-category-block {
+  background: #fafafa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.sub-title {
+  font-size: 1.25rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+.mods-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.mod-checkbox {
+  display: block;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+.mod-details-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.mod-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+.save-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.save-btn {
+  background: #28a745;
+  color: white;
+}
+
+/* Cover thumbnails with X overlay */
+.form-row .cover-slider .slick-slide {
+  position: relative;
+}
+.form-row .cover-slider img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.form-row .cover-slider .remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+/* Modifications: each selected mod becomes a flex‐card */
+.sub-category-block .mods-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 1rem;
+}
+.sub-category-block .mod-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.sub-category-block .mod-checkbox input {
+  margin-right: 0.5rem;
+}
+.sub-category-block .mod-details-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.sub-category-block .mod-details-row input[type="text"] {
+  flex: 1;
+}
+.sub-category-block .mod-details-row input[type="file"] {
+  flex: 1;
+}
+.sub-category-block .mod-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.edit-build-page { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+.edit-build-page h1 { text-align:center; margin-bottom:1rem; }
+label { font-weight:500; display:block; margin-top:1rem; }
+textarea { width:100%; min-height:80px; }
+.preview-list { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem; }
+.preview-item.small { position:relative; width:80px; height:60px; }
+.preview-item.small img { width:100%; height:100%; object-fit:cover; border-radius:4px; }
+.preview-item.small button {
+  position:absolute; top:-6px; right:-6px;
+  background:crimson; color:white; border:none; border-radius:50%;
+  width:20px; height:20px; cursor:pointer;
+}
+
+/* Accordion styling */
+details { background:#fafafa; padding:1rem; margin-top:1rem; border-radius:6px; }
+summary { font-size:1.25rem; font-weight:600; cursor:pointer; outline:none; }
+
+/* Vertical mod cards */
+.mod-card-vertical { margin-top:0.75rem; padding:0.75rem; border:1px solid #ddd;
+                    border-radius:6px; }
+.mod-extras-vertical { margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem; }
+.mod-extras-vertical input[type="text"] { flex:1; padding:6px; }
+.mod-extras-vertical input[type="file"] { flex:1; }
+.mod-thumb { width:50px; height:50px; object-fit:cover; border-radius:4px; }
+
+/* Add custom buttons */
+.add-custom-mod, .add-subcat {
+  display:flex; gap:0.5rem; margin-top:0.75rem;
+}
+.add-custom-mod input, .add-subcat input { flex:1; padding:6px; }
+.add-custom-mod button, .add-subcat button {
+  background:#5e83aa; color:white; border:none; padding:6px 12px; border-radius:4px;
+  cursor:pointer;
+}
+
+/* Form actions */
+/* .form-actions { margin-top:2rem; display:flex; gap:1rem; justify-content:flex-end; }
+.save-btn, .cancel-btn {
+  padding:10px 20px; border:none; border-radius:4px; cursor:pointer;
+}
+.save-btn { background:#28a745; color:white; }
+.cancel-btn { background:#ddd; }
+.cancel-btn:hover { background:#bbb; } */
+
+
+/* ===== Top-of-page Cancel button ===== */
+.cancel-row {
+  margin: 0.5rem 0 1.5rem;
+  text-align: center; /* or left/right */
+}
+
+.top-cancel {
+  background: none;
+  border: 2px solid #000;
+  color: #000;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.2s, color 0.2s;
+  /* ensure it's not full width */
+  width: auto;
+  display: inline-block;
+  box-shadow: none;
+}
+
+.top-cancel:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* hide any old bottom-of-form Cancel if still present */
+.form-actions .cancel-btn {
+  display: none !important;
+}
+
+/* FORCE the top-cancel button above any overlays */
+.cancel-row,
+.cancel-row .top-cancel {
+  position: relative !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}

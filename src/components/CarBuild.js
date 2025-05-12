@@ -136,11 +136,8 @@ const CarBuild = () => {
   const [build, setBuild]   = useState(null);
   const [mods, setMods]     = useState([]);    // flat array
   const [gallery, setGallery] = useState([]);
-
-  // TODO: pull this from your auth context
-  const loggedInUserId = 1;
+  const [isOwner, setIsOwner] = useState(false);
   
-
   // helper to ensure mods is always an array
   const normalizeMods = (m) => {
     console.log('groupedMods:', groupedMods);
@@ -160,6 +157,7 @@ const CarBuild = () => {
         setBuild(data.build);
         setMods(normalizeMods(data.mods || []));
         setGallery(data.build.galleryImages || []);
+        setIsOwner(data,isOwner);
       } catch (err) {
         console.error('Failed to load build:', err);
       }
@@ -187,7 +185,7 @@ const CarBuild = () => {
       <header className="car-header">
         <h1 className="car-title">{build.car_name}</h1>
         {build.body_style && <p className="body-style">{build.body_style}</p>}
-        {loggedInUserId === build.user_id && (
+        {isOwner && (
           <button className="edit-button" onClick={() => navigate(`/edit-build/${build.id}`)}>
             Edit Build
           </button>

@@ -110,7 +110,9 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
         .json({ success: false, message: 'Build not found or access denied' });
     }
 
-    // 2) Fetch gallery images
+    const isOwner = row.user_id === userId;
+
+    // Fetch gallery images
     const [galleryRows] = await pool.execute(
       `SELECT image_url
          FROM build_gallery
@@ -144,7 +146,6 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
       bodyStyle:    row.bodyStyle,
       cover_image:  row.cover_image,
       cover_image2: row.cover_image2,
-      // convenience array if you ever need it
       coverImages:  [row.cover_image, row.cover_image2].filter(Boolean),
       galleryImages
     };
@@ -152,7 +153,8 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
     return res.json({
       success: true,
       build,
-      mods: modRows
+      mods: modRows,
+      isOwner
     });
   } catch (err) {
     console.error('Error in GET /api/builds/:id:', err);
@@ -289,41 +291,156 @@ router.post(
 
 
 
-/** NEEDS TESTING & IMPLEMENTING 
+/**
  * @route   PUT /api/builds/:id
- * @desc    Update an existing car build
- * @body    { car_name, model, description, cover_image }
- * @auth    Only the logged-in user who owns the build can update it
+ * @desc    Update an existing car build (fields + covers + gallery + mods)
+ * @access  Protected (owner only)
  */
-router.put('/:id', ensureAuthenticated, async (req, res) => {
-  const userId = req.userId; 
+router.put(
+  '/:id',
+  ensureAuthenticated,
+  upload.fields([
+    { name: 'coverImages',   maxCount: 2   },
+    { name: 'galleryImages', maxCount: 10  },
+    { name: 'modImages',     maxCount: 20  }
+  ]),
+  async (req, res) => {
+    const buildId = +req.params.id;
+    const userId  = req.userId;
 
-  const { car_name, model, description, cover_image } = req.body;
+    // 1) Basic fields
+    const ownershipStatus = req.body.ownership    ?? '';
+    const car_name        = req.body.car_name     ?? '';
+    const model           = req.body.model        ?? '';
+    const bodyStyle       = req.body.bodyStyle    ?? null;
+    const description     = req.body.description  ?? '';
 
-  try {
-    // Confirm the build exists and belongs to the current user
-    const [existing] = await pool.execute(
-      'SELECT * FROM builds WHERE id = ? AND user_id = ?', 
-      [req.params.id, userId]
-    );
-
-    // If no build is found for this user, deny update access
-    if (existing.length === 0) {
-      return res.status(403).json({ success: false, message: 'Unauthorized to update this build' });
+    // 2) JSON → arrays
+    let keepCoversArr = [], keepGalleryArr = [], modsArr = [];
+    try {
+      keepCoversArr  = JSON.parse(req.body.keepCovers  || '[]');
+      keepGalleryArr = JSON.parse(req.body.keepGallery || '[]');
+      modsArr        = JSON.parse(req.body.mods        || '[]');
+    } catch (err) {
+      return res.status(400).json({ success: false, message: 'Invalid JSON payload' });
     }
 
-    // Proceed to update the build with new data
-    await pool.execute(
-      'UPDATE builds SET car_name = ?, model = ?, description = ?, cover_image = ? WHERE id = ?', 
-      [car_name, model, description, cover_image, req.params.id]
-    );
+    // 3) Uploaded files
+    const newCoverFiles   = req.files.coverImages   || [];
+    const newGalleryFiles = req.files.galleryImages || [];
+    const newModFiles     = req.files.modImages     || [];
 
-    res.json({ success: true, message: 'Build updated successfully' });
-  } catch (err) {
-    console.error('Error updating build:', err);
-    res.status(500).json({ success: false, message: 'Failed to update build' });
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      // 4) Ownership check
+      const [ownerRows] = await conn.query(
+        'SELECT user_id FROM builds WHERE id = ? FOR UPDATE',
+        [buildId]
+      );
+      if (!ownerRows.length || ownerRows[0].user_id !== userId) {
+        throw new Error('NOT_OWNER');
+      }
+
+      // 5) Update main builds row (without cover_image columns yet)
+      await conn.query(
+        `UPDATE builds
+           SET ownership_status = ?,
+               car_name         = ?,
+               model            = ?,
+               body_style       = ?,
+               description      = ?
+         WHERE id = ?`,
+        [ownershipStatus, car_name, model, bodyStyle, description, buildId]
+      );
+
+      // 6) Now update cover_image & cover_image2 columns directly
+      //    Combine "kept" URLs with any new uploads, preserving order.
+      const allCovers = [
+        ...keepCoversArr,
+        ...newCoverFiles.map(f => `/uploads/${f.filename}`)
+      ];
+      const cover1 = allCovers[0] || null;
+      const cover2 = allCovers[1] || null;
+      await conn.query(
+        `UPDATE builds
+           SET cover_image  = ?,
+               cover_image2 = ?
+         WHERE id = ?`,
+        [cover1, cover2, buildId]
+      );
+
+// … after updating builds cover_image & cover_image2 …
+
+// 7) Reconcile build_gallery
+await conn.query(
+  `DELETE FROM build_gallery
+     WHERE build_id = ?
+       AND image_url NOT IN (?)`,
+  [
+    buildId,
+    keepGalleryArr.length
+      ? keepGalleryArr
+      : ['__NONE__']
+  ]
+);
+
+// 8) Insert any newly uploaded gallery images
+const newGalleryFiles = req.files.galleryImages || [];
+if (newGalleryFiles.length) {
+  const galleryRows = newGalleryFiles.map(f => [
+    buildId,
+    `/uploads/${f.filename}`
+  ]);
+  await conn.query(
+    `INSERT INTO build_gallery (build_id, image_url) VALUES ?`,
+    [galleryRows]
+  );
+}
+
+      // 9) Reconcile build_mods (same as before)
+      await conn.query(
+        'DELETE FROM build_mods WHERE build_id = ?',
+        [buildId]
+      );
+      let imgIdx = 0;
+      for (const m of modsArr) {
+        const main      = m.main    ?? '';
+        const sub       = m.sub     ?? '';
+        const name      = m.name    ?? '';
+        const details   = m.details ?? '';
+        const file      = newModFiles[imgIdx];
+        const image_url = file ? `/uploads/${file.filename}` : null;
+        imgIdx++;
+
+        await conn.query(
+          `INSERT INTO build_mods
+             (build_id, category, sub_category, mod_name, mod_note, image_url)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [buildId, main, sub, name, details, image_url]
+        );
+      }
+
+      await conn.commit();
+      conn.release();
+      return res.json({ success: true });
+    } catch (err) {
+      await conn.rollback();
+      conn.release();
+      if (err.message === 'NOT_OWNER') {
+        return res.status(403).json({ success: false, message: 'Unauthorized' });
+      }
+      console.error('Error updating build:', err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
   }
-});
+);
+
+
+
+
+
 
 /** NEEDS TESTING & IMPLEMENTING 
  * @route   DELETE /api/builds/:id

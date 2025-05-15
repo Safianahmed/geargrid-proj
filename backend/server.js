@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();
 const bodyParser = require('body-parser');
@@ -272,14 +273,147 @@ app.post('/api/login', async (req, res) => {
       sameSite: 'Lax', //'Strict', 
     });
 
-    res.json({ success: true, username: user.username, userId: user.id, displayName: user.display_name });
+    res.json({ 
+      success: true, 
+      username: user.username, 
+      userId: user.id, 
+      displayName: user.display_name, 
+      avatarUrl: user.avatar_url 
+    });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ success: false, message: 'Login failed' });
   }
 });
 
+app.get('/api/search', async (req, res) => {
+  const { q } = req.query;
+  console.log(`[SEARCH API] Received raw query: "${q}"`);
 
+  if (!q || q.trim() === "") {
+    console.log("[SEARCH API] Query is empty or whitespace, returning empty results.");
+    return res.json({ success: true, users: [], builds: [] });
+  }
+
+  const searchTerm = q.trim();
+  const sqlSearchQuery = `%${searchTerm}%`;
+  console.log(`[SEARCH API] Processed SQL search query: "${sqlSearchQuery}"`);
+
+  try {
+    console.log(`[SEARCH API] Executing user search for: ${sqlSearchQuery}`);
+    const [userResults] = await pool.execute(
+      `SELECT id, username, display_name, avatar_url 
+       FROM users 
+       WHERE username LIKE ? OR display_name LIKE ?`,
+      [sqlSearchQuery, sqlSearchQuery]
+    );
+    console.log("[SEARCH API] Raw user results from DB:", JSON.stringify(userResults, null, 2));
+
+    console.log(`[SEARCH API] Executing build search for: ${sqlSearchQuery}`);
+    const [buildResults] = await pool.execute(
+      `SELECT b.id, b.car_name, b.cover_image, b.user_id, 
+              u.username AS owner_username, u.display_name AS owner_display_name
+       FROM builds b
+       JOIN users u ON b.user_id = u.id
+       WHERE b.car_name LIKE ?`,
+      [sqlSearchQuery]
+    );
+    
+
+    res.json({ success: true, users: userResults, builds: buildResults });
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ success: false, message: 'Search failed due to a server error.' });
+  }
+});
+
+app.put('/api/profile/:userId', authenticateToken, async (req, res) => {
+  const { userId } = req.params;
+  let { name, bio, avatar_url } = req.body;
+
+  if (parseInt(req.user.id) !== parseInt(userId)) {
+    return res.status(403).json({ success: false, message: 'Unauthorized.' });
+  }
+
+  try {
+    let finalAvatarUrl = avatar_url;
+
+    if (avatar_url && avatar_url.startsWith('data:image')) {
+      const matches = avatar_url.match(/^data:(image\/(.+));base64,(.*)$/);
+      if (matches && matches.length === 4) {
+        const imageType = matches[1]; // "image/png"
+        const extension = matches[2]; // "png"
+        const base64Data = matches[3];
+        
+        const filename = `avatar-${userId}-${Date.now()}.${extension}`;
+        const uploadsDir = path.join(__dirname, 'uploads', 'avatars');
+        await fs.mkdir(uploadsDir, { recursive: true });
+        const filePath = path.join(uploadsDir, filename);
+
+        await fs.writeFile(filePath, base64Data, 'base64');
+        finalAvatarUrl = `/uploads/avatars/${filename}`;
+        console.log(`[PROFILE UPDATE] Saved uploaded avatar to: ${finalAvatarUrl}`);
+      } else {
+        console.warn("[PROFILE UPDATE] Invalid base64 data URI format for avatar.");
+        finalAvatarUrl = null;
+      }
+    } else if (avatar_url === "") {
+        finalAvatarUrl = null;
+    }
+
+    let setClauses = [];
+    let params = [];
+
+    if (name !== undefined) {
+      setClauses.push('display_name = ?');
+      params.push(name);
+    }
+    if (bio !== undefined) {
+      setClauses.push('bio = ?');
+      params.push(bio);
+    }
+    setClauses.push('avatar_url = ?');
+    params.push(finalAvatarUrl);
+
+
+    if (setClauses.length === 0) {
+      return res.json({ success: true, message: 'No information provided to update.' });
+    }
+
+    params.push(userId);
+    const sql = `UPDATE users SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+    
+    await pool.execute(sql, params);
+    
+    const [updatedUsers] = await pool.execute(
+      'SELECT id, username, display_name, email, bio, avatar_url FROM users WHERE id = ?',
+      [userId]
+    );
+
+    res.json({ success: true, message: 'Profile updated successfully.', user: updatedUsers[0] });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ success: false, message: 'Failed to update profile.' });
+  }
+});
+
+app.get('/api/user-profile/:userIdToView', async (req, res) => {
+  try {
+    const { userIdToView } = req.params;
+    const [users] = await pool.execute(
+      'SELECT id, username, display_name, bio, avatar_url FROM users WHERE id = ?',
+      [userIdToView]
+    );
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, user: users[0] });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch user profile data.' });
+  }
+});
 
 app.get('/test-db', async (req, res) => {
   try {
@@ -294,4 +428,5 @@ app.get('/test-db', async (req, res) => {
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 //-----------------------CAR BUILD ROUTES-----------------------//
+const carBuildRoutes = require('./routes/carBuilds.js')(pool);
 app.use('/api/builds', require('./routes/carBuilds')(pool));

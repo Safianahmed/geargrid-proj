@@ -30,8 +30,14 @@ const Login = () => {
 
       const data = await response.json();
       if (data.success) {
-        // ❌ Do not set username from backend at all
         localStorage.setItem('userId', data.userId);
+        if (data.username) localStorage.setItem('username', data.username); 
+        if (data.displayName) localStorage.setItem('displayName', data.displayName);
+        if (data.avatarUrl) {
+          localStorage.setItem('avatar', data.avatarUrl);
+        } else {
+          localStorage.removeItem('avatar');
+        }
         navigate('/profile');
       } else {
         alert(data.message);

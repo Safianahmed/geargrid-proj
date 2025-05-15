@@ -37,6 +37,7 @@ const AppContent = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/menu" element={<Navbar />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/user/:viewedUserId" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/events" element={<Events />} />

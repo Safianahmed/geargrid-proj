@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani&display=swap');
+
 /* General Page Styling for Authentication Pages */
 body {
     margin: 0;
@@ -41,12 +43,20 @@ body {
 }
 
 /* Brand Name */
-.brand-name {
+/* .brand-name {
     font-family: 'Times New Roman', sans-serif;
     font-size: 42px;
     font-weight: bold;
     margin-bottom: 25px;
+} */
+
+.brand-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 45px;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
+
 
 /* Input Fields */
 .auth-box input {
@@ -116,4 +126,67 @@ body {
     display: block;
     margin-top: 14px;
     font-weight: bold; 
+}
+
+
+/* gear Icon */
+.gear-icon {
+  font-size: 28px;
+  color: #0095f6;
+  margin-bottom: 10px;
+}
+
+/* subheading */
+.subheading {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+/* glass effect */
+.auth-box,
+.signup-box {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* inputs with glow effect */
+.auth-box input:focus {
+  outline: none;
+  border-color: #0095f6;
+  box-shadow: 0 0 8px #0095f6;
+  transition: 0.3s ease;
+}
+
+/* button animation */
+.auth-btn {
+  transition: all 0.2s ease;
+}
+
+.auth-btn:active {
+  transform: scale(0.97);
+}
+
+/* eye icon inside input */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #333;
 }

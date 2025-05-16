@@ -128,6 +128,7 @@ import '../css/CarBuild.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { API_BASE, resolveImageUrl } from '../utils/imageUrl';
+import { modCategories } from '../data/modCategories';
 
 const CarBuild = () => {
   const { id } = useParams();
@@ -165,16 +166,38 @@ const CarBuild = () => {
     fetchBuild();
   }, [id]);
 
+  // const groupedMods = useMemo(() => {
+  //   return mods.reduce((cats, mod) => {
+  //     const cat = mod.category || 'Uncategorized';
+  //     const sub = mod.sub_category || 'Other';
+  //     if (!cats[cat]) cats[cat] = {};
+  //     if (!cats[cat][sub]) cats[cat][sub] = [];
+  //     cats[cat][sub].push(mod);
+  //     return cats;
+  //   }, {});
+  // }, [mods]);
+
   const groupedMods = useMemo(() => {
-    return mods.reduce((cats, mod) => {
-      const cat = mod.category || 'Uncategorized';
-      const sub = mod.sub_category || 'Other';
-      if (!cats[cat]) cats[cat] = {};
-      if (!cats[cat][sub]) cats[cat][sub] = [];
-      cats[cat][sub].push(mod);
-      return cats;
-    }, {});
-  }, [mods]);
+  const orderedCategories = Object.keys(modCategories); // Get the original order of categories
+  const modsByCategory = mods.reduce((cats, mod) => {
+    const cat = mod.category || 'Uncategorized';
+    const sub = mod.sub_category || 'Other';
+    if (!cats[cat]) cats[cat] = {};
+    if (!cats[cat][sub]) cats[cat][sub] = [];
+    cats[cat][sub].push(mod);
+    return cats;
+  }, {});
+
+  // Sort categories based on the original order
+  const sortedCategories = orderedCategories.reduce((sorted, category) => {
+    if (modsByCategory[category]) {
+      sorted[category] = modsByCategory[category];
+    }
+    return sorted;
+  }, {});
+
+  return sortedCategories;
+}, [mods]);
 
   const sliderSettings = { dots:true, infinite:true, speed:400, slidesToShow:1, adaptiveHeight:true };
 

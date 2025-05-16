@@ -166,28 +166,9 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 
 
 
-/** IN PROGRESS - mods not showing up in mod table
+/** IN PROGRESS - mods pics not showing up properly
  * @route   POST /api/builds
  * @desc    Create a new car build with optional file uploads and mods
- * @access  Protected (requires valid JWT via ensureAuthenticated)
- * @form    multipart/form-data
- */
-/**
-/**
- * @route   POST /api/builds
- * @desc    Create a new car build with cover, gallery, and mods
- * @access  Protected (requires valid JWT via ensureAuthenticated)
- * @form    multipart/form-data
- */
-/**
- * @route   POST /api/builds
- * @desc    Create a new car build with cover, gallery, and mods
- * @access  Protected (requires valid JWT via ensureAuthenticated)
- * @form    multipart/form-data
- */
-/**
- * @route   POST /api/builds
- * @desc    Create a new car build with cover, gallery, and mods
  * @access  Protected (requires valid JWT via ensureAuthenticated)
  * @form    multipart/form-data
  */
@@ -410,9 +391,17 @@ if (newGalleryFiles.length) {
         const sub       = m.sub     ?? '';
         const name      = m.name    ?? '';
         const details   = m.details ?? '';
-        const file      = newModFiles[imgIdx];
-        const image_url = file ? `/uploads/${file.filename}` : null;
-        imgIdx++;
+        const hasImage = m.hasImage;
+        const fallback = m.image_url ?? null;
+        const deleteImage = m.deleteImage ?? false;
+
+        let image_url = null;
+        if (hasImage && newModFiles[imgIdx]) {
+          image_url = `/uploads/${newModFiles[imgIdx].filename}`;
+          imgIdx++;
+        } else if (!hasImage && fallback) {
+          image_url = fallback;
+        }
 
         await conn.query(
           `INSERT INTO build_mods

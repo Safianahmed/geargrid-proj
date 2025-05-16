@@ -304,3 +304,24 @@ summary { font-size:1.25rem; font-weight:600; cursor:pointer; outline:none; }
 .delete-row .delete-btn:hover {
   background: rgba(0,0,0,0.05);
 }
+
+.mod-thumb-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.remove-thumb {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(255,0,0,0.7);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  line-height: 17px;
+  text-align: center;
+}

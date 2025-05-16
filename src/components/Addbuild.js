@@ -340,6 +340,7 @@ const AddBuild = () => {
                   />
                   <input
                     type="file"
+                    name="modImages" 
                     accept="image/*"
                     onChange={e => {
                       const file = e.target.files[0] || null;

@@ -1,9 +1,7 @@
 const express = require('express');
-//for file uploads using multer
 const multer = require('multer');
 const path = require('path');
-
-// Middleware to handle file uploads
+const ensureAuthenticated = require('../middleware/ensureAuthenticated');
 const uploadsDir = path.join(__dirname, '..', 'uploads'); 
 
 // Configure multer to store files in the uploads directory
@@ -20,60 +18,42 @@ const upload = multer({ storage });
 // Returns a configured router for car builds
 function createCarBuildRoutes(pool) {
   const router = express.Router();
+  router.get('/', ensureAuthenticated, async (req, res) => {
+    try {
+      const loggedInUserId = req.user ? req.user.id : null;
+      const targetUserId = req.query.userId || loggedInUserId;
 
-// Middleware to ensure the user is authenticated via cookies
-const ensureAuthenticated = require('../middleware/ensureAuthenticated');
+      if (!targetUserId) {
+        return res.status(400).json({ success: false, message: "User ID not found for fetching builds." });
+      }
 
+      const [currentRows] = await pool.execute(
+        `SELECT id, car_name, cover_image, ownership_status, model, body_style, description
+           FROM builds 
+          WHERE user_id = ? 
+            AND ownership_status = 'current'`,
+        [targetUserId]
+      );
 
-/**
- * @route   GET /api/builds
- * @desc    Fetch all car builds for the currently logged-in user
- */
-// router.get('/', ensureAuthenticated, async (req, res) => {
-//   try {
-//     const [rows] = await pool.execute(
-//       'SELECT * FROM builds WHERE user_id = ?',
-//       [req.userId]
-//     );
+      const [previousRows] = await pool.execute(
+        `SELECT id, car_name, cover_image, ownership_status, model, body_style, description
+           FROM builds 
+          WHERE user_id = ? 
+            AND ownership_status = 'previous'`,
+        [targetUserId]
+      );
 
-//     return res.json({ success: true, builds: rows });
-//   } catch (err) {
-//     console.error('Error in GET /api/builds:', err);
-//     return res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// });
-router.get('/', ensureAuthenticated, async (req, res) => {
-  try {
-    const userId = req.userId;
+      return res.json({
+        success: true,
+        currentBuilds: currentRows,
+        previousBuilds: previousRows
+      });
 
-    // Current builds
-    const [currentRows] = await pool.execute(
-      `SELECT * 
-         FROM builds 
-        WHERE user_id = ? 
-          AND ownership_status = 'current'`,
-      [userId]
-    );
-
-    // Previous builds
-    const [previousRows] = await pool.execute(
-      `SELECT * 
-         FROM builds 
-        WHERE user_id = ? 
-          AND ownership_status = 'previous'`,
-      [userId]
-    );
-
-    return res.json({
-      success: true,
-      currentBuilds: currentRows,
-      previousBuilds: previousRows
-    });
-  } catch (err) {
-    console.error('Error in GET /api/builds:', err);
-    return res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
+    } catch (err) {
+      console.error('Error in GET /api/builds:', err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
 
 
 /** IN PROGRESS
@@ -84,24 +64,23 @@ router.get('/', ensureAuthenticated, async (req, res) => {
  */
 router.get('/:id', ensureAuthenticated, async (req, res) => {
   const buildId = req.params.id;
-  const userId  = req.userId;
+  const loggedInUserId = req.user ? req.user.id : null;
+
+  if (!loggedInUserId) {
+    return res.status(401).json({ success: false, message: "Authentication required." });
+  }
 
   try {
     // 1) Fetch build row
     const [[row]] = await pool.execute(
       `SELECT
-         id,
-         user_id,
-         ownership_status AS ownership,
-         car_name,
-         model,
-         description,
-         body_style       AS bodyStyle,
-         cover_image,
-         cover_image2
-       FROM builds
-       WHERE id = ? AND user_id = ?`,
-      [buildId, userId]
+        b.id, b.user_id, b.ownership_status AS ownership, b.car_name, b.model,
+        b.description, b.body_style AS bodyStyle, b.cover_image, b.cover_image2,
+        u.username as owner_username
+      FROM builds b
+      JOIN users u ON b.user_id = u.id
+      WHERE b.id = ?`,
+      [buildId]
     );
 
     if (!row) {
@@ -110,7 +89,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
         .json({ success: false, message: 'Build not found or access denied' });
     }
 
-    const isOwner = row.user_id === userId;
+    const isOwner = row.user_id === loggedInUserId;
 
     // Fetch gallery images
     const [galleryRows] = await pool.execute(
@@ -188,7 +167,7 @@ router.post(
       console.log('💾 [BUILD] req.files.galleryImages:', req.files.galleryImages);
       console.log('💾 [BUILD] req.files.modImages:', req.files.modImages);
 
-      const userId = req.userId;
+      const userId = req.user.id;
       const {
         ownership   = 'current',
         car_name,
@@ -199,10 +178,10 @@ router.post(
       } = req.body;
 
       // --- Extract cover URLs ---
-      const coverFiles = req.files.coverImages || [];
-      const cover1 = coverFiles[0] ? `/uploads/${coverFiles[0].filename}` : null;
-      const cover2 = coverFiles[1] ? `/uploads/${coverFiles[1].filename}` : null;
-      console.log('💾 [BUILD] cover1, cover2 =', cover1, cover2);
+      // const coverFiles = req.files.coverImages || [];
+      const coverImage   = req.files.coverImages && req.files.coverImages[0] ? `/uploads/${req.files.coverImages[0].filename}` : null;
+      const coverImage2  = req.files.coverImages && req.files.coverImages[1] ? `/uploads/${req.files.coverImages[1].filename}` : null;
+      console.log('💾 [BUILD] coverImage, coverImage2 =', coverImage, coverImage2);
 
       // --- Parse mods JSON ---
       let parsedModsArray = [];
@@ -220,7 +199,7 @@ router.post(
             description, body_style, cover_image, cover_image2)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [ userId, ownership, car_name, model,
-          description, bodyStyle, cover1, cover2 ]
+          description, bodyStyle, coverImage, coverImage2 ]
       );
       const buildId = buildResult.insertId;
       console.log('💾 [BUILD] buildId =', buildId);
@@ -437,8 +416,8 @@ if (newGalleryFiles.length) {
  * @access  Protected (owner only)
  */
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
-  const buildId = +req.params.id;
-  const userId  = req.userId;
+  const buildId = req.params.id;
+  const userId  = req.user.Id;
   const conn    = await pool.getConnection();
 
   try {

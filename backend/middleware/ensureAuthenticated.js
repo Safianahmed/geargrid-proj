@@ -21,8 +21,9 @@ module.exports = function ensureAuthenticated(req, res, next) {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach user details from the token to the request object
-    req.userId = payload.id;          // Used later to check build ownership
-    req.username = payload.username;  // Can be used for logging or display
+    // req.userId = payload.id;          // Used later to check build ownership
+    // req.username = payload.username;  // Can be used for logging or display
+    req.user = payload;            // Attach the entire user object if needed
 
     // Continue to the next middleware or route handler
     next();

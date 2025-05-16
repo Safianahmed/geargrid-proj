@@ -1,8 +1,21 @@
+.auth-box input[type="text"],
+.auth-box input[type="email"],
+.auth-box input[type="password"] {
+  margin-bottom: 0px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
 .password-container {
   position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
+  margin-bottom: 0px; 
+}
+
+.error-message {
+  margin: 8px 0 0px 0;
+  color: #dc3545;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .password-container input {
@@ -12,8 +25,8 @@
 
 .toggle-password {
   position: absolute;
-  right: 12px;
-  top: 50%;
+  right: 15px;
+  top: 65%;
   transform: translateY(-50%);
   background: none;
   border: none;

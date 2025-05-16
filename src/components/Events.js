@@ -28,32 +28,93 @@ const Events = () => {
     fetchEvents();
   }, []);
 
+  const handleRegisterClick = async (event) => {
+    const userEmail = localStorage.getItem('userEmail');
+
+    if (!userEmail) {
+      alert('Please log in to register for events.');
+      return;
+    }
+
+    try {
+      console.log('Attempting to check registration for event:', event.id, 'with email:', userEmail);
+      const response = await fetch('http://localhost:3001/api/check-registration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          eventId: event.id, 
+          email: userEmail
+        }),
+        credentials: 'include',
+      });
+
+      console.log('Response status:', response.status);
+    
+      if (!response.ok) {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+        }
+        throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.registered) { 
+        localStorage.setItem(`event_${event.id}_${userEmail}_registered`, 'true');
+        alert(data.message + " We'll take you to edit your registration.");
+        navigate("/register", { state: { event, editMode: true, userEmail: userEmail } });
+        return;
+      }
+
+      navigate("/register", { state: { event } });
+    } catch (error) {
+      console.error('Error checking registration:', error);
+      alert('Failed to check registration status.');
+    }
+  };
+
+  const handleEditClick = (event) => {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      alert('Please log in to edit your registration.');
+      return;
+    }
+    navigate("/register", { state: { event, editMode: true, userEmail: userEmail } });
+  };
+
   return (
     <div className="events-page">
       <h1 className="events-title">🔥 Upcoming Car Events</h1>
 
       <div className="events-container">
-        {events.map((event, index) => (
-          <div key={index} className="event">
-            <img src={event.image_url} alt={event.name} className="event-image" />
-            <div className="event-details">
-              <h2 className="event-name">{event.name}</h2>
-              <p className="event-description">{event.description}</p>
-              <div className="event-info">
-                <span>⏰ {event.time}</span>
-                <span>📍 {event.location}</span>
-                <span>👥 {event.attendees}</span>
-                <span>🏆 {event.organizer}</span>
+        {events.map((event, index) => {
+          const userEmail = localStorage.getItem('userEmail');
+          const isRegistered = userEmail && localStorage.getItem(`event_${event.id}_${userEmail}_registered`) === 'true';
+
+          return (
+            <div key={index} className="event">
+              <img src={event.image_url} alt={event.name} className="event-image" />
+              <div className="event-details">
+                <h2 className="event-name">{event.name}</h2>
+                <p className="event-description">{event.description}</p>
+                <div className="event-info">
+                  <span>⏰ {event.time}</span>
+                  <span>📍 {event.location}</span>
+                  <span>👥 {event.attendees}</span>
+                  <span>🏆 {event.organizer}</span>
+                </div>
+                <button
+                  className="register-button"
+                  onClick={() => isRegistered ? handleEditClick(event) : handleRegisterClick(event)} 
+                >
+                  {isRegistered ? "Edit Registration ✏️" : "Register Now 🚗"}
+                </button>
               </div>
-              <button
-                className="register-button"
-                onClick={() => navigate("/register", { state: { event } })} 
-              >
-                Register Now 🚗
-              </button>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

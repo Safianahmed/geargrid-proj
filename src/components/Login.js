@@ -32,6 +32,7 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem('userId', data.userId);
         if (data.username) localStorage.setItem('username', data.username); 
+        if (data.email) localStorage.setItem('userEmail', data.email);
         if (data.displayName) localStorage.setItem('displayName', data.displayName);
         if (data.avatarUrl) {
           localStorage.setItem('avatar', data.avatarUrl);

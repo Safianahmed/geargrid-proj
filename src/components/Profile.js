@@ -39,6 +39,10 @@ const Profile = () => {
 
   const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatar") || "");
 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+
 
   useEffect(() => {
     if (!targetUserId) {
@@ -46,32 +50,87 @@ const Profile = () => {
       return;
     }
 
-    const fetchUserProfile = async () => {
+    const fetchUserProfileAndFollowStatus = async () => {
       setIsLoadingProfile(true);
       try {
-        const response = await fetch(`http://localhost:3001/api/user-profile/${targetUserId}`, {
+        const profileResponse = await fetch(`http://localhost:3001/api/user-profile/${targetUserId}`, {
           credentials: 'include',
         });
-        const data = await response.json();
-        if (data.success && data.user) {
+        const profileApiData = await profileResponse.json();
+        if (profileApiData.success && profileApiData.user) {
           setProfileData({
-            username: data.user.username,
-            displayName: data.user.display_name || data.user.username,
-            bio: data.user.bio || "",
-            avatarUrl: data.user.avatar_url || null,
+            username: profileApiData.user.username,
+            displayName: profileApiData.user.display_name || profileApiData.user.username,
+            bio: profileApiData.user.bio || "",
+            avatarUrl: profileApiData.user.avatar_url || null,
           });
         } else {
-          console.error("Failed to fetch user profile:", data.message);
+          console.error("Failed to fetch user profile:", profileApiData.message);
         }
+
+        if (!isOwnProfile && loggedInUserId) {
+          const statusResponse = await fetch(`http://localhost:3001/api/follows/status/${targetUserId}`, {
+            credentials: 'include',
+          });
+          const statusData = await statusResponse.json();
+          if (statusData.success) {
+            setIsFollowing(statusData.isFollowing);
+          }
+        }
+
+        const followersResponse = await fetch(`http://localhost:3001/api/follows/${targetUserId}/followers`);
+        const followersData = await followersResponse.json();
+        if (followersData.success) {
+          setFollowerCount(followersData.followers.length);
+        }
+
+        const followingResponse = await fetch(`http://localhost:3001/api/follows/${targetUserId}/following`);
+        const followingData = await followingResponse.json();
+        if (followingData.success) {
+          setFollowingCount(followingData.following.length);
+        }
+
       } catch (err) {
-        console.error("Error fetching user profile:", err);
+        console.error("Error fetching user profile or follow data:", err);
       } finally {
         setIsLoadingProfile(false);
       }
     };
 
-    fetchUserProfile();
-  }, [targetUserId, navigate, loggedInUserId]);
+    fetchUserProfileAndFollowStatus();
+  }, [targetUserId, navigate, loggedInUserId, isOwnProfile]);
+
+  const handleFollowToggle = async () => {
+    if (!loggedInUserId) {
+      navigate('/login');
+      return;
+    }
+    const url = isFollowing 
+      ? `http://localhost:3001/api/follows/${targetUserId}` 
+      : `http://localhost:3001/api/follows`;
+    const method = isFollowing ? 'DELETE' : 'POST';
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: method === 'POST' ? JSON.stringify({ followedId: targetUserId }) : null,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setIsFollowing(!isFollowing);
+        setFollowerCount(prev => isFollowing ? prev - 1 : prev + 1);
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Follow/Unfollow error:', error);
+      alert('An error occurred.');
+    }
+  };
 
   useEffect(() => {
     if (!targetUserId) return;
@@ -162,15 +221,19 @@ const Profile = () => {
           <div className="profile-main-info">
             <div className="username-row">
               <h2 className="profile-username">{profileData.username}</h2>
-              {isOwnProfile && (
+              {isOwnProfile ? (
                 <button className="profile-action-btn" onClick={() => navigate("/edit-profile")}>
                   Edit Profile
+                </button>
+              ) : loggedInUserId && (
+                <button className="profile-action-btn" onClick={handleFollowToggle}>
+                  {isFollowing ? "Unfollow" : "Follow"}
                 </button>
               )}
             </div>
             <div className="profile-stats">
-              <span><strong>_</strong> Followers</span>
-              <span><strong>_</strong> Following</span>
+              <span><strong>{followerCount}</strong> Followers</span>
+              <span><strong>{followingCount}</strong> Following</span>
             </div>
             <div className="profile-name">{profileData.displayName}</div>
             <div className="profile-bio">{profileData.bio || (isOwnProfile ? "Add a bio..." : "No bio yet.")}</div>

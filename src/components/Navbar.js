@@ -22,17 +22,20 @@ const Menu = ({ closeMenu }) => {
       if (data.success) {
         localStorage.removeItem('username');
         localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
         navigate("/login");
       } else {
         console.error('Logout failed on server:', data.message);
         localStorage.removeItem('username');
         localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
         navigate("/login");
       }
     } catch (error) {
       console.error('Logout fetch error:', error);
       localStorage.removeItem('username');
       localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
       navigate("/login");
     }
   };

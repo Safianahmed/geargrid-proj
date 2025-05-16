@@ -15,7 +15,7 @@ const app = express();
 //-----------------------FOR UPLOADS FOLDER-----------------------//
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(express.json());
+app.use(express.json({limit: '10mb'}));
 app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true, 
@@ -67,6 +67,219 @@ app.get('/api/events', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching events:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch events' });
+  }
+});
+
+app.post('/api/check-registration', async (req, res) => {
+  try {
+    const { eventId, email } = req.body;
+    
+    const [registrations] = await pool.execute(
+      'SELECT * FROM event_registrations WHERE event_id = ? AND email = ?',
+      [eventId, email]
+    );
+
+    res.json({ 
+      registered: registrations.length > 0,
+      message: registrations.length > 0 
+        ? 'This email is already registered for this event' 
+        : ''
+    });
+  } catch (error) {
+    console.error('Check registration error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to check registration status' 
+    });
+  }
+});
+
+app.post('/api/register-event', async (req, res) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const { firstName, lastName, email, phone, eventId, cars, userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is missing. Cannot complete registration.' });
+    }
+
+    const registrantName = `${firstName || ''} ${lastName || ''}`.trim();
+
+    const [registrationResult] = await connection.execute(
+      'INSERT INTO event_registrations (event_id, user_id, name, email, phone) VALUES (?, ?, ?, ?, ?)',
+      [eventId, userId, registrantName, email, phone] 
+    );
+    const registrationId = registrationResult.insertId;
+
+    if (!registrationId) {
+      throw new Error('Failed to create registration entry.');
+    }
+
+    if (cars && cars.length > 0) {
+      for (const car of cars) {
+        await connection.execute(
+          'INSERT INTO registered_cars (registration_id, make, model, year, color, mileage, modifications) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [registrationId, car.make, car.model, car.year, car.color, car.mileage, car.modified]
+        );
+      }
+    }
+
+    await connection.commit();
+    res.json({ success: true, message: 'Registration successful!' });
+
+  } catch (error) {
+    if (connection) await connection.rollback();
+    console.error('Registration error:', error);
+
+    let errorMessage = 'Registration failed due to a server error.';
+    if (error.code === 'ER_DUP_ENTRY') {
+      if (error.message && error.message.includes('event_registrations.event_id_email_unique')) {
+        errorMessage = 'This email is already registered for this event.';
+      } else {
+        errorMessage = 'A duplicate entry occurred. Please check your input.';
+      }
+    } else if (error.message && error.message.includes("Table 'registered_cars' doesn't exist")) {
+        errorMessage = "Registration failed: The 'registered_cars' table is missing on the server.";
+    } else if (error.message && error.message.includes("Unknown column")) {
+        errorMessage = `Registration failed: There's a mismatch in table columns. Please check server logs.`;
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: errorMessage
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+app.get('/api/get-registration-details', authenticateToken, async (req, res) => {
+  const { eventId } = req.query;
+  const userId = req.user.id;
+
+  if (!eventId) {
+    return res.status(400).json({ success: false, message: 'Event ID is required.' });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const [registrations] = await connection.execute(
+      'SELECT * FROM event_registrations WHERE event_id = ? AND user_id = ?',
+      [eventId, userId]
+    );
+
+    if (registrations.length === 0) {
+      return res.status(404).json({ success: false, message: 'No registration found for this event and user.' });
+    }
+
+    const registration = registrations[0];
+    const registrationId = registration.id;
+
+    const [cars] = await connection.execute(
+      'SELECT * FROM registered_cars WHERE registration_id = ?',
+      [registrationId]
+    );
+
+    const nameParts = registration.name ? registration.name.split(' ') : ['', ''];
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+    res.json({
+      success: true,
+      registrationDetails: {
+        ...registration,
+        firstName,
+        lastName,
+        cars: cars.map(car => ({
+          id: car.id,
+          make: car.make,
+          model: car.model,
+          year: car.year,
+          color: car.color,
+          mileage: car.mileage,
+          modified: car.modifications,
+        }))
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching registration details:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch registration details.' });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+app.put('/api/update-event-registration/:registrationId', authenticateToken, async (req, res) => {
+  const { registrationId } = req.params;
+  const userId = req.user.id; 
+  const { firstName, lastName, email, phone, cars } = req.body; 
+
+  if (!registrationId) {
+    return res.status(400).json({ success: false, message: 'Registration ID is required.' });
+  }
+  if (!firstName || !lastName || !email || !phone) {
+    return res.status(400).json({ success: false, message: 'First name, last name, email, and phone are required.' });
+  }
+  if (!Array.isArray(cars)) {
+    return res.status(400).json({ success: false, message: 'Cars must be an array.' });
+  }
+
+  let connection; 
+  try {
+    connection = await pool.getConnection(); 
+    await connection.beginTransaction();
+
+    const [existingRegistrations] = await connection.execute(
+      'SELECT user_id FROM event_registrations WHERE id = ?',
+      [registrationId]
+    );
+
+    if (existingRegistrations.length === 0) {
+      await connection.rollback(); 
+      return res.status(404).json({ success: false, message: 'Registration not found.' });
+    }
+
+    if (existingRegistrations[0].user_id !== userId) {
+      await connection.rollback(); 
+      return res.status(403).json({ success: false, message: 'You are not authorized to update this registration.' });
+    }
+
+    const registrantName = `${firstName} ${lastName}`.trim();
+    await connection.execute(
+      'UPDATE event_registrations SET name = ?, email = ?, phone = ? WHERE id = ?',
+      [registrantName, email, phone, registrationId]
+    );
+
+    await connection.execute(
+      'DELETE FROM registered_cars WHERE registration_id = ?',
+      [registrationId]
+    );
+
+    if (cars && cars.length > 0) {
+      for (const car of cars) {
+        if (!car.make || !car.model || !car.year) {
+            console.warn('Skipping car with missing make/model/year during update:', car);
+            continue; 
+        }
+        await connection.execute(
+          'INSERT INTO registered_cars (registration_id, make, model, year, color, mileage, modifications) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [registrationId, car.make, car.model, car.year, car.color, car.mileage, car.modified]
+        );
+      }
+    }
+
+    await connection.commit();
+    res.json({ success: true, message: 'Registration updated successfully!' });
+
+  } catch (error) {
+    if (connection) await connection.rollback(); 
+    console.error('Update registration error:', error);
+    res.status(500).json({ success: false, message: 'Failed to update registration.' });
+  } finally {
+    if (connection) connection.release(); 
   }
 });
 
@@ -277,6 +490,7 @@ app.post('/api/login', async (req, res) => {
       success: true, 
       username: user.username, 
       userId: user.id, 
+      email: user.email,
       displayName: user.display_name, 
       avatarUrl: user.avatar_url 
     });
@@ -430,3 +644,7 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 //-----------------------CAR BUILD ROUTES-----------------------//
 const carBuildRoutes = require('./routes/carBuilds.js')(pool);
 app.use('/api/builds', require('./routes/carBuilds')(pool));
+
+// for follow
+const followRoutes = require('./routes/follows.js')(pool);
+app.use('/api/follows', followRoutes);

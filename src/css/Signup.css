@@ -126,10 +126,10 @@ body {
   padding-right: 40px;
 }
 
-.toggle-password {
+.toggle-password { 
   position: absolute;
-  right: 50px;
-  top: 50%;
+  right: 30px;
+  top: 60%;
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -137,6 +137,9 @@ body {
   font-size: 1.2rem;
   color: #333;
 }
+/*
+right and top control where the eye icon is placed
+*/
 
 .toggle-password:focus {
   outline: none;

@@ -102,23 +102,26 @@ const Signup = () => {
   return (
     <div className="auth-container">
       <div className="auth-box">
+        <div className="gear-icon">
+          <i className="fas fa-cog fa-spin"></i>
+        </div>
         <h1 className="brand-name">GearGrid</h1>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              required
-            />
-            <input
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-            />
-            <div className="password-container">
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+          />
+          <div className="password-container">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -129,27 +132,29 @@ const Signup = () => {
             <span
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
-              style={{ cursor: "pointer" }}
             >
               {showPassword ? (
-                // Eye-off icon (password visible)
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.89 1 12c.6-1.49 1.38-2.87 2.3-4.11" />
-                  <path d="M1 1l22 22" />
-                  <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
-                </svg>
+              //   // Eye-off icon (password visible)
+              //   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              //     <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C7 20 2.73 16.89 1 12c.6-1.49 1.38-2.87 2.3-4.11" />
+              //     <path d="M1 1l22 22" />
+              //     <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
+              //   </svg>
+              // ) : (
+              //   // Eye icon (password hidden)
+              //   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              //     <path d="M1 12C3.73 7.55 8 4 12 4s8.27 3.55 11 8c-2.73 4.45-7 8-11 8S3.73 16.45 1 12z" />
+              //     <circle cx="12" cy="12" r="3" />
+              //   </svg>
+                <i className="fas fa-eye"></i> // password visible
               ) : (
-                // Eye icon (password hidden)
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12C3.73 7.55 8 4 12 4s8.27 3.55 11 8c-2.73 4.45-7 8-11 8S3.73 16.45 1 12z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
+                <i className="fas fa-eye-slash"></i> // password hidden
               )}
             </span>
-            </div>
-            {passwordError && <p className="error-message">{passwordError}</p>}
-            <button type="submit" className="auth-btn">Sign Up</button>
-          </form>
+          </div>
+          {passwordError && <p className="error-message">{passwordError}</p>}
+          <button type="submit" className="auth-btn">Sign Up</button>
+        </form>
       </div>
       <div className="signup-box">
         <p>Already have an account? <a href="/login">Log In</a></p>

@@ -70,7 +70,13 @@ export default function EditBuild() {
     form.append('bodyStyle', bodyStyle);
     form.append('description', description);
     form.append('mods', JSON.stringify(mods.map(m=>({
-      main: m.main, sub: m.sub, name: m.name, details: m.details
+      main: m.main, 
+      sub: m.sub, 
+      name: m.name, 
+      details: m.details, 
+      image_url: m.image ? null : m.image_url, // preserves existing mod image
+      hasImage: !!m.image,
+      deleteImage: !m.image && !m.image_url // user deleted mod image
     }))));
 
     form.append('keepCovers', JSON.stringify(existingCovers));
@@ -293,14 +299,30 @@ export default function EditBuild() {
                                 setMods(ms=>ms.map(x=>x===sel?{...x,image:f}:x));
                               }} />
                             {(sel.image_url||sel.image) && (
+                              <div className="mod-thumb-wrapper">
                               <img
                                 src={sel.image ? URL.createObjectURL(sel.image)
                                                : resolveImageUrl(sel.image_url)}
                                 className="mod-thumb"
                                 alt={sel.name}
                               />
-                            )}
+                              <button 
+                              type="button"
+      className="remove-thumb"
+      onClick={() => {
+        setMods(ms => ms.map(x =>
+          x === sel ? { ...x, image: null, image_url: null } : x
+        )
+        );
+      }}
+    >
+      ×
+    </button>
+                           
                           </div>
+                           )}
+                        
+                      </div>
                         )}
                       </div>
                     );
@@ -327,14 +349,29 @@ export default function EditBuild() {
                               const f=e.target.files[0];
                               setMods(ms=>ms.map(x=>x===m?{...x,image:f}:x));
                             }} />
-                          {(m.image_url||m.image) && (
-                            <img
-                              src={m.image ? URL.createObjectURL(m.image)
-                                            : resolveImageUrl(m.image_url)}
-                              className="mod-thumb"
-                              alt={m.name}
-                            />
-                          )}
+                          {(m.image_url || m.image) && (
+  <div className="mod-thumb-wrapper">
+    <img
+      src={m.image ? URL.createObjectURL(m.image) : resolveImageUrl(m.image_url)}
+      className="mod-thumb"
+      alt={m.name}
+    />
+    <button
+      type="button"
+      className="remove-thumb"
+      onClick={() => {
+        setMods(ms =>
+          ms.map(x =>
+            x === m ? { ...x, image: null, image_url: null } : x
+          )
+        );
+      }}
+      aria-label={`Remove image for ${m.name}`}
+    >
+      ×
+    </button>
+  </div>
+)}
                         </div>
                       </div>
                     ))

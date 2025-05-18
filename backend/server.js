@@ -555,24 +555,38 @@ app.put('/api/profile/:userId', authenticateToken, async (req, res) => {
     if (avatar_url && avatar_url.startsWith('data:image')) {
       const matches = avatar_url.match(/^data:(image\/(.+));base64,(.*)$/);
       if (matches && matches.length === 4) {
-        const imageType = matches[1]; // "image/png"
-        const extension = matches[2]; // "png"
+        const imageType = matches[1]; // e.g. "image/png"
+        const extension = matches[2]; // e.g. "png"
         const base64Data = matches[3];
-        
-        const filename = `avatar-${userId}-${Date.now()}.${extension}`;
-        const uploadsDir = path.join(__dirname, 'uploads', 'avatars');
-        await fs.mkdir(uploadsDir, { recursive: true });
-        const filePath = path.join(uploadsDir, filename);
 
+        const profileDir = path.join(__dirname, 'uploads', 'avatars', 'profilepics');
+        await fs.mkdir(profileDir, { recursive: true });
+
+        // Delete old avatar if exists
+        const [userRows] = await pool.execute('SELECT avatar_url FROM users WHERE id = ?', [userId]);
+        const existingAvatarUrl = userRows[0]?.avatar_url;
+        if (existingAvatarUrl && existingAvatarUrl.startsWith('/uploads/avatars/profilepics/')) {
+          const oldPath = path.join(__dirname, existingAvatarUrl);
+          try {
+            await fs.unlink(oldPath);
+            console.log(`[PROFILE UPDATE] Deleted old avatar: ${oldPath}`);
+          } catch (err) {
+            console.warn(`[PROFILE UPDATE] Failed to delete old avatar: ${oldPath}`, err.message);
+          }
+        }
+
+        // Save new avatar
+        const filename = `avatar-${userId}-${Date.now()}.${extension}`;
+        const filePath = path.join(profileDir, filename);
         await fs.writeFile(filePath, base64Data, 'base64');
-        finalAvatarUrl = `/uploads/avatars/${filename}`;
+        finalAvatarUrl = `/uploads/avatars/profilepics/${filename}`;
         console.log(`[PROFILE UPDATE] Saved uploaded avatar to: ${finalAvatarUrl}`);
       } else {
         console.warn("[PROFILE UPDATE] Invalid base64 data URI format for avatar.");
         finalAvatarUrl = null;
       }
     } else if (avatar_url === "") {
-        finalAvatarUrl = null;
+      finalAvatarUrl = null;
     }
 
     let setClauses = [];
@@ -586,9 +600,9 @@ app.put('/api/profile/:userId', authenticateToken, async (req, res) => {
       setClauses.push('bio = ?');
       params.push(bio);
     }
+
     setClauses.push('avatar_url = ?');
     params.push(finalAvatarUrl);
-
 
     if (setClauses.length === 0) {
       return res.json({ success: true, message: 'No information provided to update.' });
@@ -596,9 +610,8 @@ app.put('/api/profile/:userId', authenticateToken, async (req, res) => {
 
     params.push(userId);
     const sql = `UPDATE users SET ${setClauses.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-    
     await pool.execute(sql, params);
-    
+
     const [updatedUsers] = await pool.execute(
       'SELECT id, username, display_name, email, bio, avatar_url FROM users WHERE id = ?',
       [userId]
@@ -610,6 +623,7 @@ app.put('/api/profile/:userId', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to update profile.' });
   }
 });
+
 
 app.get('/api/user-profile/:userIdToView', async (req, res) => {
   try {

@@ -417,7 +417,7 @@ if (newGalleryFiles.length) {
  */
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
   const buildId = req.params.id;
-  const userId  = req.user.Id;
+  const userId  = req.user.id;
   const conn    = await pool.getConnection();
 
   try {

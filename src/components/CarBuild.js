@@ -174,7 +174,7 @@ const CarBuild = () => {
   )}
 </section>
 
-      <button className="username-button" onClick={() => navigate('/profile')}>
+      <button className="username-button" onClick={() => navigate(-1)}>
         Back to Profile
       </button>
     </div>

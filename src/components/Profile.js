@@ -438,6 +438,7 @@ const Profile = () => {
         }}>
           ❤️<span className="nav-label">Follows</span>
         </div>
+        <div className="nav-item" onClick={() => navigate(`/profile`)}>👤<span className="nav-label">Profile</span></div>
       </div>
     </>
   );

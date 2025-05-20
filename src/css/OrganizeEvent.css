@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    background-color: #f4f4f4; /* Or your preferred background */
+    background-color: #f4f4f4; 
     padding: 40px 20px;
     box-sizing: border-box;
     font-family: 'Oswald', sans-serif;
@@ -133,3 +133,52 @@
 .back-button:hover {
     text-decoration: underline;
 }
+
+/* === Submit Button Override — Scoped to .organize-event-page === */
+.organize-event-page .submit-button {
+  width: 100%;
+  padding: 14px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.organize-event-page .submit-button:hover:not(:disabled) {
+  background-color: #fff;
+  color: #000;
+}
+
+.organize-event-page .submit-button:disabled {
+  background-color: #e0e0e0;
+  color: #888;
+  border: 1px solid #ccc;
+  cursor: not-allowed;
+}
+
+/* === Scoped Back Button Offset — ONLY on OrganizeEvent Page === */
+.organize-event-page .back-button {
+  margin-top: 115px;       
+  margin-left: 20px;      
+  font-family: 'Oswald', sans-serif;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.organize-event-page .back-button:hover {
+  text-decoration: underline;
+}
+

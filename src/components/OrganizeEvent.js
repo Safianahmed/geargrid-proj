@@ -70,7 +70,9 @@ const OrganizeEvent = () => {
                 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet" />
             </Helmet>
             <div className="organize-event-container">
-                <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+                <div className="back-button-wrapper">
+                    <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+                </div>
                 <h2>Organize an Event</h2>
                 <p>Fill out the details below to organize a new event for the community.</p>
 

@@ -130,6 +130,7 @@ const Events = () => {
         })}
       </div>
       <div className="organize-event-section">
+        <p className="organize-event-prompt">Want to organize an event on GearGrid ? Click bellow!</p>
         <button 
           onClick={() => navigate('/organize-event')} 
           className="organize-event-toggle-button"

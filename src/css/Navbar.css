@@ -168,3 +168,25 @@ html, body, #root {
   background-color: #ccc;
   color: black;
 }
+
+/* === Black & White Button Overrides for Logout Modal === */
+.logout-modal button {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-modal button:hover {
+  background-color: #fff;
+  color: #000;
+}

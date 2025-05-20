@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/Contact.css";
 import { Helmet } from 'react-helmet';
 
@@ -15,6 +16,7 @@ const Contact = () => {
   const [error, setError] = useState(""); 
   const [isVisible, setIsVisible] = useState(false); 
   const [previousRequests, setPreviousRequests] = useState([]); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
@@ -77,6 +79,9 @@ const Contact = () => {
         rel="stylesheet"
       />
     </Helmet>
+    <div className="back-button-wrapper">
+      <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+    </div>
       <div className={`contact-container ${isVisible ? "slide-down" : ""}`}>
         <h2>Contact Us</h2>
         <p>Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>

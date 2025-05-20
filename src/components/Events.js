@@ -98,7 +98,14 @@ const Events = () => {
       <div className="events-container">
         {events.map((event, index) => {
           const userEmail = localStorage.getItem('userEmail');
-          const isRegistered = userEmail && localStorage.getItem(`event_${event.id}_${userEmail}_registered`) === 'true';
+          let isRegistered = userEmail && localStorage.getItem(`event_${event.id}_${userEmail}_registered`) === 'true';
+
+          if (!isRegistered && userEmail && event.registrations) {
+            isRegistered = event.registrations.some(reg => reg.email === userEmail);
+            if (isRegistered) {
+              localStorage.setItem(`event_${event.id}_${userEmail}_registered`, 'true');
+            }
+          }
 
           return (
             <div key={index} className="event">
@@ -107,10 +114,9 @@ const Events = () => {
                 <h2 className="event-name">{event.name}</h2>
                 <p className="event-description">{event.description}</p>
                 <div className="event-info">
-                  <span>⏰ {event.time}</span>
-                  <span>📍 {event.location}</span>
-                  <span>👥 {event.attendees}</span>
-                  <span>🏆 {event.organizer}</span>
+                  <span>⏰ {event.time ? new Date(event.time).toLocaleString() : 'Date TBD'}</span>
+                  <span>📍 {event.location || 'Location TBD'}</span>
+                  <span>🏆 {event.organizer || 'Organizer TBD'}</span>
                 </div>
                 <button
                   className="register-button"
@@ -122,6 +128,14 @@ const Events = () => {
             </div>
           );
         })}
+      </div>
+      <div className="organize-event-section">
+        <button 
+          onClick={() => navigate('/organize-event')} 
+          className="organize-event-toggle-button"
+        >
+          Organize an Event
+        </button>
       </div>
     </div>
   );

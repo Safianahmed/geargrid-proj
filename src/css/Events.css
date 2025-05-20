@@ -195,3 +195,33 @@
 .events-page .modal-content button:last-of-type:hover {
   color:            var(--text-primary);
 }
+
+.organize-event-section {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.organize-event-toggle-button {
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.organize-event-toggle-button:hover {
+  background-color: #333333;
+  transform: translateY(-2px);
+}
+
+.organize-event-toggle-button:active {
+  transform: translateY(0);
+}

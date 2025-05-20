@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import Archive from "./components/Archive";
 import Events from "./components/Events";
+import OrganizeEvent from './components/OrganizeEvent';
 import Footer from './components/Footer';
 import Header from "./components/Header";
 import Contact from "./components/Contact";
@@ -41,6 +42,7 @@ const AppContent = () => {
           <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/archive" element={<Archive />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/organize-event" element={<OrganizeEvent />} />
           <Route path="/register" element={<RegisterEvent />} />
           <Route path="/businesses" element={<Businesses />} />
           <Route path="/businesses/:name" element={<BusinessDetail />} />

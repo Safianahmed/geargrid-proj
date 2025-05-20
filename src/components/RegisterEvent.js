@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/RegisterEvent.css";
+import { Helmet } from 'react-helmet';
 
 const initialCarState = {
   make: "",
@@ -194,6 +195,12 @@ const RegisterEvent = () => {
       <div className="register-card wide-card">
         {!success ? (
           <>
+            <Helmet>
+              <link
+                href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap"
+                rel="stylesheet"
+              />
+            </Helmet>
             <h2 className="wide-title">{editMode ? `Edit Your Registration for ${event.name}` : `Register for ${event.name}`}</h2>
             {error && <div className="error-message">{error}</div>}
             <form onSubmit={handleSubmit} className="register-form two-column">

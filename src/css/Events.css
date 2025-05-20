@@ -1,157 +1,197 @@
-/* Events Page */
+/* ── Scoped Variables ───────────────────────────────────────────────────────── */
 .events-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 50px 20px;
-    min-height: 100vh;
-    background: linear-gradient(to bottom, #f0f4f8, #d9e2ec); 
-    color: #1f2937;
+  --bg-page:        #ffffff;
+  --bg-card:        #ffffff;
+  --text-primary:   #111111;
+  --text-secondary: #555555;
+  --border:         #e0e0e0;
+  --shadow-light:   rgba(0, 0, 0, 0.04);
+  --shadow-hover:   rgba(0, 0, 0, 0.1);
+  --btn-bg:         #111111;
+  --btn-hover:      #333333;
+  --btn-text:       #ffffff;
+  --radius:         8px;
+  --spacing:        16px;
+  --font:           'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Title Styling */
-.events-title {
-    font-size: 2.8rem;
-    font-weight: bold;
-    color: #0088cc; 
-    text-transform: uppercase;
-    text-shadow: 2px 2px 6px rgba(0, 136, 204, 0.7);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 30px;
+/* ── Page Layout ─────────────────────────────────────────────────────────── */
+.events-page {
+  background:       var(--bg-page);
+  color:            var(--text-primary);
+  font-family:      var(--font);
+  padding:          calc(var(--spacing) * 3) var(--spacing);
+  min-height:       100vh;
+  display:          flex;
+  flex-direction:   column;
+  align-items:      center;
 }
 
-/* Events Container */
-.events-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    max-width: 1200px;
+/* ── Title Styling ───────────────────────────────────────────────────────── */
+.events-page .events-title {
+  font-family:      'Oswald', sans-serif;
+  font-size:        2.4rem;
+  font-weight:      700;
+  color:            var(--text-primary);
+  text-transform:   uppercase;
+  display:          flex;
+  align-items:      center;
+  gap:              var(--spacing);
+  margin-bottom:    calc(var(--spacing) * 2);
 }
 
-/* Event Cards */
-.event {
-    width: 370px;
-    background: #fff; 
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+/* ── Events Grid ────────────────────────────────────────────────────────── */
+.events-page .events-container {
+  display:          flex;
+  flex-wrap:        wrap;
+  justify-content:  center;
+  gap:              var(--spacing);
+  max-width:        1200px;
+  width:            100%;
 }
 
-/* Hover Effect */
-.event:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+/* ── Event Card ─────────────────────────────────────────────────────────── */
+.events-page .event {
+  background:       var(--bg-card);
+  border:           1px solid var(--border);
+  border-radius:    var(--radius);
+  box-shadow:       0 2px 6px var(--shadow-light);
+  overflow:         hidden;
+  width:            350px;
+  transition:       transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Event Image */
-.event-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-bottom: 3px solid #0088cc; 
+.events-page .event:hover {
+  transform:        translateY(-4px);
+  box-shadow:       0 4px 12px var(--shadow-hover);
 }
 
-/* Event Details */
-.event-details {
-    padding: 18px;
-    text-align: left;
+/* ── Image ───────────────────────────────────────────────────────────────── */
+.events-page .event-image {
+  width:            100%;
+  height:           200px;
+  object-fit:       cover;
+}
+
+/* ── Details ────────────────────────────────────────────────────────────── */
+.events-page .event-details {
+  padding:          var(--spacing);
+  display:          flex;
+  flex-direction:   column;
 }
 
 /* Event Name */
-.event-name {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #0088cc; 
-    margin-bottom: 6px;
+.events-page .event-name {
+  font-size:        1.4rem;
+  font-weight:      600;
+  margin-bottom:    0.5rem;
+  color:            var(--text-primary);
 }
 
-/* Event Description */
-.event-description {
-    font-size: 1rem;
-    color: #555;
-    margin-bottom: 12px;
+/* Description */
+.events-page .event-description {
+  font-size:        1rem;
+  color:            var(--text-secondary);
+  margin-bottom:    1rem;
+  line-height:      1.4;
 }
 
-/* Event Info Section */
-.event-info {
-    font-size: 0.95rem;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    color: #444;
+/* Info Rows */
+.events-page .event-info {
+  display:          flex;
+  flex-direction:   column;
+  gap:              0.5rem;
+  font-size:        0.95rem;
+  color:            var(--text-secondary);
 }
 
-/* Tag & Info Icons */
-.event-info span {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.events-page .event-info span {
+  display:          flex;
+  align-items:      center;
+  gap:              8px;
 }
 
-/* Register Button */
-.register-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 15px;
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    background: #0088cc;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+/* ── Register Button ────────────────────────────────────────────────────── */
+.events-page .register-button {
+  font-family:      Oswald, sans-serif;
+  font-size:        1rem;
+  margin-top:       var(--spacing);
+  padding:          0.75rem;
+  background:       var(--btn-bg);
+  color:            var(--btn-text);
+  font-weight:      600;
+  text-align:       center;
+  border:           none;
+  border-radius:    var(--radius);
+  cursor:           pointer;
+  transition:       background 0.2s ease, transform 0.2s ease;
 }
 
-/* Button Hover Effect */
-.register-button:hover {
-    background: #006699;
-    transform: scale(1.08);
+.events-page .register-button:hover {
+  background:       var(--btn-hover);
+  transform:        scale(1.03);
 }
 
-.registration-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.events-page .registration-modal {
+  position:         fixed;
+  inset:            0;
+  background:       rgba(0, 0, 0, 0.6);
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  z-index:          1000;
 }
 
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.events-page .modal-content {
+  background:       var(--bg-card);
+  padding:          calc(var(--spacing) * 2);
+  border-radius:    var(--radius);
+  width:            90%;
+  max-width:        400px;
+  box-shadow:       0 4px 12px var(--shadow-hover);
 }
 
-.modal-content h3 {
-  margin-bottom: 1.5rem;
+.events-page .modal-content h3 {
+  margin-bottom:    var(--spacing);
+  font-size:        1.25rem;
+  color:            var(--text-primary);
 }
 
-.modal-content input {
-  width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.events-page .modal-content input {
+  width:            100%;
+  padding:          0.75rem;
+  margin-bottom:    var(--spacing);
+  border:           1px solid var(--border);
+  border-radius:    var(--radius);
+  font-size:        1rem;
+  color:            var(--text-primary);
 }
 
-.modal-content button {
-  margin-top: 1rem;
-  padding: 0.8rem 1.5rem;
-  margin-right: 1rem;
-  cursor: pointer;
+.events-page .modal-content button {
+  padding:          0.75rem 1.25rem;
+  margin-right:     0.5rem;
+  font-weight:      600;
+  border:           none;
+  border-radius:    var(--radius);
+  cursor:           pointer;
+  transition:       background 0.2s ease;
+}
+
+.events-page .modal-content button:first-of-type {
+  background:       var(--btn-bg);
+  color:            var(--btn-text);
+}
+
+.events-page .modal-content button:first-of-type:hover {
+  background:       var(--btn-hover);
+}
+
+.events-page .modal-content button:last-of-type {
+  background:       transparent;
+  color:            var(--text-secondary);
+}
+
+.events-page .modal-content button:last-of-type:hover {
+  color:            var(--text-primary);
 }

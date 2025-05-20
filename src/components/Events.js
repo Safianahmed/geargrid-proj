@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/Events.css";
+import { Helmet } from 'react-helmet';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -86,7 +87,13 @@ const Events = () => {
 
   return (
     <div className="events-page">
-      <h1 className="events-title">🔥 Upcoming Car Events</h1>
+      <Helmet>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap"
+          rel="stylesheet"
+        />
+      </Helmet>
+      <h1 className="events-title">Upcoming Car Events</h1>
 
       <div className="events-container">
         {events.map((event, index) => {
@@ -109,7 +116,7 @@ const Events = () => {
                   className="register-button"
                   onClick={() => isRegistered ? handleEditClick(event) : handleRegisterClick(event)} 
                 >
-                  {isRegistered ? "Edit Registration ✏️" : "Register Now 🚗"}
+                  {isRegistered ? "Edit Registration ✏️" : "Register Now"}
                 </button>
               </div>
             </div>

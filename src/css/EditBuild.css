@@ -1,327 +1,372 @@
+/* === Page Wrapper === */
 .edit-build-page {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: sans-serif;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: #ffffff;
+  min-height: 100vh;
 }
+
+/* === Header Title === */
 .edit-build-page h1 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.model-row {
-  display: flex;
-  gap: 0.5rem;
-}
-textarea, select, input[type="text"] {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.cover-slider img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-.remove-btn {
-  margin-top: 0.5rem;
-  background: crimson;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-.preview-list {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-.preview-item img {
-  width: 80px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-.preview-item button {
-  position: relative;
-  top: -15px;
-  left: 60px;
-  background: crimson;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-}
-
-/* Modifications */
-.category-block {
-  margin-bottom: 2rem;
-}
-.category-title {
-  font-size: 1.5rem;
-  border-left: 4px solid #5e83aa;
-  padding-left: 0.5rem;
-  margin-bottom: 1rem;
-}
-.sub-category-block {
-  background: #fafafa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-}
-.sub-title {
-  font-size: 1.25rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.25rem;
-  margin-bottom: 0.75rem;
-}
-.mods-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.mod-checkbox {
-  display: block;
-  background: #fff;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-.mod-details-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.mod-thumb {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-.save-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.save-btn {
-  background: #28a745;
-  color: white;
-}
-
-/* Cover thumbnails with X overlay */
-.form-row .cover-slider .slick-slide {
-  position: relative;
-}
-.form-row .cover-slider img {
-  width: 120px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 6px;
-}
-.form-row .cover-slider .remove-btn {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
-  line-height: 18px;
-  cursor: pointer;
-}
-
-/* Modifications: each selected mod becomes a flex‐card */
-.sub-category-block .mods-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 1rem;
-}
-.sub-category-block .mod-checkbox {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-.sub-category-block .mod-checkbox input {
-  margin-right: 0.5rem;
-}
-.sub-category-block .mod-details-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-.sub-category-block .mod-details-row input[type="text"] {
-  flex: 1;
-}
-.sub-category-block .mod-details-row input[type="file"] {
-  flex: 1;
-}
-.sub-category-block .mod-thumb {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-}
-
-.edit-build-page { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-.edit-build-page h1 { text-align:center; margin-bottom:1rem; }
-label { font-weight:500; display:block; margin-top:1rem; }
-textarea { width:100%; min-height:80px; }
-.preview-list { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem; }
-.preview-item.small { position:relative; width:80px; height:60px; }
-.preview-item.small img { width:100%; height:100%; object-fit:cover; border-radius:4px; }
-.preview-item.small button {
-  position:absolute; top:-6px; right:-6px;
-  background:crimson; color:white; border:none; border-radius:50%;
-  width:20px; height:20px; cursor:pointer;
-}
-
-/* Accordion styling */
-details { background:#fafafa; padding:1rem; margin-top:1rem; border-radius:6px; }
-summary { font-size:1.25rem; font-weight:600; cursor:pointer; outline:none; }
-
-/* Vertical mod cards */
-.mod-card-vertical { margin-top:0.75rem; padding:0.75rem; border:1px solid #ddd;
-                    border-radius:6px; }
-.mod-extras-vertical { margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem; }
-.mod-extras-vertical input[type="text"] { flex:1; padding:6px; }
-.mod-extras-vertical input[type="file"] { flex:1; }
-.mod-thumb { width:50px; height:50px; object-fit:cover; border-radius:4px; }
-
-/* Add custom buttons */
-.add-custom-mod, .add-subcat {
-  display:flex; gap:0.5rem; margin-top:0.75rem;
-}
-.add-custom-mod input, .add-subcat input { flex:1; padding:6px; }
-.add-custom-mod button, .add-subcat button {
-  background:#5e83aa; color:white; border:none; padding:6px 12px; border-radius:4px;
-  cursor:pointer;
-}
-
-/* Form actions */
-/* .form-actions { margin-top:2rem; display:flex; gap:1rem; justify-content:flex-end; }
-.save-btn, .cancel-btn {
-  padding:10px 20px; border:none; border-radius:4px; cursor:pointer;
-}
-.save-btn { background:#28a745; color:white; }
-.cancel-btn { background:#ddd; }
-.cancel-btn:hover { background:#bbb; } */
-
-
-/* ===== Top-of-page Cancel button ===== */
-.cancel-row {
-  margin: 0.5rem 0 1.5rem;
-  text-align: center; /* or left/right */
-}
-
-.top-cancel {
-  background: none;
-  border: 2px solid #000;
+  font-size: 2rem;
+  font-weight: 300;
+  text-align: left;
+  margin: 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e5e5;
   color: #000;
-  padding: 6px 14px;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  pointer-events: auto;
-  transition: background 0.2s, color 0.2s;
-  /* ensure it's not full width */
-  width: auto;
-  display: inline-block;
-  box-shadow: none;
+  letter-spacing: 0.5px;
 }
 
-.top-cancel:hover {
+/* === Top Row: Title + Buttons === */
+.edit-build-page .cancel-row {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+}
+.edit-build-page .cancel-row .top-cancel,
+.edit-build-page .cancel-row .delete-btn {
+  background: transparent;
+  border: 1px solid #000;
+  color: #000;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.edit-build-page .cancel-row .top-cancel:hover,
+.edit-build-page .cancel-row .delete-btn:hover {
   background: #000;
   color: #fff;
 }
-
-/* hide any old bottom-of-form Cancel if still present */
-.form-actions .cancel-btn {
-  display: none !important;
+.edit-build-page .cancel-row .delete-btn {
+  margin-left: auto;
+  border-radius: 0;
 }
 
-/* FORCE the top-cancel button above any overlays */
-.cancel-row,
-.cancel-row .top-cancel {
-  position: relative !important;
-  z-index: 9999 !important;
-  pointer-events: auto !important;
+/* === Form Structure === */
+.edit-build-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.edit-build-page .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-/* DELETE BUILD BUTTON */
-.delete-row {
-  width: 100%;
-  margin-top: 1rem;
+/* === Labels === */
+.edit-build-page label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  color: #000;
 }
 
-/* stretch the same as Save Changes */
-.delete-row .delete-btn {
-  display: block;
-  width: 100%;
-  max-width: none;       
+/* === Inputs & Focus States === */
+.edit-build-page textarea,
+.edit-build-page select,
+.edit-build-page input[type="text"],
+.edit-build-page input[type="file"] {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+.edit-build-page textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.edit-build-page textarea:focus,
+.edit-build-page select:focus,
+.edit-build-page input[type="text"]:focus,
+.edit-build-page input[type="file"]:focus {
+  outline: none;
+  border-color: #000;
+}
+.edit-build-page select {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
 
-  /* match Save’s vertical padding */
-  padding: 0.75rem 1rem;
+/* === Main Categories === */
+.edit-build-page .category-block {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  border: 2px solid #000;
+}
+.edit-build-page .category-title {
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #000;
+  color: #000;
+}
 
-  /* outline style like Cancel */
-  background: transparent;
-  color: inherit;       
-  border: 2px solid currentColor;
-  border-radius: 4px;
+/* === Sub-categories === */
+.edit-build-page .sub-category-block {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: #fafafa;
+  border-left: 4px solid #000;
+}
+.edit-build-page .sub-title {
   font-size: 1rem;
   font-weight: 500;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #d1d5db;
+  color: #000;
+}
+
+/* === Mods Grid & Items === */
+.edit-build-page .mods-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.edit-build-page .mod-checkbox {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
   cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.edit-build-page .mod-checkbox:hover {
+  border-color: #000;
+}
+.edit-build-page .mod-checkbox input[type="checkbox"] {
+  margin-right: 0.75rem;
+  margin-top: 0.25rem;
+  transform: scale(1.1);
+}
+.edit-build-page .mod-name {
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 0.5rem;
 }
 
-.delete-row .delete-btn:hover {
-  background: rgba(0,0,0,0.05);
+/* === Details & Thumbnails === */
+.edit-build-page .mod-details-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
-
-.mod-thumb-wrapper {
+.edit-build-page .mod-details-row input,
+.edit-build-page .mod-details-row input[type="file"] {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+.edit-build-page .mod-thumb-wrapper {
   position: relative;
   display: inline-block;
 }
-
-.remove-thumb {
+.edit-build-page .mod-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid #d1d5db;
+}
+.edit-build-page .remove-thumb {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: rgba(255,0,0,0.7);
+  top: -5px;
+  right: -5px;
+  background: #000;
+  color: #fff;
   border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  line-height: 17px;
-  text-align: center;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* === Cover Previews === */
+.edit-build-page .preview-list {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+.edit-build-page .preview-item {
+  position: relative;
+}
+.edit-build-page .preview-item img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border: 1px solid #d1d5db;
+}
+.edit-build-page .preview-item button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* === Add Custom Mod & Subcat === */
+.edit-build-page .add-custom-mod,
+.edit-build-page .add-subcat {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+.edit-build-page .add-custom-mod input,
+.edit-build-page .add-subcat input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+.edit-build-page .add-custom-mod button,
+.edit-build-page .add-subcat button {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.edit-build-page .add-custom-mod button:hover,
+.edit-build-page .add-subcat button:hover {
+  background: #333;
+}
+
+/* === Accordion Style === */
+.edit-build-page details {
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  margin-top: 1rem;
+}
+.edit-build-page summary {
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border-bottom: 1px solid #e5e5e5;
+}
+.edit-build-page details[open] summary {
+  border-bottom: 1px solid #d1d5db;
+}
+.edit-build-page .mod-card-vertical {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+.edit-build-page .mod-card-vertical:last-child {
+  border-bottom: none;
+}
+.edit-build-page .mod-extras-vertical {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.edit-build-page .mod-extras-vertical input {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+/* === Save Button === */
+.edit-build-page .form-actions {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.edit-build-page .save-btn {
+  padding: 0.75rem 1rem;
+  background: #000;
+  color: #fff;
+  border: 1px solid #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.edit-build-page .save-btn:hover {
+  background: #fff;
+  color: #000;
+}
+
+/* === Hide any legacy bottom delete button === */
+.edit-build-page .delete-row {
+  display: none !important;
+}
+
+/* === Override Save Changes === */
+.edit-build-page .save-btn,
+.edit-build-page button[type="submit"] {
+  background: #000 !important;
+  color: #fff !important;
+  border: 1px solid #000 !important;
+  border-radius: 0 !important;
+}
+.edit-build-page .save-btn:hover,
+.edit-build-page button[type="submit"]:hover {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+  .edit-build-page {
+    padding: 1rem;
+  }
+  .edit-build-page .mods-container {
+    grid-template-columns: 1fr;
+  }
+  .edit-build-page .model-row,
+  .edit-build-page .add-custom-mod,
+  .edit-build-page .add-subcat,
+  .edit-build-page .mod-details-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

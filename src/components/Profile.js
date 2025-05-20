@@ -10,8 +10,14 @@ const Profile = () => {
   const [previousBuilds, setPreviousBuilds] = useState([]);
   const [activeTab, setActiveTab] = useState("current");
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [viewingFollowRequests, setViewingFollowRequests] = useState(false);
+  // const [showNotifications, setShowNotifications] = useState(false);
+  // const [viewingFollowRequests, setViewingFollowRequests] = useState(false);
+
+  const [showFollowsPanel, setShowFollowsPanel] = useState(false);
+  const [followersList, setFollowersList] = useState([]);
+  const [followingList, setFollowingList] = useState([]);
+  const [isLoadingFollows, setIsLoadingFollows] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -186,6 +192,43 @@ const Profile = () => {
     return () => clearTimeout(timerId);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (showFollowsPanel && loggedInUserId) {
+      const fetchFollowData = async () => {
+        setIsLoadingFollows(true);
+        try {
+          const [followersRes, followingRes] = await Promise.all([
+            fetch(`http://localhost:3001/api/follows/${loggedInUserId}/followers`, { credentials: 'include' }),
+            fetch(`http://localhost:3001/api/follows/${loggedInUserId}/following`, { credentials: 'include' })
+          ]);
+
+          const followersData = await followersRes.json();
+          if (followersData.success) {
+            setFollowersList(followersData.followers);
+          } else {
+            console.error("Failed to fetch followers list:", followersData.message);
+            setFollowersList([]);
+          }
+
+          const followingData = await followingRes.json();
+          if (followingData.success) {
+            setFollowingList(followingData.following);
+          } else {
+            console.error("Failed to fetch following list:", followingData.message);
+            setFollowingList([]);
+          }
+        } catch (error) {
+          console.error("Error fetching follow lists:", error);
+          setFollowersList([]);
+          setFollowingList([]);
+        } finally {
+          setIsLoadingFollows(false);
+        }
+      };
+      fetchFollowData();
+    }
+  }, [showFollowsPanel, loggedInUserId]);
+
   const renderImages = list =>
     list.map(b => (
       <div
@@ -315,33 +358,66 @@ const Profile = () => {
           </div>
         </div>
       )}
-      {showNotifications && (
+      {showFollowsPanel && (
         <div className="notification-panel">
-          {!viewingFollowRequests ? (
-            <>
-              <div className="notification-header back">
-                <span onClick={() => setShowNotifications(false)}>&larr;</span>
-                <h2>Notifications</h2>
-              </div>
-              <div className="notification-requests" onClick={() => setViewingFollowRequests(true)}>
-                <div className="notification-avatar" />
-                <div className="notification-text">
-                  <strong>Follow requests</strong><br />
-                  No new requests
-                </div>
-              </div>
-              <div className="notification-section">
-                <h4>This Week</h4>
-                <div className="no-requests-text">No new activity this week.</div>
-              </div>
-            </>
+          <div className="notification-header back">
+            <span onClick={() => setShowFollowsPanel(false)}>&larr;</span>
+            <h2>Follows</h2>
+          </div>
+
+          {isLoadingFollows ? (
+            <p style={{ textAlign: 'center', padding: '20px' }}>Loading...</p>
           ) : (
             <>
-              <div className="notification-header back">
-                <span onClick={() => setViewingFollowRequests(false)}>&larr;</span>
-                <h2>Follow requests</h2>
+              <div className="notification-section">
+                <h4>Following ({followingList.length})</h4>
+                {followingList.length > 0 ? (
+                  followingList.map(user => (
+                    <div
+                      key={`following-${user.id}`}
+                      className="notification-item"
+                      onClick={() => {
+                        navigate(`/user/${user.id}`);
+                        setShowFollowsPanel(false); 
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img src={resolveImageUrl(user.avatar_url, 'avatar')} alt={user.display_name || user.username} className="notification-avatar" />
+                      <div className="notification-text">
+                        <strong>{user.display_name || user.username}</strong><br />
+                        <span>@{user.username}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-requests-text">Not following anyone.</p> 
+                )}
               </div>
-              <div className="no-requests-text">No follow requests.</div>
+
+              <div className="notification-section">
+                <h4>Followers ({followersList.length})</h4>
+                {followersList.length > 0 ? (
+                  followersList.map(user => (
+                    <div
+                      key={`follower-${user.id}`}
+                      className="notification-item"
+                      onClick={() => {
+                        navigate(`/user/${user.id}`);
+                        setShowFollowsPanel(false);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <img src={resolveImageUrl(user.avatar_url, 'avatar')} alt={user.display_name || user.username} className="notification-avatar" />
+                      <div className="notification-text">
+                        <strong>{user.display_name || user.username}</strong><br />
+                        <span>@{user.username}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-requests-text">No followers yet.</p>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -350,17 +426,17 @@ const Profile = () => {
       <div className="bottom-nav">
         <div className="nav-item" onClick={() => {
           setShowSearchBar(true);
-          setShowNotifications(false);
+          setShowFollowsPanel(false);
         }}>
           🔍
           <span className="nav-label">Search</span>
         </div>
         <div className="nav-item" onClick={() => navigate("/add-build")}>➕<span className="nav-label">Create</span></div>
         <div className="nav-item" onClick={() => {
-          setShowNotifications(true);
+          setShowFollowsPanel(true);
           setShowSearchBar(false);
         }}>
-          ❤️<span className="nav-label">Notifications</span>
+          ❤️<span className="nav-label">Follows</span>
         </div>
       </div>
     </>

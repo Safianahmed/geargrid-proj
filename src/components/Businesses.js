@@ -140,8 +140,6 @@ const Businesses = () => {
             className="category-select"
           >
             <option value="">All Categories</option>
-            <option value="Automotive">Automotive</option>
-            <option value="Manufacturing">Manufacturing</option>
             <option value="Maintenance & Repairs">Maintenance & Repairs</option>
             <option value="Cosmetic & Detailing">Cosmetic & Detailing</option>
             <option value="Upgrades & Customization">Upgrades & Customization</option>

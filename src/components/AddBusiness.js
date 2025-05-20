@@ -94,8 +94,6 @@ const AddBusiness = () => {
                     className="form-input"
                 >
                     <option value="">Select a category</option>
-                    <option value="Automotive">Automotive</option>
-                    <option value="Manufacturing">Manufacturing</option>
                     <option value="Maintenance & Repairs">Maintenance & Repairs</option>
                     <option value="Cosmetic & Detailing">Cosmetic & Detailing</option>
                     <option value="Upgrades & Customization">Upgrades & Customization</option>

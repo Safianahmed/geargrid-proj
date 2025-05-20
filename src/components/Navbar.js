@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/Navbar.css";
+import { Helmet } from 'react-helmet';
 
 const Menu = ({ closeMenu }) => {
   const navigate = useNavigate();
@@ -52,6 +53,12 @@ const Menu = ({ closeMenu }) => {
 
   return (
     <div className="menu-overlay">
+    <Helmet>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap"
+        rel="stylesheet"
+      />
+    </Helmet>
       <div className="menu-image"></div>
       <div className="menu-container">
         <div className="close-icon" onClick={closeMenu}></div>

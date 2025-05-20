@@ -100,6 +100,10 @@ const AddBuild = () => {
       {/* ====== Main Form Area ====== */}
       <div className="main-form-area">
         <h2>Add a New Build</h2>
+        <div className="add-build-form">
+          <button type="button" onClick={() => navigate('/profile')}>Cancel</button>
+        </div>
+        <br/>
         <form onSubmit={handleSubmit} className="add-build-form">
 
           {/* ====== Vehicle Info Section ====== */}
@@ -386,9 +390,8 @@ const AddBuild = () => {
             </div>
           </div>
 
-          {/* ====== Submit & Cancel Buttons ====== */}
+          {/* ====== Submit Button ====== */}
           <button type="submit" disabled={!coverFiles[0]}>Submit Build</button>
-          <button type="button" onClick={() => navigate('/profile')}>Cancel</button>
         </form>
       </div>
     </div>

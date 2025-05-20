@@ -262,3 +262,47 @@
   border-color:     #000 !important;
   color:            #fff !important;
 }
+
+/* ── Override: Equal‐width & spread buttons on Registration Page ───────────────── */
+.register-event-container .form-actions {
+  display: flex;           
+  gap: var(--spacing);    
+}
+
+.register-event-container .form-actions .submit-btn,
+.register-event-container .form-actions .cancel-btn {
+  flex: 1;                
+  max-width: none;        
+  margin: 0;               
+  text-align: center;     
+}
+
+.register-event-container .form-actions .submit-btn,
+.register-event-container .form-actions .cancel-btn {
+  padding: 0.75rem 0;     
+}
+
+/* Keeping black/white styling */
+.register-event-container .form-actions .submit-btn {
+  background-color: #000 !important;
+  border: 2px solid #000 !important;
+  color: #fff !important;
+}
+
+.register-event-container .form-actions .cancel-btn {
+  background-color: #fff !important;
+  border: 2px solid #000 !important;
+  color: #000 !important;
+}
+
+/* Hover states */
+.register-event-container .form-actions .submit-btn:hover {
+  background-color: #333 !important;
+  transform: translateY(-1px);
+}
+
+.register-event-container .form-actions .cancel-btn:hover {
+  background-color: #000 !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}

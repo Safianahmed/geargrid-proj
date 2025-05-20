@@ -13,7 +13,7 @@ const AddBusiness = () => {
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const DEFAULT_IMAGE_URL = '/banners/default.jpg'; //for later change: use a default image from server or internet
 
@@ -143,10 +143,13 @@ const AddBusiness = () => {
                 />
                 <small>If left blank, a default image will be used.</small>
             </div>
-
-            <button type="submit" className="submit-btn" disabled={submitting}>
+            <div className='form-actions'>
+                <button type="submit" className="submit-btn" disabled={submitting}>
                 {submitting ? 'Submitting...' : 'Submit Business'}
             </button>
+            <button type='button' className='cancel-btn' onClick={() => navigate(-1)}
+            >Cancel</button>
+            </div>
             </form>
         )}
         </div>

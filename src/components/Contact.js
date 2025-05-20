@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/Contact.css";
+import { Helmet } from 'react-helmet';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -70,6 +71,12 @@ const Contact = () => {
 
   return (
     <div className="contact-page">
+    <Helmet>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap"
+        rel="stylesheet"
+      />
+    </Helmet>
       <div className={`contact-container ${isVisible ? "slide-down" : ""}`}>
         <h2>Contact Us</h2>
         <p>Have questions? Reach out to us, and we’ll get back to you as soon as possible.</p>

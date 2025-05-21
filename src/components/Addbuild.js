@@ -4,6 +4,8 @@ import { vehicleData } from '../data/vehicleData';
 import { modCategories } from '../data/modCategories';
 import '../css/AddBuild.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 // AddBuild component: lets user create a new car build with details, images, and mods
 const AddBuild = () => {
 
@@ -69,7 +71,7 @@ const AddBuild = () => {
     galleryFiles.forEach(file => file && formData.append('galleryImages', file));
 
     try {
-      const res = await fetch('/api/builds', {
+      const res = await fetch(`${API_BASE_URL}/api/builds`, {
         method: 'POST',
         credentials: 'include',
         body: formData

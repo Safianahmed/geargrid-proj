@@ -25,19 +25,20 @@ export default function EditBuild() {
   const [description, setDescription]     = useState('');
 
   // === Image State ===
-  const [existingCovers, setExistingCovers]   = useState([]);
-  const [coverFiles, setCoverFiles]           = useState([]);
-  const [existingGallery, setExistingGallery] = useState([]);
-  const [galleryFiles, setGalleryFiles]       = useState([]);
+  const [existingCovers, setExistingCovers]   = useState([]); // URLs of already uploaded cover images
+  const [coverFiles, setCoverFiles]           = useState([]); // New cover files to upload
+  const [existingGallery, setExistingGallery] = useState([]); // URLs of already uploaded gallery images
+  const [galleryFiles, setGalleryFiles]       = useState([]); // New gallery files to upload
 
   // === Mod State ===
-  const [mods, setMods]                 = useState([]);
-  const [newModInputs, setNewModInputs] = useState({});
+  const [mods, setMods]                 = useState([]); // All mods for this build
+  const [newModInputs, setNewModInputs] = useState({}); // For custom mod input fields
 
   // === Fetch build data on mount ===
   useEffect(() => {
     axios.get(`${API_BASE}/api/builds/${id}`, { withCredentials: true })
       .then(({ data }) => {
+        // Populate form fields with existing build data
         const b = data.build;
         setOwnership(b.ownership);
         const [br, ...rest] = b.car_name.split(' ');
@@ -50,12 +51,13 @@ export default function EditBuild() {
         setDescription(b.description || '');
         setExistingCovers([b.cover_image, b.cover_image2].filter(Boolean));
         setExistingGallery(b.galleryImages || []);
+        // Map backend mods to local mod structure
         setMods((data.mods || []).map(m => ({
           main:      m.category,
           sub:       m.sub_category,
           name:      m.mod_name,
           details:   m.mod_note || '',
-          image:     null,
+          image:     null, // No new image file yet
           image_url: m.image_url || null
         })));
       })
@@ -69,11 +71,13 @@ export default function EditBuild() {
   const handleSubmit = async e => {
     e.preventDefault();
     const form = new FormData();
+    // Append all form fields and files to FormData for backend
     form.append('ownership', ownership);
     form.append('car_name', `${brand} ${customModel || selectedModel}`.trim());
     form.append('model', customModel || selectedModel);
     form.append('bodyStyle', bodyStyle);
     form.append('description', description);
+    // Serialize mods for backend
     form.append('mods', JSON.stringify(
       mods.map(m => ({
         main:        m.main,
@@ -85,15 +89,17 @@ export default function EditBuild() {
         deleteImage: !m.image && !m.image_url
       }))
     ));
+    // Keep track of which covers/gallery images to keep
     form.append('keepCovers', JSON.stringify(existingCovers));
     coverFiles.forEach(f => form.append('coverImages', f));
     form.append('keepGallery', JSON.stringify(existingGallery));
     galleryFiles.forEach(f => form.append('galleryImages', f));
+    // Attach new mod images
     mods.forEach(m => m.image && form.append('modImages', m.image));
 
     try {
       const res = await axios.put(`${API_BASE}/api/builds/${id}`, form, { withCredentials: true });
-      if (res.data.success) return navigate(-1);
+      if (res.data.success) return navigate(-1); // Go back on success
       alert(res.data.message || 'Save failed');
     } catch (err) {
       console.error('Save error:', err);
@@ -106,7 +112,9 @@ export default function EditBuild() {
   };
 
   // === Helpers for Mod UI ===
+  // Returns true if any mod is selected in this main category
   const mainHasSelection = main => mods.some(m => m.main === main);
+  // Returns true if any mod is selected in this subcategory
   const subHasSelection  = (main, sub) => mods.some(m => m.main === main && m.sub === sub);
 
   // === Render ===
@@ -115,6 +123,7 @@ export default function EditBuild() {
       {/* --- Header & Actions --- */}
       <h1>Edit Build</h1>
       <div className="cancel-row">
+        {/* Cancel button returns to previous page */}
         <button
           type="button"
           className="top-cancel"
@@ -122,6 +131,7 @@ export default function EditBuild() {
         >
           Cancel
         </button>
+        {/* Delete build button */}
         <button
           type="button"
           className="delete-btn"
@@ -199,6 +209,7 @@ export default function EditBuild() {
                 }}
               >
                 <option value="">— select —</option>
+                {/* List brands for selected vehicle type */}
                 {Object.keys(vehicleData[vehicleType]).map(b => (
                   <option key={b} value={b}>{b}</option>
                 ))}
@@ -217,6 +228,7 @@ export default function EditBuild() {
                   }}
                 >
                   <option value="">— select —</option>
+                  {/* List models for selected brand */}
                   {(vehicleData[vehicleType][brand] || []).map(m => (
                     <option key={m} value={m}>{m}</option>
                   ))}
@@ -242,6 +254,7 @@ export default function EditBuild() {
                 onChange={e => setBodyStyle(e.target.value)}
               >
                 <option value="">— select —</option>
+                {/* Common body styles */}
                 <option value="Coupe">Coupe</option>
                 <option value="Sedan">Sedan</option>
                 <option value="Hatchback">Hatchback</option>
@@ -267,6 +280,7 @@ export default function EditBuild() {
         {/* --- Covers Section --- */}
         <label>Current Covers</label>
         <div className="preview-list">
+          {/* Show existing cover images with remove buttons */}
           {existingCovers.map((url, i) => (
             <div key={i} className="preview-item small">
               <img src={resolveImageUrl(url)} alt={`Cover ${i+1}`} />
@@ -284,6 +298,7 @@ export default function EditBuild() {
           accept="image/*"
           disabled={existingCovers.length + coverFiles.length >= 2}
           onChange={e => {
+            // Only allow up to 2 cover images total
             const picked = Array.from(e.target.files);
             const remaining = 2 - existingCovers.length - coverFiles.length;
             if (picked.length > remaining) {
@@ -294,6 +309,7 @@ export default function EditBuild() {
           }}
         />
         <div className="preview-list">
+          {/* Show previews for new cover files */}
           {coverFiles.map((file,i) => (
             <div key={i} className="preview-item small">
               <img src={URL.createObjectURL(file)} alt={file.name} />
@@ -308,6 +324,7 @@ export default function EditBuild() {
         {/* --- Gallery Section --- */}
         <label>Current Gallery</label>
         <div className="preview-list">
+          {/* Show existing gallery images with remove buttons */}
           {existingGallery.map((url, i) => (
             <div key={i} className="preview-item small">
               <img src={resolveImageUrl(url)} alt={`Gallery ${i+1}`} />
@@ -325,6 +342,7 @@ export default function EditBuild() {
           accept="image/*"
           disabled={existingGallery.length + galleryFiles.length >= 10}
           onChange={e => {
+            // Only allow up to 10 gallery images total
             const picked = Array.from(e.target.files);
             const remaining = 10 - existingGallery.length - galleryFiles.length;
             if (picked.length > remaining) {
@@ -335,6 +353,7 @@ export default function EditBuild() {
           }}
         />
         <div className="preview-list">
+          {/* Show previews for new gallery files */}
           {galleryFiles.map((file,i) => (
             <div key={i} className="preview-item small">
               <img src={URL.createObjectURL(file)} alt={file.name} />
@@ -349,6 +368,7 @@ export default function EditBuild() {
         {/* --- Modifications Section --- */}
         <section className="modifications">
           <h2>Modifications</h2>
+          {/* Render all main categories and their subcategories */}
           {Object.entries(modCategories).map(([main, subsObj]) => (
             <details key={main} open={mainHasSelection(main)}>
               <summary>{main}</summary>
@@ -357,7 +377,7 @@ export default function EditBuild() {
                 <details key={sub} open={subHasSelection(main, sub)}>
                   <summary>{sub}</summary>
 
-                  {/* Built-in mods */}
+                  {/* Built-in mods for this subcategory */}
                   {subsObj[sub].map(name => {
                     const sel = mods.find(
                       m => m.main === main &&
@@ -366,6 +386,7 @@ export default function EditBuild() {
                     );
                     return (
                       <div key={name} className="mod-card-vertical">
+                        {/* Checkbox to select/deselect mod */}
                         <label>
                           <input
                             type="checkbox"
@@ -381,6 +402,7 @@ export default function EditBuild() {
                           />
                           {name}
                         </label>
+                        {/* If selected, show details input and image upload */}
                         {sel && (
                           <div className="mod-extras-vertical">
                             <input
@@ -404,6 +426,7 @@ export default function EditBuild() {
                                 );
                               }}
                             />
+                            {/* Show mod image thumbnail if present */}
                             {(sel.image_url || sel.image) && (
                               <div className="mod-thumb-wrapper">
                                 <img
@@ -435,7 +458,7 @@ export default function EditBuild() {
                     );
                   })}
 
-                  {/* Custom mods */}
+                  {/* Custom mods for this subcategory */}
                   {mods
                     .filter(m =>
                       m.main === main &&
@@ -444,6 +467,7 @@ export default function EditBuild() {
                     )
                     .map((m, i) => (
                       <div key={i} className="mod-card-vertical">
+                        {/* Checkbox to remove custom mod */}
                         <label>
                           <input
                             type="checkbox"
@@ -476,6 +500,7 @@ export default function EditBuild() {
                               );
                             }}
                           />
+                          {/* Show mod image thumbnail if present */}
                           {(m.image_url || m.image) && (
                             <div className="mod-thumb-wrapper">
                               <img
@@ -505,7 +530,7 @@ export default function EditBuild() {
                       </div>
                     ))}
 
-                  {/* Add new custom mod */}
+                  {/* Add new custom mod input */}
                   <div className="add-custom-mod">
                     <input
                       type="text"

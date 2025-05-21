@@ -55,8 +55,6 @@ function createCarBuildRoutes(pool) {
     }
   });
 
-
-/** IN PROGRESS
  /**
  * @route   GET /api/builds/:id
  * @desc    Fetch a single build (with covers, gallery & mods)
@@ -71,7 +69,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
   }
 
   try {
-    // 1) Fetch build row
+    // Fetch build row
     const [[row]] = await pool.execute(
       `SELECT
         b.id, b.user_id, b.ownership_status AS ownership, b.car_name, b.model,
@@ -100,7 +98,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
     );
     const galleryImages = galleryRows.map(r => r.image_url);
 
-    // 3) Fetch mods with original column names
+    // Fetch mods with original column names
     const [modRows] = await pool.execute(
       `SELECT
          id,
@@ -114,7 +112,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
       [buildId]
     );
 
-    // 4) Assemble response
+    // Assemble response
     const build = {
       id:           row.id,
       user_id:      row.user_id,
@@ -143,9 +141,7 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
-
-
-/** IN PROGRESS - mods pics not showing up properly
+/*
  * @route   POST /api/builds
  * @desc    Create a new car build with optional file uploads and mods
  * @access  Protected (requires valid JWT via ensureAuthenticated)
@@ -239,17 +235,11 @@ router.post(
 
       return res.status(201).json({ success:true, buildId });
     } catch (err) {
-      console.error('🔥 [BUILD ERROR]:', err);
+      console.error('[BUILD ERROR]:', err);
       return res.status(500).json({ success:false, message:'Server error' });
     }
   }
 );
-
-
-
-
-
-
 
 /**
  * @route   PUT /api/builds/:id
@@ -268,14 +258,14 @@ router.put(
     const buildId = +req.params.id;
     const userId  = req.userId;
 
-    // 1) Basic fields
+    // Basic fields
     const ownershipStatus = req.body.ownership    ?? '';
     const car_name        = req.body.car_name     ?? '';
     const model           = req.body.model        ?? '';
     const bodyStyle       = req.body.bodyStyle    ?? null;
     const description     = req.body.description  ?? '';
 
-    // 2) JSON → arrays
+    // JSON → arrays
     let keepCoversArr = [], keepGalleryArr = [], modsArr = [];
     try {
       keepCoversArr  = JSON.parse(req.body.keepCovers  || '[]');
@@ -285,7 +275,7 @@ router.put(
       return res.status(400).json({ success: false, message: 'Invalid JSON payload' });
     }
 
-    // 3) Uploaded files
+    // Uploaded files
     const newCoverFiles   = req.files.coverImages   || [];
     const newGalleryFiles = req.files.galleryImages || [];
     const newModFiles     = req.files.modImages     || [];
@@ -294,7 +284,7 @@ router.put(
     try {
       await conn.beginTransaction();
 
-      // 4) Ownership check
+      // Ownership check
       const [ownerRows] = await conn.query(
         'SELECT user_id FROM builds WHERE id = ? FOR UPDATE',
         [buildId]
@@ -303,7 +293,7 @@ router.put(
         throw new Error('NOT_OWNER');
       }
 
-      // 5) Update main builds row (without cover_image columns yet)
+      // Update main builds row (without cover_image columns yet)
       await conn.query(
         `UPDATE builds
            SET ownership_status = ?,
@@ -315,8 +305,8 @@ router.put(
         [ownershipStatus, car_name, model, bodyStyle, description, buildId]
       );
 
-      // 6) Now update cover_image & cover_image2 columns directly
-      //    Combine "kept" URLs with any new uploads, preserving order.
+      // Updating cover_image & cover_image2 columns directly
+      // Combining "kept" URLs with any new uploads, preserving order
       const allCovers = [
         ...keepCoversArr,
         ...newCoverFiles.map(f => `/uploads/${f.filename}`)
@@ -331,9 +321,7 @@ router.put(
         [cover1, cover2, buildId]
       );
 
-// … after updating builds cover_image & cover_image2 …
-
-// 7) Reconcile build_gallery
+// Reconcile build_gallery
 await conn.query(
   `DELETE FROM build_gallery
      WHERE build_id = ?
@@ -346,7 +334,7 @@ await conn.query(
   ]
 );
 
-// 8) Insert any newly uploaded gallery images
+// Insert any newly uploaded gallery images
 const newGalleryFiles = req.files.galleryImages || [];
 if (newGalleryFiles.length) {
   const galleryRows = newGalleryFiles.map(f => [
@@ -359,7 +347,7 @@ if (newGalleryFiles.length) {
   );
 }
 
-      // 9) Reconcile build_mods (same as before)
+      // Reconcile build_mods (same as before)
       await conn.query(
         'DELETE FROM build_mods WHERE build_id = ?',
         [buildId]
@@ -405,11 +393,6 @@ if (newGalleryFiles.length) {
   }
 );
 
-
-
-
-
-
 /**
  * @route   DELETE /api/builds/:id
  * @desc    Delete a build and its related gallery & mods
@@ -423,7 +406,7 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // 1) Verify ownership
+    // Verify ownership
     const [rows] = await conn.query(
       `SELECT user_id FROM builds WHERE id = ? FOR UPDATE`,
       [buildId]
@@ -432,20 +415,19 @@ router.delete('/:id', ensureAuthenticated, async (req, res) => {
       throw new Error('NOT_OWNER');
     }
 
-    // 2) Delete related mods
+    // Delete related mods
     await conn.query(
       `DELETE FROM build_mods WHERE build_id = ?`,
       [buildId]
     );
 
-    // 3) Delete gallery entries
+    // Delete gallery entries
     await conn.query(
       `DELETE FROM build_gallery WHERE build_id = ?`,
       [buildId]
     );
 
-
-    // 4) Delete the build row last
+    // Delete the build row last
     await conn.query(
       `DELETE FROM builds WHERE id = ?`,
       [buildId]

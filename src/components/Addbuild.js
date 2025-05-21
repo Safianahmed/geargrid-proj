@@ -4,32 +4,35 @@ import { vehicleData } from '../data/vehicleData';
 import { modCategories } from '../data/modCategories';
 import '../css/AddBuild.css';
 
+// AddBuild component: lets user create a new car build with details, images, and mods
 const AddBuild = () => {
 
+  // Set a data attribute on the body for page-specific styling
   useEffect(() => {
-  document.body.setAttribute('data-page', 'add-build');
-  return () => {
-    document.body.removeAttribute('data-page');
-  };
-}, []);
+    document.body.setAttribute('data-page', 'add-build');
+    return () => {
+      document.body.removeAttribute('data-page');
+    };
+  }, []);
 
   // ====== Form State ======
-  const [ownership, setOwnership] = useState('current');
+  const [ownership, setOwnership] = useState('current'); // current or previous
   const [vehicleType, setVehicleType] = useState('');
   const [brand, setBrand] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [customModel, setCustomModel] = useState('');
   const [bodyStyle, setBodyStyle] = useState('');
   const [description, setDescription] = useState('');
-  const [coverFiles, setCoverFiles] = useState([]);
-  const [galleryFiles, setGalleryFiles] = useState([]);
-  const [mods, setMods] = useState([]);
-  const [customSubs, setCustomSubs] = useState({});
-  const [newSubInputs, setNewSubInputs] = useState({});
-  const [customModInput, setCustomModInput] = useState('');
-  const [currentMain, setCurrentMain] = useState('');
-  const [currentSub, setCurrentSub] = useState('');
+  const [coverFiles, setCoverFiles] = useState([]); // up to 2 cover images
+  const [galleryFiles, setGalleryFiles] = useState([]); // up to 10 gallery images
+  const [mods, setMods] = useState([]); // selected mods
+  const [customSubs, setCustomSubs] = useState({}); // custom sub-categories by main category
+  const [newSubInputs, setNewSubInputs] = useState({}); // input values for new sub-categories
+  const [customModInput, setCustomModInput] = useState(''); // input for custom mod name
+  const [currentMain, setCurrentMain] = useState(''); // currently selected main category
+  const [currentSub, setCurrentSub] = useState(''); // currently selected sub-category
 
+  // For sidebar navigation between main categories
   const mainCategories = Object.keys(modCategories);
   const [stepIndex, setStepIndex] = useState(0);
   const currentCategory = mainCategories[stepIndex];
@@ -39,12 +42,14 @@ const AddBuild = () => {
   // ====== Form Submit Handler ======
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate required fields
     const finalModel = customModel || selectedModel;
     if (!vehicleType || !brand || !finalModel || !bodyStyle || !coverFiles[0]) {
       alert("Please select vehicle type, brand, model, body style, and upload at least 1 cover image.");
       return;
     }
 
+    // Prepare form data for backend (multipart/form-data)
     const formData = new FormData();
     formData.append('ownership', ownership);
     formData.append('car_name', `${brand} ${finalModel}`.trim());
@@ -52,12 +57,14 @@ const AddBuild = () => {
     formData.append('bodyStyle', bodyStyle);
     formData.append('description', description);
 
+    // Serialize mods for backend
     const modsPayload = mods.map(({ main, sub, name, details }) => ({ main, sub, name, details }));
     formData.append('mods', JSON.stringify(modsPayload));
     mods.forEach(mod => {
       if (mod.image) formData.append('modImages', mod.image);
     });
 
+    // Attach cover and gallery images
     coverFiles.slice(0, 2).forEach(file => file && formData.append('coverImages', file));
     galleryFiles.forEach(file => file && formData.append('galleryImages', file));
 
@@ -77,7 +84,7 @@ const AddBuild = () => {
 
   return (
     <div className="add-build-container-with-sidebar">
-      {/* ====== Sidebar Navigation ====== */}
+      {/* ====== Sidebar Navigation for Main Categories ====== */}
       <div className="sidebar-nav">
         <h3>Categories</h3>
         <ul>
@@ -101,6 +108,7 @@ const AddBuild = () => {
       <div className="main-form-area">
         <h2>Add a New Build</h2>
         <div className="add-build-form">
+          {/* Cancel button returns to profile */}
           <button type="button" onClick={() => navigate('/profile')}>Cancel</button>
         </div>
         <br/>
@@ -119,6 +127,7 @@ const AddBuild = () => {
             </label>
           </fieldset>
 
+          {/* Vehicle type selection */}
           <label>Vehicle Type</label>
           <select value={vehicleType} onChange={e => {
             setVehicleType(e.target.value);
@@ -128,6 +137,7 @@ const AddBuild = () => {
             {Object.keys(vehicleData).map(type => <option key={type} value={type}>{type}</option>)}
           </select>
 
+          {/* Brand selection, shown after vehicle type is picked */}
           {vehicleType && (
             <>
               <label>Brand</label>
@@ -141,6 +151,7 @@ const AddBuild = () => {
             </>
           )}
 
+          {/* Model selection and manual input, shown after brand is picked */}
           {brand && (
             <>
               <label>Model</label>
@@ -149,16 +160,19 @@ const AddBuild = () => {
                   <option value="">-- Select Model --</option>
                   {vehicleData[vehicleType][brand].map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
+                {/* Manual model input */}
                 <input placeholder="Type manually" value={customModel} onChange={e => setCustomModel(e.target.value)} />
               </div>
             </>
           )}
 
+          {/* Body style selection, shown after model is picked or typed */}
           {(selectedModel || customModel) && (
             <>
               <label>Body Style</label>
               <select value={bodyStyle} onChange={e => setBodyStyle(e.target.value)}>
                 <option value="">-- Select Body Style --</option>
+                {/* Common body styles */}
                 {['Coupe', 'Sedan', 'Hatchback', 'SUV', 'Wagon', 'Convertible', 'Pickup Truck', 'Van', 'Motorcycle', 'Other'].map(style => (
                   <option key={style} value={style}>{style}</option>
                 ))}
@@ -166,17 +180,21 @@ const AddBuild = () => {
             </>
           )}
 
+          {/* Build description */}
           <label>Description</label>
           <textarea value={description} onChange={e => setDescription(e.target.value)} rows="4" placeholder="Describe your build..." />
 
           {/* ====== Mod Selection Section ====== */}
           <h3>{currentCategory}</h3>
 
+          {/* List all sub-categories (built-in and custom) for the current main category */}
           {[...(Object.keys(modCategories[currentCategory] || [])), ...(customSubs[currentCategory] || [])].map(sub => {
             const isCustom = (customSubs[currentCategory] || []).includes(sub);
+            // Sub-category is open if selected or if any mod is selected in it
             const isSubOpen = currentSub === sub || mods.some(m => m.main === currentCategory && m.sub === sub);
             return (
               <div key={sub} className="mod-sub-block">
+                {/* Sub-category button (toggles open/close) */}
                 <button
                   type="button"
                   className={`mod-sub-btn ${currentSub === sub ? 'active' : ''}`}
@@ -184,28 +202,29 @@ const AddBuild = () => {
                 >
                   <span className="label-text">{sub}</span>
 
-                {/* ====== Delete Custom Sub-Category Button ====== */}
-                {isCustom && (
-                  <button
-                    type="button"
-                    className="mod-sub-delete"
-                    onClick={() => {
-                      if (!window.confirm(`Delete sub-category “${sub}”?`)) return;
-                      setCustomSubs(cs => {
-                        const filtered = cs[currentCategory].filter(s => s !== sub);
-                        return { ...cs, [currentCategory]: filtered };
-                      });
-                      if (currentSub === sub) setCurrentSub('');
-                    }}
-                  >
-                    ×
-                  </button>
-                )}
+                  {/* ====== Delete Custom Sub-Category Button ====== */}
+                  {isCustom && (
+                    <button
+                      type="button"
+                      className="mod-sub-delete"
+                      onClick={() => {
+                        if (!window.confirm(`Delete sub-category “${sub}”?`)) return;
+                        setCustomSubs(cs => {
+                          const filtered = cs[currentCategory].filter(s => s !== sub);
+                          return { ...cs, [currentCategory]: filtered };
+                        });
+                        if (currentSub === sub) setCurrentSub('');
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
                 </button>
 
                 {/* ====== Mods in This Sub-Category ====== */}
                 {isSubOpen && (
                   <div className="mods-items">
+                    {/* List built-in and custom mods for this sub-category */}
                     {[...(modCategories[currentCategory][sub] || []),
                       ...mods.filter(m => m.main === currentCategory && m.sub === sub && !(modCategories[currentCategory][sub] || []).includes(m.name)).map(m => m.name)
                     ].map(item => {
@@ -213,6 +232,7 @@ const AddBuild = () => {
                       const mod = mods.find(m => m.main === currentCategory && m.sub === sub && m.name === item);
                       return (
                         <div key={item}>
+                          {/* Checkbox for mod selection */}
                           <label>
                             <input
                               type="checkbox"
@@ -227,6 +247,7 @@ const AddBuild = () => {
                             />
                             {item}
                           </label>
+                          {/* If checked, show details and image upload */}
                           {isChecked && (
                             <div>
                               <input
@@ -254,6 +275,7 @@ const AddBuild = () => {
                                   ));
                                 }}
                               />
+                              {/* Show preview if image is selected */}
                               {mod?.image && (
                                 <div className="mod-image-preview">
                                   <img src={URL.createObjectURL(mod.image)} alt={item} />
@@ -345,6 +367,7 @@ const AddBuild = () => {
                 });
               }}
             />
+            {/* Preview selected cover images */}
             <div className="preview-list">
               {coverFiles.map((file, i) => {
                 const url = URL.createObjectURL(file);
@@ -376,6 +399,7 @@ const AddBuild = () => {
                 });
               }}
             />
+            {/* Preview selected gallery images */}
             <div className="preview-list">
               {galleryFiles.map((file, i) => {
                 const url = URL.createObjectURL(file);

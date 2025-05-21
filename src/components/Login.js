@@ -26,7 +26,8 @@ const Login = () => {
           email: formData.email,
           password: formData.password
         }),
-        credentials: 'include'
+        credentials: 'include',
+        mode: 'cors'
       });
 
       const data = await response.json();

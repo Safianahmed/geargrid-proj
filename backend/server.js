@@ -25,11 +25,18 @@ app.use(express.json({limit: '10mb'}));
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+    console.log('[CORS] Request Origin:', origin); //received origin
+    console.log('[CORS] Allowed Origins:', allowedOrigins); //current allowedOrigins
+    if (!origin) {
+      console.log('[CORS] No origin specified, allowing.');
+      return callback(null, true);
+    }
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'Specified orgins are not allowed to access this site';
+      const msg = `[CORS] The origin '${origin}' is not allowed by CORS.`;
+      console.error(msg);
       return callback(new Error(msg), false);
     }
+    console.log(`[CORS] Origin '${origin}' is allowed by CORS.`);
     return callback(null, true);
   },
   credentials: true,
@@ -671,8 +678,8 @@ app.get('/test-db', async (req, res) => {
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 //-----------------------CAR BUILD ROUTES-----------------------//
-const carBuildRoutes = require('./routes/carBuilds.js')(pool);
-app.use('/api/builds', require('./routes/carBuilds')(pool));
+const carBuildRouter = require('./routes/carBuilds.js')(pool);
+app.use('/api/builds', carBuildRouter);
 
 // for follow
 const followRoutes = require('./routes/follows.js')(pool);

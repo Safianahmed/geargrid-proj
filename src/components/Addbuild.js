@@ -71,6 +71,7 @@ const AddBuild = () => {
     galleryFiles.forEach(file => file && formData.append('galleryImages', file));
 
     try {
+      console.log('Attempting to fetch from API_BASE_URL:', API_BASE_URL);
       const res = await fetch(`${API_BASE_URL}/api/builds`, {
         method: 'POST',
         credentials: 'include',

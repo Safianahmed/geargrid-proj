@@ -53,7 +53,7 @@ const Footer = () => {
             <h4>Company</h4>
             <Link to="/">Home</Link>
             <Link to="/contact">Contact</Link>
-            <Link to="/about">About</Link>
+            <a href="/#about-section">About</a>
           </div>
 
           {/* services */}
@@ -61,7 +61,7 @@ const Footer = () => {
             <h4>Services</h4>
             <Link to="/businesses">Find a Business</Link>
             <Link to="/events">Events</Link>
-            <Link to="/register">Register Event</Link>
+            <Link to="/organize-event">Register Event</Link>
           </div>
 
           {/* account Links */}

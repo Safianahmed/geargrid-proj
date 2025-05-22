@@ -1,6 +1,6 @@
 // src/components/BusinessDetail.js
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../css/BusinessDetail.css";
 
 // main component for displaying individual business page
@@ -19,6 +19,8 @@ const BusinessDetail = () => {
   const [editingReview, setEditingReview] = useState(null);
 
   const currentUserId = localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId")) : null;
+
+  const navigate = useNavigate();
 
   const fetchBusinessDetails = useCallback(async () => {
     setIsLoading(true);
@@ -145,6 +147,9 @@ const BusinessDetail = () => {
 
   return (
     <div className="business-detail-container">
+      <div className="back-button-wrapper">
+        <button onClick={() => navigate(-1)} className="back-button">← Back</button>
+      </div>
       <img
         src={business.image_url || "/banners/default.jpg"}
         alt={`${business.name} banner`}
